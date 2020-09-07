@@ -153,10 +153,10 @@ namespace FietsDemo
                         int instantaneousCadence = bytes[startingByteMessage + 2];
 
                         // Accumulated Power LSB
-                        int leastSignificantBit = bytes[startingByteMessage + 3];
+                        int accumalatedPowerLSB = bytes[startingByteMessage + 3];
 
                         // Accumulated Power MSB
-                        int mostSignificantBit = bytes[startingByteMessage + 4];
+                        int accumelatedPowerMSB = bytes[startingByteMessage + 4];
 
                         // Instantaneous Power LSB 
                         int instantaneousPowerLSB = bytes[startingByteMessage + 5];
@@ -187,7 +187,7 @@ namespace FietsDemo
 
 
                         // Acumelated power calculation
-                        double acumelatedPower = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
+                        double acumelatedPower = (accumalatedPowerLSB + (accumelatedPowerMSB << 8)) / 1000.0;
 
                         // Instantaneous power calculation
                         double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8)) / 1000.0;
@@ -195,7 +195,7 @@ namespace FietsDemo
 
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t power: {3}", name, acumelatedPower, instantaneousCadence, instantaneousPower);
+                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3}", name, acumelatedPower, instantaneousCadence, instantaneousPower);
                     }
 
                 }

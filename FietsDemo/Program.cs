@@ -149,6 +149,7 @@ namespace FietsDemo
                         // Update Event Count
                         int eventCount = bytes[startingByteMessage + 1];
 
+                        // __TODO__ rpm skips around
                         // Instantaneous Cadence (ratations per minute)
                         int instantaneousCadence = bytes[startingByteMessage + 2];
 
@@ -180,6 +181,7 @@ namespace FietsDemo
                         }
 
                         // Trainer Status Bit Field (bytes 4-8)
+                        //every bit says something different
                         int trainerStatusBitField = 0;
                         {
                             byte tempByte = bytes[startingByteMessage + 6];
@@ -197,8 +199,9 @@ namespace FietsDemo
                             }
                         }
 
+                        // Flags Bit Field 
 
-                        // __TODO__ seperate the byte
+                        // FE State Bit Field
 
 
                         // Acumelated power calculation

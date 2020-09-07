@@ -60,10 +60,11 @@ namespace FietsDemo
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
             String name = e.ServiceName;
-            StringBuilder data = new StringBuilder();
 
             if (name == "00002a37-0000-1000-8000-00805f9b34fb")
             {
+                StringBuilder data = new StringBuilder();
+
                 name = "HeartRate";
                 foreach (byte b in e.Data)
                 {
@@ -78,16 +79,16 @@ namespace FietsDemo
                 name = "Avans Bike";
 
                 byte[] bytes = e.Data;
-                //starting byte should always be 0xA4
+                // Starting byte should always be 0xA4
                 if (bytes[0] == 0xA4)
                 {
-                    //length of the message
+                    // Length of the message
                     int length = bytes[1];
-                    //type of message
+                    // Type of message
                     int type = bytes[2];
 
 
-                    //checking if the checksum is correct
+                    // Checking if the checksum is correct
                     int checksum = bytes[length + 3];
                     int checksumCalculated = bytes[0];
                     for (int i = 1; i < bytes.Length - 1; i++)
@@ -95,7 +96,7 @@ namespace FietsDemo
                         checksumCalculated = bytes[i] ^ checksumCalculated;
                     }
 
-                    //if it does not match the message is corrupted so we leave this message alone
+                    // If it does not match the message is corrupted so we leave this message alone
                     if (checksum != checksumCalculated)
                     {
                         Console.WriteLine("Error wrong message construction");
@@ -103,17 +104,53 @@ namespace FietsDemo
                     }
 
 
-                    //Console.WriteLine($"length = {length} \t type = {type}");
-                    for (int i = 0; i < length; i++)
+                    // Get the channel id from the message
+                    int channelID = bytes[3];
+
+                    // Check wich command it is
+                    if (bytes[4] == 0x10)
                     {
-                        data.Append(bytes[i + 3]);
-                        data.Append(" ");
+                        // General fe datapage
+
+                        // Equipment Type Bit Field
+                        int equipmentTypeBit = bytes[5];
+                        
+                        // Elapsed Time
+                        int elapsedTime = bytes[6];
+
+                        // Distance Traveled
+                        int distanceTraveled = bytes[7];
+
+                        // Speed LSB
+                        int leastSignificantBit = bytes[8];
+
+                        // Speed MSB
+                        int mostSignificantBit = bytes[9];
+
+                        // Heart Rate
+                        int heartRateFromBike = bytes[10];
+
+                        // Capabilities Bit Field (4 bits) and FE State Bit Field (4 bits)
+                        // __TODO__ make an seperator
+
+                        double speed = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
+
+
+
+                        Console.WriteLine("{0}: \t speed: {1}", name, speed);
+                    }
+                    else if (bytes[4] == 0x19)
+                    {
+                        // Specific Trainer/Stationary Bike Data 
+
+                        //Console.WriteLine("{0}: \tmessage: {1}", name, data.ToString());
                     }
 
-                    Console.WriteLine("{0}: \ttype: {1} \tmessage: {2}", name, type, data.ToString());
                 }
+
             }
         }
-
     }
+
 }
+

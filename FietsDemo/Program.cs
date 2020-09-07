@@ -181,27 +181,61 @@ namespace FietsDemo
                         }
 
                         // Trainer Status Bit Field (bytes 4-8)
-                        //every bit says something different
-                        int trainerStatusBitField = 0;
                         {
                             byte tempByte = bytes[startingByteMessage + 6];
-                            int bytesAmount = 4;
+
+
+                            bool needsBicyclePowerCalibration = (tempByte & (1 << 4)) != 0;
+                            bool needsResistanceCalibration = (tempByte & (1 << 5)) != 0;
+                            bool needsUserConfiguration = (tempByte & (1 << 6)) != 0;
+                            bool reservedForFuture = (tempByte & (1 << 7)) != 0;
+                        }
+
+                        // Flags Bit Field 
+                        {
+                            byte tempByte = bytes[startingByteMessage + 7];
+
+                            // Target Power Limits
+                            // 0 – Trainer operating at the target power, or no target power set.
+                            // 1 – User’s cycling speed is too low to achieve target power.
+                            // 2 – User’s cycling speed is too high to achieve target power.
+                            // 3 – Undetermined (maximum or minimum) target power limit reached.
+                            int targetPowerLimits = 0;
+                            if ((tempByte & (1 << 1)) != 0)
+                            {
+                                targetPowerLimits++;
+                                targetPowerLimits <<= 1;
+                            }
+                            if ((tempByte & (1 << 1)) != 0)
+                            {
+                                targetPowerLimits++;
+                            }
+
+                            bool reservedForFuture = (tempByte & (1 << 2)) != 0;
+                            bool reservedForFuture2 = (tempByte & (1 << 3)) != 0;
+                        }
+
+                        // FE State Bit Field
+                        int feState = 0;
+                        {
+                            byte tempByte = bytes[startingByteMessage + 7];
+
+                            int bytesAmount = 3;
                             for (int bitNumber = 4; bitNumber < bytesAmount + 4; bitNumber++)
                             {
                                 Boolean bit = (tempByte & (1 << bitNumber - 1)) != 0;
 
-                                trainerStatusBitField <<= 1;
+                                feState <<= 1;
 
                                 if (bit)
                                 {
-                                    trainerStatusBitField++;
+                                    feState++;
                                 }
                             }
+
+                            // A change in value of the lap toggle bit indicates a lap event
+                            Boolean lapToggleBit = (tempByte & (1 << 7)) != 0;
                         }
-
-                        // Flags Bit Field 
-
-                        // FE State Bit Field
 
 
                         // Acumelated power calculation
@@ -213,7 +247,7 @@ namespace FietsDemo
 
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t trainer status: {4}", name, acumelatedPower, instantaneousCadence, instantaneousPower, trainerStatusBitField);
+                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3}", name, acumelatedPower, instantaneousCadence, instantaneousPower, trainerStatusBitField);
                     }
 
                 }

@@ -146,20 +146,26 @@ namespace FietsDemo
                     {
                         // Specific Trainer/Stationary Bike Data 
 
+
                         // Update Event Count
                         int eventCount = bytes[startingByteMessage + 1];
+
 
                         // Instantaneous Cadence (ratations per minute)
                         int instantaneousCadence = bytes[startingByteMessage + 2];
 
+
                         // Accumulated Power LSB
                         int accumalatedPowerLSB = bytes[startingByteMessage + 3];
+
 
                         // Accumulated Power MSB
                         int accumelatedPowerMSB = bytes[startingByteMessage + 4];
 
+
                         // Instantaneous Power LSB 
                         int instantaneousPowerLSB = bytes[startingByteMessage + 5];
+
 
                         // Instantaneous Power MSN
                         int instantaneousPowerMSN = 0;
@@ -179,6 +185,7 @@ namespace FietsDemo
                             }
                         }
 
+
                         // Trainer Status Bit Field
                         bool needsBicyclePowerCalibration;
                         bool needsResistanceCalibration;
@@ -193,8 +200,8 @@ namespace FietsDemo
                             bool reservedForFuture = (tempByte & (1 << 7)) != 0;
                         }
 
-                        // Flags Bit Field 
 
+                        // Flags Bit Field 
                         // Target Power Limits
                         // 0 – Trainer operating at the target power, or no target power set.
                         // 1 – User’s cycling speed is too low to achieve target power.
@@ -219,6 +226,7 @@ namespace FietsDemo
                             bool reservedForFuture2 = (tempByte & (1 << 3)) != 0;
                         }
 
+
                         // FE State Bit Field
                         // 0 - Reserved
                         // 1 - ASLEEP (OFF)
@@ -227,6 +235,7 @@ namespace FietsDemo
                         // 4 - FINISHED (PAUSED)
                         // 5-7 - Reserved. Do not send or interpret
                         int feState = 0;
+
                         // A change in value of the lap toggle bit indicates a lap event
                         Boolean lapToggleBit;
                         {
@@ -245,7 +254,6 @@ namespace FietsDemo
                                 }
                             }
 
-                            // A change in value of the lap toggle bit indicates a lap event
                             lapToggleBit = (tempByte & (1 << 7)) != 0;
                         }
 
@@ -253,13 +261,14 @@ namespace FietsDemo
                         // Acumelated power calculation
                         double acumelatedPower = (accumalatedPowerLSB + (accumelatedPowerMSB << 8)) / 1000.0;
 
+
                         // Instantaneous power calculation
                         double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8));
 
 
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3}", name, acumelatedPower, instantaneousCadence, instantaneousPower);
+                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, acumelatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
                     }
 
                 }

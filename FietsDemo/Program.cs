@@ -149,7 +149,6 @@ namespace FietsDemo
                         // Update Event Count
                         int eventCount = bytes[startingByteMessage + 1];
 
-                        // __TODO__ rpm skips around
                         // Instantaneous Cadence (ratations per minute)
                         int instantaneousCadence = bytes[startingByteMessage + 2];
 
@@ -162,7 +161,7 @@ namespace FietsDemo
                         // Instantaneous Power LSB 
                         int instantaneousPowerLSB = bytes[startingByteMessage + 5];
 
-                        // Instantaneous Power MSN (bytes 0 - 3)
+                        // Instantaneous Power MSN
                         int instantaneousPowerMSN = 0;
                         {
                             byte tempByte = bytes[startingByteMessage + 6];
@@ -180,27 +179,32 @@ namespace FietsDemo
                             }
                         }
 
-                        // Trainer Status Bit Field (bytes 4-8)
+                        // Trainer Status Bit Field
+                        bool needsBicyclePowerCalibration;
+                        bool needsResistanceCalibration;
+                        bool needsUserConfiguration;
                         {
                             byte tempByte = bytes[startingByteMessage + 6];
 
 
-                            bool needsBicyclePowerCalibration = (tempByte & (1 << 4)) != 0;
-                            bool needsResistanceCalibration = (tempByte & (1 << 5)) != 0;
-                            bool needsUserConfiguration = (tempByte & (1 << 6)) != 0;
+                            needsBicyclePowerCalibration = (tempByte & (1 << 4)) != 0;
+                            needsResistanceCalibration = (tempByte & (1 << 5)) != 0;
+                            needsUserConfiguration = (tempByte & (1 << 6)) != 0;
                             bool reservedForFuture = (tempByte & (1 << 7)) != 0;
                         }
 
                         // Flags Bit Field 
+
+                        // Target Power Limits
+                        // 0 – Trainer operating at the target power, or no target power set.
+                        // 1 – User’s cycling speed is too low to achieve target power.
+                        // 2 – User’s cycling speed is too high to achieve target power.
+                        // 3 – Undetermined (maximum or minimum) target power limit reached.
+                        int targetPowerLimits = 0;
                         {
                             byte tempByte = bytes[startingByteMessage + 7];
 
-                            // Target Power Limits
-                            // 0 – Trainer operating at the target power, or no target power set.
-                            // 1 – User’s cycling speed is too low to achieve target power.
-                            // 2 – User’s cycling speed is too high to achieve target power.
-                            // 3 – Undetermined (maximum or minimum) target power limit reached.
-                            int targetPowerLimits = 0;
+
                             if ((tempByte & (1 << 1)) != 0)
                             {
                                 targetPowerLimits++;
@@ -216,7 +220,15 @@ namespace FietsDemo
                         }
 
                         // FE State Bit Field
+                        // 0 - Reserved
+                        // 1 - ASLEEP (OFF)
+                        // 2 - READY
+                        // 3 - IN_USE
+                        // 4 - FINISHED (PAUSED)
+                        // 5-7 - Reserved. Do not send or interpret
                         int feState = 0;
+                        // A change in value of the lap toggle bit indicates a lap event
+                        Boolean lapToggleBit;
                         {
                             byte tempByte = bytes[startingByteMessage + 7];
 
@@ -234,7 +246,7 @@ namespace FietsDemo
                             }
 
                             // A change in value of the lap toggle bit indicates a lap event
-                            Boolean lapToggleBit = (tempByte & (1 << 7)) != 0;
+                            lapToggleBit = (tempByte & (1 << 7)) != 0;
                         }
 
 
@@ -247,7 +259,7 @@ namespace FietsDemo
 
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3}", name, acumelatedPower, instantaneousCadence, instantaneousPower, trainerStatusBitField);
+                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3}", name, acumelatedPower, instantaneousCadence, instantaneousPower);
                     }
 
                 }

@@ -110,7 +110,7 @@ namespace FietsDemo
                         data.Append(" ");
                     }
 
-                    Console.WriteLine("{0}: {1}", name, data.ToString());
+                    Console.WriteLine("{0}: \ttype: {1} \tmessage: {2}", name, type, data.ToString());
                 }
             }
         }

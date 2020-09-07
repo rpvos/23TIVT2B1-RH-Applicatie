@@ -107,28 +107,31 @@ namespace FietsDemo
                     // Get the channel id from the message
                     int channelID = bytes[3];
 
+                    // Starting byte of the message
+                    int startingByteMessage = 4;
+
                     // Check wich command it is
-                    if (bytes[4] == 0x10)
+                    if (bytes[startingByteMessage] == 0x10)
                     {
                         // General fe datapage
 
                         // Equipment Type Bit Field
-                        int equipmentTypeBit = bytes[5];
-                        
+                        int equipmentTypeBit = bytes[startingByteMessage + 1];
+
                         // Elapsed Time
-                        int elapsedTime = bytes[6];
+                        int elapsedTime = bytes[startingByteMessage + 2];
 
                         // Distance Traveled
-                        int distanceTraveled = bytes[7];
+                        int distanceTraveled = bytes[startingByteMessage + 3];
 
                         // Speed LSB
-                        int leastSignificantBit = bytes[8];
+                        int leastSignificantBit = bytes[startingByteMessage + 4];
 
                         // Speed MSB
-                        int mostSignificantBit = bytes[9];
+                        int mostSignificantBit = bytes[startingByteMessage + 5];
 
                         // Heart Rate
-                        int heartRateFromBike = bytes[10];
+                        int heartRateFromBike = bytes[startingByteMessage + 6];
 
                         // Capabilities Bit Field (4 bits) and FE State Bit Field (4 bits)
                         // __TODO__ make an seperator
@@ -139,9 +142,12 @@ namespace FietsDemo
 
                         Console.WriteLine("{0}: \t speed: {1}", name, speed);
                     }
-                    else if (bytes[4] == 0x19)
+                    else if (bytes[startingByteMessage] == 0x19)
                     {
                         // Specific Trainer/Stationary Bike Data 
+
+                        // Update Event Count
+                        int eventCount = bytes[startingByteMessage+1];
 
                         //Console.WriteLine("{0}: \tmessage: {1}", name, data.ToString());
                     }

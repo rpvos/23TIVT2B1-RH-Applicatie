@@ -147,9 +147,9 @@ namespace FietsDemo
                         // Specific Trainer/Stationary Bike Data 
 
                         // Update Event Count
-                        int eventCount = bytes[startingByteMessage+1];
+                        int eventCount = bytes[startingByteMessage + 1];
 
-                        // Instantaneous Cadence
+                        // Instantaneous Cadence (ratations per minute)
                         int instantaneousCadence = bytes[startingByteMessage + 2];
 
                         // Accumulated Power LSB
@@ -161,11 +161,27 @@ namespace FietsDemo
                         // Instantaneous Power LSB 
                         int instantaneousPowerLSB = bytes[startingByteMessage + 5];
 
-                        // Instantaneous Power MSN
-                        int instantaneousPowerMSN = bytes[startingByteMessage + 6];
+                        // Instantaneous Power MSN (bytes 0 - 3)
+                        int instantaneousPowerMSN = 0;
+                        {
+                            byte tempByte = bytes[startingByteMessage + 6];
+                            int bytesAmount = 4;
+                            for (int bitNumber = 0; bitNumber < bytesAmount; bitNumber++)
+                            {
+                                Boolean bit = (tempByte & (1 << bitNumber - 1)) != 0;
 
-                        // Trainer Status Bit Field
-                        int trainerStatusBitField = bytes[startingByteMessage + 7];
+                                instantaneousPowerMSN <<= 1;
+
+                                if (bit)
+                                {
+                                    instantaneousPowerMSN++;
+                                }
+                            }
+                        }
+
+                        // Trainer Status Bit Field (bytes 4-8)
+                        int trainerStatusBitField = 0;
+
 
                         // __TODO__ seperate the byte
 
@@ -173,9 +189,13 @@ namespace FietsDemo
                         // Acumelated power calculation
                         double acumelatedPower = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
 
+                        // Instantaneous power calculation
+                        double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8)) / 1000.0;
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1}", name, acumelatedPower);
+
+
+                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t power: {3}", name, acumelatedPower, instantaneousCadence, instantaneousPower);
                     }
 
                 }

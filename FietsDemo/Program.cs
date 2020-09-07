@@ -140,7 +140,7 @@ namespace FietsDemo
 
 
 
-                        Console.WriteLine("{0}: \t speed: {1}", name, speed);
+                        //Console.WriteLine("{0}: \t speed: {1}", name, speed);
                     }
                     else if (bytes[startingByteMessage] == 0x19)
                     {
@@ -149,7 +149,33 @@ namespace FietsDemo
                         // Update Event Count
                         int eventCount = bytes[startingByteMessage+1];
 
-                        //Console.WriteLine("{0}: \tmessage: {1}", name, data.ToString());
+                        // Instantaneous Cadence
+                        int instantaneousCadence = bytes[startingByteMessage + 2];
+
+                        // Accumulated Power LSB
+                        int leastSignificantBit = bytes[startingByteMessage + 3];
+
+                        // Accumulated Power MSB
+                        int mostSignificantBit = bytes[startingByteMessage + 4];
+
+                        // Instantaneous Power LSB 
+                        int instantaneousPowerLSB = bytes[startingByteMessage + 5];
+
+                        // Instantaneous Power MSN
+                        int instantaneousPowerMSN = bytes[startingByteMessage + 6];
+
+                        // Trainer Status Bit Field
+                        int trainerStatusBitField = bytes[startingByteMessage + 7];
+
+                        // __TODO__ seperate the byte
+
+
+                        // Acumelated power calculation
+                        double acumelatedPower = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
+
+
+
+                        Console.WriteLine("{0}: \t acumelated power: {1}", name, acumelatedPower);
                     }
 
                 }

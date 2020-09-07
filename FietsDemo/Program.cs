@@ -166,7 +166,7 @@ namespace FietsDemo
                         {
                             byte tempByte = bytes[startingByteMessage + 6];
                             int bytesAmount = 4;
-                            for (int bitNumber = 0; bitNumber < bytesAmount + bitNumber; bitNumber++)
+                            for (int bitNumber = 0; bitNumber < bytesAmount; bitNumber++)
                             {
                                 Boolean bit = (tempByte & (1 << bitNumber - 1)) != 0;
 
@@ -184,7 +184,7 @@ namespace FietsDemo
                         {
                             byte tempByte = bytes[startingByteMessage + 6];
                             int bytesAmount = 4;
-                            for (int bitNumber = 4; bitNumber < bytesAmount + bitNumber; bitNumber++)
+                            for (int bitNumber = 4; bitNumber < bytesAmount + 4; bitNumber++)
                             {
                                 Boolean bit = (tempByte & (1 << bitNumber - 1)) != 0;
 

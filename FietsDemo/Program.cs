@@ -166,7 +166,7 @@ namespace FietsDemo
                         {
                             byte tempByte = bytes[startingByteMessage + 6];
                             int bytesAmount = 4;
-                            for (int bitNumber = 0; bitNumber < bytesAmount; bitNumber++)
+                            for (int bitNumber = 0; bitNumber < bytesAmount + bitNumber; bitNumber++)
                             {
                                 Boolean bit = (tempByte & (1 << bitNumber - 1)) != 0;
 
@@ -181,6 +181,21 @@ namespace FietsDemo
 
                         // Trainer Status Bit Field (bytes 4-8)
                         int trainerStatusBitField = 0;
+                        {
+                            byte tempByte = bytes[startingByteMessage + 6];
+                            int bytesAmount = 4;
+                            for (int bitNumber = 4; bitNumber < bytesAmount + bitNumber; bitNumber++)
+                            {
+                                Boolean bit = (tempByte & (1 << bitNumber - 1)) != 0;
+
+                                trainerStatusBitField <<= 1;
+
+                                if (bit)
+                                {
+                                    trainerStatusBitField++;
+                                }
+                            }
+                        }
 
 
                         // __TODO__ seperate the byte
@@ -190,12 +205,12 @@ namespace FietsDemo
                         double acumelatedPower = (accumalatedPowerLSB + (accumelatedPowerMSB << 8)) / 1000.0;
 
                         // Instantaneous power calculation
-                        double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8)) / 1000.0;
+                        double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8));
 
 
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3}", name, acumelatedPower, instantaneousCadence, instantaneousPower);
+                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t trainer status: {4}", name, acumelatedPower, instantaneousCadence, instantaneousPower, trainerStatusBitField);
                     }
 
                 }

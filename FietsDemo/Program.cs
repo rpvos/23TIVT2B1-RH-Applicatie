@@ -55,7 +55,7 @@ namespace FietsDemo
             }
 
             // Connecting
-            errorCode = await bleBike.OpenDevice("Avans Bike A918");
+            errorCode = await bleBike.OpenDevice("Avans Bike");
             // __TODO__ Error check
 
             var services = bleBike.GetServices;
@@ -73,7 +73,7 @@ namespace FietsDemo
             errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
-            errorCode = await bleHeart.OpenDevice("Avans Bike A918");
+            errorCode = await bleHeart.OpenDevice("Avans Bike");
 
             await bleHeart.SetService("HeartRate");
 

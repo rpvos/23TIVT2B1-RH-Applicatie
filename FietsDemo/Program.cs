@@ -200,7 +200,8 @@ namespace FietsDemo
 
                         this.timeElapsedInSeconds = ((64 * timeElapsedCounter) + elapsedTime * 0.25);
                         this.previousTimeElapsed = elapsedTime;
-
+                                              
+                        setValuesInGui("elapsedTime", timeElapsedInSeconds, "");
 
                         // Calculation distance traveled
                         if (previousDistanceTraveled > distanceTraveled)
@@ -370,7 +371,10 @@ namespace FietsDemo
                 case "DT":
                     this.gui.getForm().setDT(value);
                     break;
-
+                case "elapsedTime":
+                    this.gui.getForm().setElapsedTime(value);
+                    break;
+                    
             }
 
         }

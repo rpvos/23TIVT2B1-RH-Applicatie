@@ -191,11 +191,11 @@ namespace FietsDemo
                         if (previousDistanceTraveled > distanceTraveled)
                             distanceTraveledCounter++;
 
-                        this.distanceTraveledInKM = ((255 * distanceTraveledCounter) + distanceTraveled)/1000;
+                        this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000;
                         this.previousDistanceTraveled = distanceTraveled;
 
 
-                        setValuesInGui("speed",speed,"");
+                        setValuesInGui("speed", speed, "");
 
                         Console.WriteLine("{0}: \t speed: {1}", name, speed);
                     }
@@ -344,13 +344,13 @@ namespace FietsDemo
             switch (valueType)
             {
                 case "speed":
-                this.gui.getForm().setSpeed(value);
+                    this.gui.getForm().setSpeed(value);
                     break;
                 case "heartrate":
-                this.gui.getForm().setHeartrate(heartrate);
+                    this.gui.getForm().setHeartrate(heartrate);
                     break;
                 case "AP":
-                this.gui.getForm().setAP(value);
+                    this.gui.getForm().setAP(value);
                     break;
             }
 

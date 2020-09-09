@@ -99,7 +99,9 @@ namespace FietsDemo
                     data.Append(" ");
                 }
 
-                //Console.WriteLine("{0}: {1}", name, data.ToString());
+                Console.WriteLine("{0}: {1}", name, data.ToString());
+                String heartrateString = data.ToString();
+                setValuesInGui("heartrate", 0, heartrateString);
             }
             else if (name == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e")
             {
@@ -165,7 +167,7 @@ namespace FietsDemo
 
                         double speed = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
 
-                        setValuesInGui(speed, 0);
+                        setValuesInGui("speed",speed,"");
 
                         Console.WriteLine("{0}: \t speed: {1}", name, speed);
                     }
@@ -303,11 +305,17 @@ namespace FietsDemo
             }
         }
 
-        public void setValuesInGui(double speed, int heartrate)
+        public void setValuesInGui(String valueType, double speed, String heartrate)
         {
-
-            this.gui.getForm().setSpeed(speed);
-            this.gui.getForm().setHeartrate(heartrate);
+            switch (valueType)
+            {
+                case "speed":
+                this.gui.getForm().setSpeed(speed);
+                    break;
+                case "heartrate":
+                    this.gui.getForm().setHeartrate(heartrate);
+                    break;
+            }
 
         }
     }

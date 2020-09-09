@@ -198,9 +198,8 @@ namespace FietsDemo
 
                         this.timeElapsedInSeconds = ((64 * timeElapsedCounter) + elapsedTime * 0.25);
                         this.previousTimeElapsed = elapsedTime;
-
-                        var timeSpan = TimeSpan.FromSeconds(timeElapsedInSeconds);
-
+                                              
+                        setValuesInGui("elapsedTime", timeElapsedInSeconds, "");
 
                         // Calculation distance traveled
                         if (previousDistanceTraveled > distanceTraveled)
@@ -214,7 +213,7 @@ namespace FietsDemo
                         setValuesInGui("DT", this.distanceTraveledInKM, "");
                         setValuesInGui("speed", speed, "");
 
-                        Console.WriteLine("{0}: \t distance traveled: {1} time: {2}", name, this.distanceTraveledInKM, timeSpan.ToString(@"hh\:mm\:ss"));
+                        Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
                     }
                     else if (bytes[startingByteMessage] == 0x19)
                     {
@@ -371,6 +370,9 @@ namespace FietsDemo
                     break;
                 case "DT":
                     this.gui.getForm().setDT(value);
+                    break;
+                case "elapsedTime":
+                    this.gui.getForm().setElapsedTime(value);
                     break;
                     
             }

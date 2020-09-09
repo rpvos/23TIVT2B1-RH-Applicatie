@@ -60,5 +60,14 @@ namespace FietsDemo
             }));
         }
 
+        public void setElapsedTime(double elapsedTime)
+        {
+            var timeSpan = TimeSpan.FromSeconds(elapsedTime);
+            ElapsedTimeValue.Invoke((MethodInvoker)(() =>
+            {
+                ElapsedTimeValue.Text = timeSpan.ToString(@"hh\:mm\:ss");
+            }));
+        }
+
     }
 }

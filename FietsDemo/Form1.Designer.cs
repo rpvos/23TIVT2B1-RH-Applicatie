@@ -40,6 +40,8 @@
             this.ExitButton = new System.Windows.Forms.Button();
             this.Resistance = new System.Windows.Forms.Label();
             this.ResistanceValue = new System.Windows.Forms.Label();
+            this.accumalatedPower = new System.Windows.Forms.Label();
+            this.APLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Speed
@@ -157,12 +159,35 @@
             this.ResistanceValue.Size = new System.Drawing.Size(0, 55);
             this.ResistanceValue.TabIndex = 10;
             // 
-            // Form1
+            // accumalatedPower
+            // 
+            this.accumalatedPower.AutoSize = true;
+            this.accumalatedPower.BackColor = System.Drawing.Color.White;
+            this.accumalatedPower.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.accumalatedPower.Location = new System.Drawing.Point(-11, 431);
+            this.accumalatedPower.Name = "accumalatedPower";
+            this.accumalatedPower.Size = new System.Drawing.Size(452, 55);
+            this.accumalatedPower.TabIndex = 11;
+            this.accumalatedPower.Text = "Accumalated Power";
+            // 
+            // APLabel
+            // 
+            this.APLabel.AutoSize = true;
+            this.APLabel.BackColor = System.Drawing.Color.White;
+            this.APLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.APLabel.Location = new System.Drawing.Point(448, 431);
+            this.APLabel.Name = "APLabel";
+            this.APLabel.Size = new System.Drawing.Size(0, 55);
+            this.APLabel.TabIndex = 12;
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(1403, 667);
+            this.Controls.Add(this.APLabel);
+            this.Controls.Add(this.accumalatedPower);
             this.Controls.Add(this.ResistanceValue);
             this.Controls.Add(this.Resistance);
             this.Controls.Add(this.ExitButton);
@@ -174,7 +199,7 @@
             this.Controls.Add(this.Heartrate);
             this.Controls.Add(this.SpeedValue);
             this.Controls.Add(this.Speed);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
@@ -195,5 +220,7 @@
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.Label Resistance;
         private System.Windows.Forms.Label ResistanceValue;
+        private System.Windows.Forms.Label accumalatedPower;
+        private System.Windows.Forms.Label APLabel;
     }
 }

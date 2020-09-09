@@ -313,6 +313,8 @@ namespace FietsDemo
                         // Instantaneous power calculation
                         double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8));
 
+                        setValuesInGui("AP", this.accumulatedPower, "");
+
 
 
 
@@ -324,15 +326,18 @@ namespace FietsDemo
             }
         }
 
-        public void setValuesInGui(String valueType, double speed, String heartrate)
+        public void setValuesInGui(String valueType, double value, String heartrate)
         {
             switch (valueType)
             {
                 case "speed":
-                this.gui.getForm().setSpeed(speed);
+                this.gui.getForm().setSpeed(value);
                     break;
                 case "heartrate":
-                    this.gui.getForm().setHeartrate(heartrate);
+                this.gui.getForm().setHeartrate(heartrate);
+                    break;
+                case "AP":
+                this.gui.getForm().setAP(value);
                     break;
             }
 

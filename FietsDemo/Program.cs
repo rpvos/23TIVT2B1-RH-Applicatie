@@ -19,6 +19,12 @@ namespace FietsDemo
         private int accumulatedPowerCounter;
         private double previousAccumulatedPower;
 
+
+        private double distanceTraveledInKM;
+        private int distanceTraveledCounter;
+        private double previousDistanceTraveled;
+
+
         static void Main(string[] args)
         {
             Program program = new Program();
@@ -181,6 +187,13 @@ namespace FietsDemo
 
                         // Total speed value
                         double speed = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
+
+                        if (previousDistanceTraveled > distanceTraveled)
+                            distanceTraveledCounter++;
+
+                        this.distanceTraveledInKM = ((255 * distanceTraveledCounter) + distanceTraveled)/1000;
+                        this.previousDistanceTraveled = distanceTraveled;
+
 
                         setValuesInGui("speed",speed,"");
 

@@ -16,14 +16,17 @@ namespace FietsDemo
 
 
         private double accumulatedPower;
-        private int accumulatedPowerCounter;
+        private int accumulatedPowerCounter = 0;
         private double previousAccumulatedPower;
 
 
         private double distanceTraveledInKM;
-        private int distanceTraveledCounter;
+        private int distanceTraveledCounter = 0;
         private double previousDistanceTraveled;
 
+        private double timeElapsedInSeconds;
+        private int previousTimeElapsed;
+        private int timeElapsedCounter = 0;
 
         static void Main(string[] args)
         {
@@ -188,10 +191,20 @@ namespace FietsDemo
                         // Total speed value
                         double speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0)*3.6;
 
+
+                        // Calculation time elapsed
+                        if (previousTimeElapsed > elapsedTime)
+                            timeElapsedCounter++;
+
+                        this.timeElapsedInSeconds = ((64 * timeElapsedCounter) + elapsedTime * 0.25);
+                        this.previousTimeElapsed = elapsedTime;
+
+
+                        // Calculation distance traveled
                         if (previousDistanceTraveled > distanceTraveled)
                             distanceTraveledCounter++;
 
-                        this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000;
+                        this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled);
                         this.previousDistanceTraveled = distanceTraveled;
 
                         Console.WriteLine("DT:::"+distanceTraveled);
@@ -199,7 +212,7 @@ namespace FietsDemo
                         setValuesInGui("DT", this.distanceTraveledInKM, "");
                         setValuesInGui("speed", speed, "");
 
-                        Console.WriteLine("{0}: \t speed: {1}", name, speed);
+                        Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
                     }
                     else if (bytes[startingByteMessage] == 0x19)
                     {
@@ -333,7 +346,7 @@ namespace FietsDemo
 
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, accumulatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
+                        //Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, accumulatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
                     }
 
                 }

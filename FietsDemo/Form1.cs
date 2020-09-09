@@ -43,5 +43,14 @@ namespace FietsDemo
                 HeartrateValue.Text = heartrate + " bpm";
             }));
         }
+
+        public void setAP(double AP)
+        {
+            APLabel.Invoke((MethodInvoker)(() =>
+            {
+                APLabel.Text = AP + " Watt";
+            }));
+        }
+
     }
 }

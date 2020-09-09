@@ -12,11 +12,21 @@ namespace FietsDemo
     class GUI
     {
 
+        private MainForm form;
+
        public void run()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            this.form = new MainForm();
+
+            Application.Run(form);
+        }
+
+        public MainForm getForm()
+        {
+            return this.form;
         }
     }
 }

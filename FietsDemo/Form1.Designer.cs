@@ -1,6 +1,6 @@
 ﻿namespace FietsDemo
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.Speed = new System.Windows.Forms.Label();
             this.SpeedValue = new System.Windows.Forms.Label();
             this.Heartrate = new System.Windows.Forms.Label();
@@ -38,6 +38,8 @@
             this.DistanceTraveled = new System.Windows.Forms.Label();
             this.DistanceTraveledValue = new System.Windows.Forms.Label();
             this.ExitButton = new System.Windows.Forms.Button();
+            this.Resistance = new System.Windows.Forms.Label();
+            this.ResistanceValue = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Speed
@@ -134,12 +136,35 @@
             this.ExitButton.UseVisualStyleBackColor = false;
             this.ExitButton.Click += new System.EventHandler(this.exitButton_Click);
             // 
+            // Resistance
+            // 
+            this.Resistance.AutoSize = true;
+            this.Resistance.BackColor = System.Drawing.Color.White;
+            this.Resistance.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Resistance.Location = new System.Drawing.Point(174, 357);
+            this.Resistance.Name = "Resistance";
+            this.Resistance.Size = new System.Drawing.Size(262, 55);
+            this.Resistance.TabIndex = 9;
+            this.Resistance.Text = "Resistance";
+            // 
+            // ResistanceValue
+            // 
+            this.ResistanceValue.AutoSize = true;
+            this.ResistanceValue.BackColor = System.Drawing.Color.White;
+            this.ResistanceValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResistanceValue.Location = new System.Drawing.Point(443, 357);
+            this.ResistanceValue.Name = "ResistanceValue";
+            this.ResistanceValue.Size = new System.Drawing.Size(0, 55);
+            this.ResistanceValue.TabIndex = 10;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(1403, 667);
+            this.Controls.Add(this.ResistanceValue);
+            this.Controls.Add(this.Resistance);
             this.Controls.Add(this.ExitButton);
             this.Controls.Add(this.DistanceTraveledValue);
             this.Controls.Add(this.DistanceTraveled);
@@ -168,5 +193,7 @@
         private System.Windows.Forms.Label DistanceTraveled;
         private System.Windows.Forms.Label DistanceTraveledValue;
         private System.Windows.Forms.Button ExitButton;
+        private System.Windows.Forms.Label Resistance;
+        private System.Windows.Forms.Label ResistanceValue;
     }
 }

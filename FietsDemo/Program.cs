@@ -4,13 +4,40 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Avans.TI.BLE;
 
 namespace FietsDemo
 {
     class Program
     {
-        static async Task Main(string[] args)
+
+        private GUI gui;
+
+        static void Main(string[] args)
+        {
+            Program program = new Program();
+            program.start();
+
+
+        }
+
+        public void start()
+        {
+            Thread thread = new Thread(startGUI);
+            thread.Start();
+
+            initialize();
+
+        }
+
+        public void startGUI()
+        {
+            this.gui = new GUI();
+            gui.run();
+        }
+
+        public async Task initialize()
         {
             int errorCode = 0;
             BLE bleBike = new BLE();
@@ -57,7 +84,7 @@ namespace FietsDemo
             Console.Read();
         }
 
-        private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        public void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
             String name = e.ServiceName;
 
@@ -138,9 +165,9 @@ namespace FietsDemo
 
                         double speed = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
 
+                        setValuesInGui(speed, 0);
 
-
-                        //Console.WriteLine("{0}: \t speed: {1}", name, speed);
+                        Console.WriteLine("{0}: \t speed: {1}", name, speed);
                     }
                     else if (bytes[startingByteMessage] == 0x19)
                     {
@@ -274,6 +301,14 @@ namespace FietsDemo
                 }
 
             }
+        }
+
+        public void setValuesInGui(double speed, int heartrate)
+        {
+
+            this.gui.getForm().setSpeed(speed);
+            this.gui.getForm().setHeartrate(heartrate);
+
         }
     }
 

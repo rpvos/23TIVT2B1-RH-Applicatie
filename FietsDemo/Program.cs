@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,6 @@ namespace FietsDemo
     {
 
         private GUI gui;
-
 
         private double accumulatedPower;
         private int accumulatedPowerCounter = 0;
@@ -95,6 +94,7 @@ namespace FietsDemo
             await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
 
 
+
             Console.Read();
         }
 
@@ -113,9 +113,11 @@ namespace FietsDemo
                     data.Append(" ");
                 }
 
-                //Console.WriteLine("{0}: {1}", name, data.ToString());
+                Console.WriteLine("{0}: {1}", name, data.ToString());
                 String heartrateString = data.ToString();
                 setValuesInGui("heartrate", 0, heartrateString);
+
+
             }
             else if (name == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e")
             {
@@ -208,12 +210,10 @@ namespace FietsDemo
                         this.previousDistanceTraveled = distanceTraveled;
 
 
-                        Console.WriteLine("DT:::" + distanceTraveled);
-
                         setValuesInGui("DT", this.distanceTraveledInKM, "");
                         setValuesInGui("speed", speed, "");
 
-                        //Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
+                        Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
                     }
                     else if (bytes[startingByteMessage] == 0x19)
                     {
@@ -346,8 +346,7 @@ namespace FietsDemo
 
 
 
-
-                        //Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, accumulatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
+                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, accumulatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
                     }
 
                 }

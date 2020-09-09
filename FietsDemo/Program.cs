@@ -14,6 +14,11 @@ namespace FietsDemo
 
         private GUI gui;
 
+
+        private double accumulatedPower;
+        private int accumulatedPowerCounter;
+        private double previousAccumulatedPower;
+
         static void Main(string[] args)
         {
             Program program = new Program();
@@ -162,9 +167,19 @@ namespace FietsDemo
                         // Heart Rate
                         int heartRateFromBike = bytes[startingByteMessage + 6];
 
-                        // Capabilities Bit Field (4 bits) and FE State Bit Field (4 bits)
-                        // __TODO__ make an seperator
+                        // Capabilities, LAP and FEtype merged byte
+                        int capabilitiesAndFeType = bytes[startingByteMessage + 7];
 
+                        // LAP
+                        int LAP = capabilitiesAndFeType >> 7;
+
+                        // FEtype
+                        int FEType = (capabilitiesAndFeType << 1) >> 5;
+
+                        // CAPABILITIES: 0 or 1
+                        bool capabilities = (capabilitiesAndFeType & (1 << 2)) != 0;
+
+                        // Total speed value
                         double speed = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
 
                         setValuesInGui("speed",speed,"");
@@ -288,8 +303,12 @@ namespace FietsDemo
 
 
                         // Acumelated power calculation
-                        double acumelatedPower = (accumalatedPowerLSB + (accumelatedPowerMSB << 8)) / 1000.0;
+                        double accumulatedPower = (accumalatedPowerLSB + (accumelatedPowerMSB << 8)) / 1000.0;
+                        if (this.previousAccumulatedPower > accumulatedPower)
+                            this.accumulatedPowerCounter++;
 
+                        this.accumulatedPower = (65536 * accumulatedPowerCounter) + accumulatedPower;
+                        this.previousAccumulatedPower = accumulatedPower;
 
                         // Instantaneous power calculation
                         double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8));
@@ -297,7 +316,7 @@ namespace FietsDemo
 
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, acumelatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
+                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, accumulatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
                     }
 
                 }

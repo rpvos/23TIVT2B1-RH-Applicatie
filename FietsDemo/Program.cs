@@ -113,7 +113,7 @@ namespace FietsDemo
                     data.Append(" ");
                 }
 
-                Console.WriteLine("{0}: {1}", name, data.ToString());
+                //Console.WriteLine("{0}: {1}", name, data.ToString());
                 String heartrateString = data.ToString();
                 setValuesInGui("heartrate", 0, heartrateString);
             }
@@ -189,7 +189,7 @@ namespace FietsDemo
                         bool capabilities = (capabilitiesAndFeType & (1 << 2)) != 0;
 
                         // Total speed value
-                        double speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0)*3.6;
+                        double speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0) * 3.6;
 
 
                         // Calculation time elapsed
@@ -204,15 +204,16 @@ namespace FietsDemo
                         if (previousDistanceTraveled > distanceTraveled)
                             distanceTraveledCounter++;
 
-                        this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled);
+                        this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000;
                         this.previousDistanceTraveled = distanceTraveled;
 
-                        Console.WriteLine("DT:::"+distanceTraveled);
+
+                        Console.WriteLine("DT:::" + distanceTraveled);
 
                         setValuesInGui("DT", this.distanceTraveledInKM, "");
                         setValuesInGui("speed", speed, "");
 
-                        Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
+                        //Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
                     }
                     else if (bytes[startingByteMessage] == 0x19)
                     {
@@ -370,7 +371,7 @@ namespace FietsDemo
                 case "DT":
                     this.gui.getForm().setDT(value);
                     break;
-                    
+
             }
 
         }

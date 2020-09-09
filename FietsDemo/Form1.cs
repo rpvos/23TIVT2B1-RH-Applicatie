@@ -32,7 +32,7 @@ namespace FietsDemo
         {
             SpeedValue.Invoke((MethodInvoker)(() =>
             {
-                SpeedValue.Text = speed + " m/s";
+                SpeedValue.Text = speed + " km/h";
             }));
         }
 
@@ -49,6 +49,14 @@ namespace FietsDemo
             APLabel.Invoke((MethodInvoker)(() =>
             {
                 APLabel.Text = AP + " Watt";
+            }));
+        }
+
+        public void setDT(double DT)
+        {
+            DistanceTraveledValue.Invoke((MethodInvoker)(() =>
+            {
+                DistanceTraveledValue.Text = DT + " km";
             }));
         }
 

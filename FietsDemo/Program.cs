@@ -186,7 +186,7 @@ namespace FietsDemo
                         bool capabilities = (capabilitiesAndFeType & (1 << 2)) != 0;
 
                         // Total speed value
-                        double speed = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
+                        double speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0)*3.6;
 
                         if (previousDistanceTraveled > distanceTraveled)
                             distanceTraveledCounter++;
@@ -194,7 +194,9 @@ namespace FietsDemo
                         this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000;
                         this.previousDistanceTraveled = distanceTraveled;
 
+                        Console.WriteLine("DT:::"+distanceTraveled);
 
+                        setValuesInGui("DT", this.distanceTraveledInKM, "");
                         setValuesInGui("speed", speed, "");
 
                         Console.WriteLine("{0}: \t speed: {1}", name, speed);
@@ -352,6 +354,10 @@ namespace FietsDemo
                 case "AP":
                     this.gui.getForm().setAP(value);
                     break;
+                case "DT":
+                    this.gui.getForm().setDT(value);
+                    break;
+                    
             }
 
         }

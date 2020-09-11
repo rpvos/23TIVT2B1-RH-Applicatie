@@ -153,7 +153,7 @@ namespace FietsDemo
         public bool LAP;
         // value represents the state of the device. 2 = READY.
         public byte FEState;
-
+        
         public Page0x10Message()
         {
             Speed = 0;

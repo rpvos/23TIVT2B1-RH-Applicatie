@@ -17,6 +17,7 @@ namespace FietsDemo
         private BikeSimulator bikeSimulator;
 
         private BLE BleBike;
+        private BLE HeartRateSensor;
 
         private double accumulatedPower;
         private int accumulatedPowerCounter = 0;
@@ -52,8 +53,31 @@ namespace FietsDemo
 
         public void startSimulator()
         {
+            BleBike.Unsubscribe("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            HeartRateSensor.Unsubscribe("HeartRateMeasurement");
+            
+            Console.WriteLine("starting simulator...");
+            bikeSimulator = new BikeSimulator(this);
+
+            Thread thread = new Thread(startSimulatorGUI);
+            thread.Start();
+            
+        }
+
+        private void startSimulatorGUI()
+        {
             this.simulator = new Simulator(this.bikeSimulator);
             this.simulator.run();
+        }
+
+        public void stopSimulator()
+        {
+            Console.WriteLine("Stopping Simulator...");
+            this.bikeSimulator.running = false;
+            this.simulator.stop();
+
+            BleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            HeartRateSensor.SubscribeToCharacteristic("HeartRateMeasurement");
         }
 
         public void startGUI()
@@ -66,7 +90,7 @@ namespace FietsDemo
         {
             int errorCode = 0;
             BleBike = new BLE();
-            BLE bleHeart = new BLE();
+            HeartRateSensor = new BLE();
 
             // We need some time to list available devices
             Thread.Sleep(1000);
@@ -80,7 +104,7 @@ namespace FietsDemo
             }
 
             // Connecting
-            //errorCode = await bleBike.OpenDevice("Avans Bike");
+            errorCode = await BleBike.OpenDevice("Avans Bike");
             // __TODO__ Error check
 
             var services = BleBike.GetServices;
@@ -89,26 +113,21 @@ namespace FietsDemo
                 Console.WriteLine($"Service: {service}");
             }
 
-            Console.WriteLine("starting sim");
-            bikeSimulator = new BikeSimulator(this);
-            Thread thread = new Thread(startSimulator);
-            thread.Start();
-
             // Set service
-            //errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+            errorCode = await BleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
             // __TODO__ error check
 
             // Subscribe
-            //bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            //errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            errorCode = await BleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
-            //errorCode = await bleHeart.OpenDevice("Avans Bike");
+            errorCode = await HeartRateSensor.OpenDevice("Avans Bike");
 
-            //await bleHeart.SetService("HeartRate");
+            await HeartRateSensor.SetService("HeartRate");
 
-            //bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            //await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
+            HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            await HeartRateSensor.SubscribeToCharacteristic("HeartRateMeasurement");
 
 
 

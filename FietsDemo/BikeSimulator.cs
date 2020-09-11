@@ -7,6 +7,9 @@ namespace FietsDemo
     public class BikeSimulator
     {
         public bool running;
+
+        private float Resistance;
+
         private IBLEcallBack IBLEcallBack;
         private Page0x10Message SendingPage0x10Message;
         private Page0x19Message SendingPage0x19Message;
@@ -117,6 +120,23 @@ namespace FietsDemo
             {
                 SendingPage0x19Message.EventCount = 0;
             }
+        }
+
+        public void WriteCharacteristic(string address, byte[] byteArray)
+        {
+            int checksumCalculated = byteArray[0];
+            for (int i = 1; i < byteArray.Length - 1; i++)
+            {
+                checksumCalculated = byteArray[i] ^ checksumCalculated;
+            }
+
+            if(checksumCalculated != byteArray[byteArray.Length - 1])
+            {
+                Console.WriteLine("Simulator: message received is corrupted\nAddress: {0}", address);
+                return;
+            }
+
+            Resistance = (float)(byteArray[12] / 2.0);
         }
     }
     class Page0x10Message

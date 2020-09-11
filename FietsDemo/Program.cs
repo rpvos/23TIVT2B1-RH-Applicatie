@@ -16,6 +16,8 @@ namespace FietsDemo
         private Simulator simulator;
         private BikeSimulator bikeSimulator;
 
+        private BLE BleBike;
+
         private double accumulatedPower;
         private int accumulatedPowerCounter = 0;
         private double previousAccumulatedPower;
@@ -63,14 +65,14 @@ namespace FietsDemo
         public async Task initialize()
         {
             int errorCode = 0;
-            BLE bleBike = new BLE();
+            BleBike = new BLE();
             BLE bleHeart = new BLE();
 
             // We need some time to list available devices
             Thread.Sleep(1000);
 
             // List available devices
-            List<String> bleBikeList = bleBike.ListDevices();
+            List<String> bleBikeList = BleBike.ListDevices();
             Console.WriteLine("Devices found: ");
             foreach (var name in bleBikeList)
             {
@@ -81,7 +83,7 @@ namespace FietsDemo
             //errorCode = await bleBike.OpenDevice("Avans Bike");
             // __TODO__ Error check
 
-            var services = bleBike.GetServices;
+            var services = BleBike.GetServices;
             foreach (var service in services)
             {
                 Console.WriteLine($"Service: {service}");
@@ -382,6 +384,23 @@ namespace FietsDemo
                     
             }
 
+        }
+
+        public void setResistance(float percentage)
+        {
+            byte[] byteArray = { 0xA4, 0x09, 0x4E, 0x05, 0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, (byte)(percentage * 2), 0 };
+
+
+            int checksumCalculated = byteArray[0];
+            for (int i = 1; i < byteArray.Length - 1; i++)
+            {
+                checksumCalculated = byteArray[i] ^ checksumCalculated;
+            }
+
+            byteArray[byteArray.Length - 1] = (byte)checksumCalculated;
+
+            BleBike.WriteCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e", byteArray);
+            bikeSimulator.WriteCharacteristic("Simulator", byteArray);
         }
     }
 

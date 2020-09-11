@@ -13,7 +13,7 @@ namespace FietsDemo
         {
             IBLEcallBack = bLEcallBack;
             SendingPage0x10Message = new Page0x10Message(50, 50);
-            SendingPage0x19Message = new Page0x19Message(50);
+            SendingPage0x19Message = new Page0x19Message();
             running = true;
             Thread backgroundSender = new Thread(new ThreadStart(update));
             backgroundSender.Start();
@@ -26,7 +26,7 @@ namespace FietsDemo
 
         public void setPower(byte power)
         {
-            SendingPage0x19Message.Power = power;
+            SendingPage0x19Message.InstantaneousPower = power;
         }
 
         public void setHeartRate(byte heartrate)
@@ -121,21 +121,28 @@ namespace FietsDemo
     {
         public byte EventCount = 0;
         public int AccumulatedPower;
-        public int Instantaneous;
+        public int InstantaneousPower;
         public int FEState;
         public bool LapTogleBit;
 
         public byte[] getData()
         {
+            // Bitmask for 
             byte BIT_MASK_FIRST_EIGHT_BITS = (byte)0xff;
             byte accumulatedPowerLSB = (byte)((AccumulatedPower % 65536) & BIT_MASK_FIRST_EIGHT_BITS);
             byte accumulatedPowerMSB = (byte)((AccumulatedPower % 65536) >> 8);
 
-            byte instantaneousPowerLSB = (byte)((Instantaneous % 4094) & BIT_MASK_FIRST_EIGHT_BITS);
+            byte instantaneousPowerLSB = (byte)((InstantaneousPower % 4094) & BIT_MASK_FIRST_EIGHT_BITS);
             int BIT_MASK_EIGHT_TO_TWELVE_BITS = (15 << 8);
-            byte instantaneousPowerMSBAndTrainerStatus = (byte)((Instantaneous % 4094) & BIT_MASK_EIGHT_TO_TWELVE_BITS);
+            byte instantaneousPowerMSBAndTrainerStatus = (byte)((InstantaneousPower % 4094) & BIT_MASK_EIGHT_TO_TWELVE_BITS);
+            byte feStateAndLapToggle = 0;
+            if (LapTogleBit)
+                feStateAndLapToggle = 1 << 7;
+            feStateAndLapToggle = (byte)(feStateAndLapToggle & FEState << 3);
+¶
+            byte instantaneousCadence = 0; //__TODO__
 
-            var returningData = new byte[] { 0xA4, 0x09, 0x4E, 0x05, 0x19, EventCount, accumulatedPowerLSB, accumulatedPowerMSB, instantaneousPowerLSB, instantaneousPowerMSBAndTrainerStatus, 0, FEState, 0 };
+            var returningData = new byte[] { 0xA4, 0x09, 0x4E, 0x05, 0x19, EventCount, instantaneousCadence, accumulatedPowerLSB, accumulatedPowerMSB, instantaneousPowerLSB, instantaneousPowerMSBAndTrainerStatus, feStateAndLapToggle, 0 };
 
             byte checkSum = returningData[0];
             for (int i = 1; i < returningData.Length - 1; i++)

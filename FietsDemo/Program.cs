@@ -117,20 +117,10 @@ namespace FietsDemo
         {
             string name = e.ServiceName;
 
-            if (name == "00002a37-0000-1000-8000-00805f9b34fb")
+            if (name == "00002a37-0000-1000-8000-00805f9b34fb" || name == "SimulatorHeartRate")
             {
-                StringBuilder data = new StringBuilder();
-
-                name = "HeartRate";
-                foreach (byte b in e.Data)
-                {
-                    data.Append(b);
-                    data.Append(" ");
-                }
-
-                Console.WriteLine("{0}: {1}", name, data.ToString());
-                String heartrateString = data.ToString();
-                setValuesInGui("heartrate", 0, heartrateString);
+                
+                setValuesInGui("heartrate", e.Data[1], null);
 
 
             }
@@ -378,7 +368,7 @@ namespace FietsDemo
                     this.gui.getForm().setSpeed(value);
                     break;
                 case "heartrate":
-                    this.gui.getForm().setHeartrate(heartrate);
+                    this.gui.getForm().setHeartrate(value);
                     break;
                 case "AP":
                     this.gui.getForm().setAP(value);

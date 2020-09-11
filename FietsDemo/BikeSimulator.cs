@@ -10,11 +10,13 @@ namespace FietsDemo
         private IBLEcallBack IBLEcallBack;
         private Page0x10Message SendingPage0x10Message;
         private Page0x19Message SendingPage0x19Message;
+        private HeartRateMessage SendingHeartRateMessage;
         public BikeSimulator(IBLEcallBack bLEcallBack)
         {
             IBLEcallBack = bLEcallBack;
             SendingPage0x10Message = new Page0x10Message();
             SendingPage0x19Message = new Page0x19Message();
+            SendingHeartRateMessage = new HeartRateMessage();
             running = true;
             Thread backgroundSender = new Thread(new ThreadStart(update));
             backgroundSender.Start();
@@ -32,7 +34,7 @@ namespace FietsDemo
 
         public void setHeartRate(byte heartrate)
         {
-            SendingPage0x10Message.Heartrate = heartrate;
+            SendingHeartRateMessage.HeartRate = heartrate;
         }
 
         private void update()
@@ -64,7 +66,13 @@ namespace FietsDemo
 
                     page = true;
                 }
+                BLESubscriptionValueChangedEventArgs argsHRSensor = new BLESubscriptionValueChangedEventArgs
+                {
+                    Data = SendingHeartRateMessage.getData(),
+                    ServiceName = "SimulatorHeartRate"
+                };
 
+                IBLEcallBack.BleBike_SubscriptionValueChanged(null, argsHRSensor);
                 IBLEcallBack.BleBike_SubscriptionValueChanged(null, args);
                 Thread.Sleep(125);
             }
@@ -215,6 +223,16 @@ namespace FietsDemo
             returningData[returningData.Length - 1] = checkSum;
 
             return returningData;
+        }
+    }
+
+    class HeartRateMessage
+    {
+        public byte HeartRate;
+
+        public byte[] getData()
+        {
+            return new byte[] {0, HeartRate};
         }
     }
 }

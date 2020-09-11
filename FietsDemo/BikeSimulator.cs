@@ -25,7 +25,7 @@ namespace FietsDemo
             SendingPage0x10Message.Speed = speed;
         }
 
-        public void setPower(byte power)
+        public void setInstantaneousPower(byte power)
         {
             SendingPage0x19Message.InstantaneousPower = power;
         }

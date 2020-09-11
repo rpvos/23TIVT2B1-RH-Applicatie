@@ -64,6 +64,19 @@ namespace FietsDemo
                 Thread.Sleep(250);
             }
         }
+        private void updateTimeAndDistance()
+        {
+            if (SendingPage0x10Message.Time != 255)
+            {
+                SendingPage0x10Message.Time++;
+            }
+            else
+            {
+                SendingPage0x10Message.Time = 0;
+            }
+
+            updateDistance();
+        }
         private void updateTime()
         {
             if (SendingPage0x10Message.Time != 255)
@@ -75,6 +88,22 @@ namespace FietsDemo
                 SendingPage0x10Message.Time = 0;
             }
         }
+
+        private void updateDistance()
+        {
+            double traveledMeters = (SendingPage0x10Message.Speed / 4.0);
+
+            if (SendingPage0x10Message.Distance + traveledMeters <= 255)
+            {
+                SendingPage0x10Message.Distance += traveledMeters;
+            }
+            else
+            {
+                SendingPage0x10Message.Distance =
+                    (traveledMeters - (255 - SendingPage0x10Message.Distance));
+            }
+        }
+
         private void updateEventCount()
         {
             if (SendingPage0x19Message.EventCount != 255)
@@ -89,23 +118,54 @@ namespace FietsDemo
     }
     class Page0x10Message
     {
+        // value represents the speed in m/s.
         public byte Speed;
+        // value represents the heartrate in BPM.
         public byte Heartrate;
+        // value represents the time in 0.25s, rollover at 255.
         public byte Time;
+        // value represents distance in meters, rollover at 255.
+        public double Distance;
+        // if a lap is completed this value turns true.
+        public bool LAP;
+        // value represents the state of the device. 2 = READY.
+        public byte FEState;
 
-        public Page0x10Message(byte speed, byte heartrate)
+        public Page0x10Message()
         {
-            Speed = speed;
-            Heartrate = heartrate;
+            Speed = 0;
+            Heartrate = 0;
             Time = 0;
+            Distance = 0;
+            FEState = 2;
+            LAP = false;
         }
         public byte[] getData()
         {
+            // split the speed up in two bytes LSB and MSB.
             byte speedLSB = (byte)(((Speed * 1000) << 8) >> 8);
             byte speedMSB = (byte)((Speed * 1000) >> 8);
 
-            var returningData = new byte[] { 0xA4, 0x09, 0x4E, 0x05, 0x10, 0, Time, 0, speedLSB, speedMSB, Heartrate, 0, 0 };
+            // if lap is false the last bit of the last byte will be 0, else 1.
+            byte capabilitiesAndFEtype = 0;
+
+            if (LAP)
+            {
+                capabilitiesAndFEtype = 1;
+            }
+
+            // the last four bits are the LAP and FEtype, these are shifted together.
+            capabilitiesAndFEtype = (byte)(capabilitiesAndFEtype << 3);
+            capabilitiesAndFEtype += FEState;
+            capabilitiesAndFEtype = (byte)(capabilitiesAndFEtype << 4);
+            // After shifting the LAP and FEtype to the last four bits, the capabilities static value is added.
+            capabilitiesAndFEtype += 0b0010;
+
+            var returningData = new byte[] { 0xA4, 0x09, 0x4E, 0x05, 0x10, 0x19, Time, (byte)Math.Round(Distance), speedLSB, speedMSB, Heartrate, capabilitiesAndFEtype, 0 };
+
             byte checkSum = returningData[0];
+
+            // XOR of all bytes.
             for (int i = 1; i < returningData.Length - 1; i++)
             {
                 checkSum = (byte)(returningData[i] ^ checkSum);
@@ -116,6 +176,7 @@ namespace FietsDemo
             return returningData;
         }
     }
+}
 
     class Page0x19Message
     {

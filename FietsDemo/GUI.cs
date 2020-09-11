@@ -44,5 +44,10 @@ namespace FietsDemo
         {
             this.program.startSimulator();
         }
+
+        public void setResistance(float resistance)
+        {
+            program.setResistance(resistance);
+        }
     }
 }

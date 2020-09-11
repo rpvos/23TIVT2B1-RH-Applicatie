@@ -86,21 +86,19 @@ namespace FietsDemo
         {
             if (e.Delta > 0)
             {
-                double i = Int32.Parse(resistanceTextbox.Text);
+                int i = Int32.Parse(resistanceTextbox.Text);
                 i++;
                 if (i > 100)
                 {
                     i = 100;
                 }
                 resistanceTextbox.Text = i + "";
-                
 
-
-
+                gui.setResistance(i);
             }
             else if (e.Delta < 0)
             {
-                double i = Int32.Parse(resistanceTextbox.Text);
+                int i = Int32.Parse(resistanceTextbox.Text);
                 i--;
                 if (i < 0)
                 {
@@ -108,7 +106,7 @@ namespace FietsDemo
                 }
                 resistanceTextbox.Text = i + "";
 
-
+                gui.setResistance(i);
 
             }
 
@@ -123,6 +121,8 @@ namespace FietsDemo
                 i = 0;
             }
             resistanceTextbox.Text = i + "";
+            gui.setResistance(i);
+
         }
 
         private void plusResistance_Click(object sender, EventArgs e)
@@ -134,6 +134,8 @@ namespace FietsDemo
                 i = 100;
             }
             resistanceTextbox.Text = i + "";
+            gui.setResistance(i);
+
         }
 
 

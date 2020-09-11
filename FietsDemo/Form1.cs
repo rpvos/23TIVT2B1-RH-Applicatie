@@ -32,16 +32,42 @@ namespace FietsDemo
         {
             SpeedValue.Invoke((MethodInvoker)(() =>
             {
-                SpeedValue.Text = speed + " m/s";
+                SpeedValue.Text = speed + " km/h";
             }));
         }
 
-        public void setHeartrate(int heartrate)
+        public void setHeartrate(String heartrate)
         {
             HeartrateValue.Invoke((MethodInvoker)(() =>
             {
                 HeartrateValue.Text = heartrate + " bpm";
             }));
         }
+
+        public void setAP(double AP)
+        {
+            APLabel.Invoke((MethodInvoker)(() =>
+            {
+                APLabel.Text = AP + " Watt";
+            }));
+        }
+
+        public void setDT(double DT)
+        {
+            DistanceTraveledValue.Invoke((MethodInvoker)(() =>
+            {
+                DistanceTraveledValue.Text = DT + " km";
+            }));
+        }
+
+        public void setElapsedTime(double elapsedTime)
+        {
+            var timeSpan = TimeSpan.FromSeconds(elapsedTime);
+            ElapsedTimeValue.Invoke((MethodInvoker)(() =>
+            {
+                ElapsedTimeValue.Text = timeSpan.ToString(@"hh\:mm\:ss");
+            }));
+        }
+
     }
 }

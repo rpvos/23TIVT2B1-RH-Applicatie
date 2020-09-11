@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +13,20 @@ namespace FietsDemo
     {
 
         private GUI gui;
+        private Simulator simulator;
+
+        private double accumulatedPower;
+        private int accumulatedPowerCounter = 0;
+        private double previousAccumulatedPower;
+
+
+        private double distanceTraveledInKM;
+        private int distanceTraveledCounter = 0;
+        private double previousDistanceTraveled;
+
+        private double timeElapsedInSeconds;
+        private int previousTimeElapsed;
+        private int timeElapsedCounter = 0;
 
         static void Main(string[] args)
         {
@@ -27,14 +41,23 @@ namespace FietsDemo
             Thread thread = new Thread(startGUI);
             thread.Start();
 
+            Thread thread2 = new Thread(startSimulator);
+            thread2.Start();
+
             initialize();
 
+        }
+
+        public void startSimulator()
+        {
+            this.simulator = new Simulator();
+            this.simulator.run();
         }
 
         public void startGUI()
         {
             this.gui = new GUI();
-            gui.run();
+            this.gui.run();
         }
 
         public async Task initialize()
@@ -84,6 +107,7 @@ namespace FietsDemo
             //await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
 
 
+
             Console.Read();
         }
 
@@ -102,7 +126,11 @@ namespace FietsDemo
                     data.Append(" ");
                 }
 
-                //Console.WriteLine("{0}: {1}", name, data.ToString());
+                Console.WriteLine("{0}: {1}", name, data.ToString());
+                String heartrateString = data.ToString();
+                setValuesInGui("heartrate", 0, heartrateString);
+
+
             }
             else if (name == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e" || name == "Simulator")
             {
@@ -176,11 +204,31 @@ namespace FietsDemo
                         bool capabilities = (capabilitiesAndFeType & (1 << 2)) != 0;
 
                         // Total speed value
-                        double speed = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
+                        double speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0) * 3.6;
 
                         setValuesInGui(speed, heartRateFromBike);
 
-                        Console.WriteLine("{0}: \t speed: {1}", name, speed);
+                        // Calculation time elapsed
+                        if (previousTimeElapsed > elapsedTime)
+                            timeElapsedCounter++;
+
+                        this.timeElapsedInSeconds = ((64 * timeElapsedCounter) + elapsedTime * 0.25);
+                        this.previousTimeElapsed = elapsedTime;
+                                              
+                        setValuesInGui("elapsedTime", timeElapsedInSeconds, "");
+
+                        // Calculation distance traveled
+                        if (previousDistanceTraveled > distanceTraveled)
+                            distanceTraveledCounter++;
+
+                        this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000;
+                        this.previousDistanceTraveled = distanceTraveled;
+
+
+                        setValuesInGui("DT", this.distanceTraveledInKM, "");
+                        setValuesInGui("speed", speed, "");
+
+                        Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
                     }
                     else if (bytes[startingByteMessage] == 0x19)
                     {
@@ -299,16 +347,21 @@ namespace FietsDemo
 
 
                         // Acumelated power calculation
-                        double acumelatedPower = (accumalatedPowerLSB + (accumelatedPowerMSB << 8)) / 1000.0;
+                        double accumulatedPower = (accumalatedPowerLSB + (accumelatedPowerMSB << 8)) / 1000.0;
+                        if (this.previousAccumulatedPower > accumulatedPower)
+                            this.accumulatedPowerCounter++;
 
+                        this.accumulatedPower = (65536 * accumulatedPowerCounter) + accumulatedPower;
+                        this.previousAccumulatedPower = accumulatedPower;
 
                         // Instantaneous power calculation
                         double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8));
 
+                        setValuesInGui("AP", this.accumulatedPower, "");
 
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, acumelatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
+                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, accumulatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
                     }
 
                 }
@@ -316,11 +369,27 @@ namespace FietsDemo
             }
         }
 
-        public void setValuesInGui(double speed, int heartrate)
+        public void setValuesInGui(String valueType, double value, String heartrate)
         {
-
-            this.gui.getForm().setSpeed(speed);
-            this.gui.getForm().setHeartrate(heartrate);
+            switch (valueType)
+            {
+                case "speed":
+                    this.gui.getForm().setSpeed(value);
+                    break;
+                case "heartrate":
+                    this.gui.getForm().setHeartrate(heartrate);
+                    break;
+                case "AP":
+                    this.gui.getForm().setAP(value);
+                    break;
+                case "DT":
+                    this.gui.getForm().setDT(value);
+                    break;
+                case "elapsedTime":
+                    this.gui.getForm().setElapsedTime(value);
+                    break;
+                    
+            }
 
         }
     }

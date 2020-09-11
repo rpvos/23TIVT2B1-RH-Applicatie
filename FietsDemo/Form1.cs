@@ -125,5 +125,19 @@ namespace FietsDemo
             }
             resistanceTextbox.Text = i + "";
         }
+
+
+
+        private void ESPSimulatorButton_Click(object sender, EventArgs e)
+        {
+            SoftwareSimulatorButton.BackColor = Color.White;
+            ESPSimulatorButton.BackColor = Color.LightBlue;
+        }
+
+        private void SoftwareSimulatorButton_Click(object sender, EventArgs e)
+        {
+            SoftwareSimulatorButton.BackColor = Color.LightBlue;
+            ESPSimulatorButton.BackColor = Color.White;
+        }
     }
 }

@@ -45,6 +45,8 @@
             this.plusResistance = new System.Windows.Forms.Button();
             this.minResistance = new System.Windows.Forms.Button();
             this.resistanceTextbox = new System.Windows.Forms.TextBox();
+            this.ESPSimulatorButton = new System.Windows.Forms.Button();
+            this.SoftwareSimulatorButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Speed
@@ -219,12 +221,37 @@
             this.resistanceTextbox.TabIndex = 15;
             this.resistanceTextbox.Text = "0";
             // 
+            // ESPSimulatorButton
+            // 
+            this.ESPSimulatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ESPSimulatorButton.Location = new System.Drawing.Point(1188, 83);
+            this.ESPSimulatorButton.Name = "ESPSimulatorButton";
+            this.ESPSimulatorButton.Size = new System.Drawing.Size(203, 50);
+            this.ESPSimulatorButton.TabIndex = 16;
+            this.ESPSimulatorButton.Text = "ESP Simulator";
+            this.ESPSimulatorButton.UseVisualStyleBackColor = true;
+            this.ESPSimulatorButton.Click += new System.EventHandler(this.ESPSimulatorButton_Click);
+            // 
+            // SoftwareSimulatorButton
+            // 
+            this.SoftwareSimulatorButton.BackColor = System.Drawing.Color.LightBlue;
+            this.SoftwareSimulatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SoftwareSimulatorButton.Location = new System.Drawing.Point(1133, 27);
+            this.SoftwareSimulatorButton.Name = "SoftwareSimulatorButton";
+            this.SoftwareSimulatorButton.Size = new System.Drawing.Size(258, 50);
+            this.SoftwareSimulatorButton.TabIndex = 17;
+            this.SoftwareSimulatorButton.Text = "Software Simulator";
+            this.SoftwareSimulatorButton.UseVisualStyleBackColor = false;
+            this.SoftwareSimulatorButton.Click += new System.EventHandler(this.SoftwareSimulatorButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(1403, 667);
+            this.Controls.Add(this.SoftwareSimulatorButton);
+            this.Controls.Add(this.ESPSimulatorButton);
             this.Controls.Add(this.resistanceTextbox);
             this.Controls.Add(this.minResistance);
             this.Controls.Add(this.plusResistance);
@@ -267,5 +294,7 @@
         private System.Windows.Forms.Button plusResistance;
         private System.Windows.Forms.Button minResistance;
         private System.Windows.Forms.TextBox resistanceTextbox;
+        private System.Windows.Forms.Button ESPSimulatorButton;
+        private System.Windows.Forms.Button SoftwareSimulatorButton;
     }
 }

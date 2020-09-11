@@ -9,7 +9,7 @@ using Avans.TI.BLE;
 
 namespace FietsDemo
 {
-    class Program
+    class Program : IBLEcallBack
     {
 
         private GUI gui;
@@ -55,7 +55,7 @@ namespace FietsDemo
             }
 
             // Connecting
-            errorCode = await bleBike.OpenDevice("Avans Bike");
+            //errorCode = await bleBike.OpenDevice("Avans Bike");
             // __TODO__ Error check
 
             var services = bleBike.GetServices;
@@ -64,21 +64,24 @@ namespace FietsDemo
                 Console.WriteLine($"Service: {service}");
             }
 
+            Console.WriteLine("starting sim");
+            BikeSimulator b = new BikeSimulator(this);
+
             // Set service
-            errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+            //errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
             // __TODO__ error check
 
             // Subscribe
-            bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            //bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            //errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
-            errorCode = await bleHeart.OpenDevice("Avans Bike");
+            //errorCode = await bleHeart.OpenDevice("Avans Bike");
 
-            await bleHeart.SetService("HeartRate");
+            //await bleHeart.SetService("HeartRate");
 
-            bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
+            //bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            //await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
 
 
             Console.Read();
@@ -86,7 +89,7 @@ namespace FietsDemo
 
         public void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            String name = e.ServiceName;
+            string name = e.ServiceName;
 
             if (name == "00002a37-0000-1000-8000-00805f9b34fb")
             {
@@ -101,7 +104,7 @@ namespace FietsDemo
 
                 //Console.WriteLine("{0}: {1}", name, data.ToString());
             }
-            else if (name == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e")
+            else if (name == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e" || name == "Simulator")
             {
                 name = "Avans Bike";
 
@@ -175,7 +178,7 @@ namespace FietsDemo
                         // Total speed value
                         double speed = (leastSignificantBit + (mostSignificantBit << 8)) / 1000.0;
 
-                        setValuesInGui(speed, 0);
+                        setValuesInGui(speed, heartRateFromBike);
 
                         Console.WriteLine("{0}: \t speed: {1}", name, speed);
                     }

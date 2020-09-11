@@ -206,7 +206,6 @@ namespace FietsDemo
                         // Total speed value
                         double speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0) * 3.6;
 
-                        setValuesInGui(speed, heartRateFromBike);
 
                         // Calculation time elapsed
                         if (previousTimeElapsed > elapsedTime)

@@ -120,7 +120,7 @@ namespace FietsDemo
             if (name == "00002a37-0000-1000-8000-00805f9b34fb" || name == "SimulatorHeartRate")
             {
                 
-                setValuesInGui("heartrate", e.Data[1], null);
+                setValuesInGui("heartrate", e.Data[1]);
 
 
             }
@@ -218,7 +218,6 @@ namespace FietsDemo
 
                         setValuesInGui("DT", this.distanceTraveledInKM);
                         setValuesInGui("speed", speed);
-                        setValuesInGui("heartrate", heartRateFromBike);
 
                         Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
                     }

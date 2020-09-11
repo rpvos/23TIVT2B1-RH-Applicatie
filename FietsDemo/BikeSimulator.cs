@@ -12,8 +12,8 @@ namespace FietsDemo
         public BikeSimulator(IBLEcallBack bLEcallBack)
         {
             IBLEcallBack = bLEcallBack;
-            SendingPage0x10Message = new Page0x10Message(50,50);
-            SendingPage0x19Message = new Page0x19Message(50, 50, 50);
+            SendingPage0x10Message = new Page0x10Message(50, 50);
+            SendingPage0x19Message = new Page0x19Message(50);
             running = true;
             Thread backgroundSender = new Thread(new ThreadStart(update));
             backgroundSender.Start();
@@ -48,7 +48,8 @@ namespace FietsDemo
                     };
 
                     page = false;
-                } else
+                }
+                else
                 {
                     BLESubscriptionValueChangedEventArgs args = new BLESubscriptionValueChangedEventArgs
                     {
@@ -76,7 +77,7 @@ namespace FietsDemo
         }
         private void updateEventCount()
         {
-            if(SendingPage0x19Message.EventCount != 255)
+            if (SendingPage0x19Message.EventCount != 255)
             {
                 SendingPage0x19Message.EventCount++;
             }
@@ -87,7 +88,7 @@ namespace FietsDemo
         }
     }
     class Page0x10Message
-    { 
+    {
         public byte Speed;
         public byte Heartrate;
         public byte Time;
@@ -103,9 +104,9 @@ namespace FietsDemo
             byte speedLSB = (byte)(((Speed * 1000) << 8) >> 8);
             byte speedMSB = (byte)((Speed * 1000) >> 8);
 
-            var returningData = new byte[] {0xA4, 0x09, 0x4E, 0x05, 0x10, 0, Time, 0, speedLSB, speedMSB, Heartrate, 0, 0};
+            var returningData = new byte[] { 0xA4, 0x09, 0x4E, 0x05, 0x10, 0, Time, 0, speedLSB, speedMSB, Heartrate, 0, 0 };
             byte checkSum = returningData[0];
-            for(int i = 1; i < returningData.Length - 1; i++)
+            for (int i = 1; i < returningData.Length - 1; i++)
             {
                 checkSum = (byte)(returningData[i] ^ checkSum);
             }
@@ -118,16 +119,24 @@ namespace FietsDemo
 
     class Page0x19Message
     {
-        public byte EventCount;
-        public byte Power;
+        public byte EventCount = 0;
+        public int AccumulatedPower;
+        public int Instantaneous;
+        public int FEState;
+        public bool LapTogleBit;
 
-        public Page0x19Message(byte power)
-        {
-            Power = power;
-        }
         public byte[] getData()
         {
-            var returningData = new byte[] { 0xA4, 0x09, 0x4E, 0x05, 0x19, 0, 0, 0, 0, 0, 0, 0, 0 };
+            byte BIT_MASK_FIRST_EIGHT_BITS = (byte)0xff;
+            byte accumulatedPowerLSB = (byte)((AccumulatedPower % 65536) & BIT_MASK_FIRST_EIGHT_BITS);
+            byte accumulatedPowerMSB = (byte)((AccumulatedPower % 65536) >> 8);
+
+            byte instantaneousPowerLSB = (byte)((Instantaneous % 4094) & BIT_MASK_FIRST_EIGHT_BITS);
+            int BIT_MASK_EIGHT_TO_TWELVE_BITS = (15 << 8);
+            byte instantaneousPowerMSBAndTrainerStatus = (byte)((Instantaneous % 4094) & BIT_MASK_EIGHT_TO_TWELVE_BITS);
+
+            var returningData = new byte[] { 0xA4, 0x09, 0x4E, 0x05, 0x19, EventCount, accumulatedPowerLSB, accumulatedPowerMSB, instantaneousPowerLSB, instantaneousPowerMSBAndTrainerStatus, 0, FEState, 0 };
+
             byte checkSum = returningData[0];
             for (int i = 1; i < returningData.Length - 1; i++)
             {

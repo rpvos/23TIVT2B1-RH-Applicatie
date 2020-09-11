@@ -1,4 +1,5 @@
 ﻿using Avans.TI.BLE;
+using System;
 using System.Threading;
 
 namespace FietsDemo
@@ -12,7 +13,7 @@ namespace FietsDemo
         public BikeSimulator(IBLEcallBack bLEcallBack)
         {
             IBLEcallBack = bLEcallBack;
-            SendingPage0x10Message = new Page0x10Message(50, 50);
+            SendingPage0x10Message = new Page0x10Message();
             SendingPage0x19Message = new Page0x19Message();
             running = true;
             Thread backgroundSender = new Thread(new ThreadStart(update));
@@ -39,31 +40,36 @@ namespace FietsDemo
             bool page = false;
             while (running)
             {
+                BLESubscriptionValueChangedEventArgs args = null;
+
                 if (page)
                 {
-                    BLESubscriptionValueChangedEventArgs args = new BLESubscriptionValueChangedEventArgs
+                    args = new BLESubscriptionValueChangedEventArgs
                     {
                         Data = SendingPage0x10Message.getData(),
                         ServiceName = "Simulator"
                     };
+                    updateTimeAndDistance();
 
                     page = false;
                 }
                 else
                 {
-                    BLESubscriptionValueChangedEventArgs args = new BLESubscriptionValueChangedEventArgs
+                    args = new BLESubscriptionValueChangedEventArgs
                     {
                         Data = SendingPage0x19Message.getData(),
                         ServiceName = "Simulator"
                     };
                     updateEventCount();
+
                     page = true;
                 }
 
-                updateTime();
-                Thread.Sleep(250);
+                IBLEcallBack.BleBike_SubscriptionValueChanged(null, args);
+                Thread.Sleep(125);
             }
         }
+
         private void updateTimeAndDistance()
         {
             if (SendingPage0x10Message.Time != 255)
@@ -76,17 +82,6 @@ namespace FietsDemo
             }
 
             updateDistance();
-        }
-        private void updateTime()
-        {
-            if (SendingPage0x10Message.Time != 255)
-            {
-                SendingPage0x10Message.Time++;
-            }
-            else
-            {
-                SendingPage0x10Message.Time = 0;
-            }
         }
 
         private void updateDistance()
@@ -176,7 +171,6 @@ namespace FietsDemo
             return returningData;
         }
     }
-}
 
     class Page0x19Message
     {

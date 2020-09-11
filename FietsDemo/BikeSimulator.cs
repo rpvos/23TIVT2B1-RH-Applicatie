@@ -127,29 +127,36 @@ namespace FietsDemo
 
         public byte[] getData()
         {
-            // Bitmask for 
+            // Bitmask to get the first 8 bits and the 9th to 12th bit
             byte BIT_MASK_FIRST_EIGHT_BITS = (byte)0xff;
+            int BIT_MASK_EIGHT_TO_TWELVE_BITS = (15 << 8);
+
+            // Accumulated power calculation from big integer to two bytes
             byte accumulatedPowerLSB = (byte)((AccumulatedPower % 65536) & BIT_MASK_FIRST_EIGHT_BITS);
             byte accumulatedPowerMSB = (byte)((AccumulatedPower % 65536) >> 8);
 
+            // Instantaneous power calculation from integer to 12 bits and last 4 bits are used for festate and laptoggle
             byte instantaneousPowerLSB = (byte)((InstantaneousPower % 4094) & BIT_MASK_FIRST_EIGHT_BITS);
-            int BIT_MASK_EIGHT_TO_TWELVE_BITS = (15 << 8);
             byte instantaneousPowerMSBAndTrainerStatus = (byte)((InstantaneousPower % 4094) & BIT_MASK_EIGHT_TO_TWELVE_BITS);
             byte feStateAndLapToggle = 0;
             if (LapTogleBit)
                 feStateAndLapToggle = 1 << 7;
             feStateAndLapToggle = (byte)(feStateAndLapToggle & FEState << 3);
-¶
-            byte instantaneousCadence = 0; //__TODO__
 
+            // __TODO__ needs to get implemented using gears
+            byte instantaneousCadence = 0; //__TODO__ 
+
+            // Constructing the byte array we are going to send
             var returningData = new byte[] { 0xA4, 0x09, 0x4E, 0x05, 0x19, EventCount, instantaneousCadence, accumulatedPowerLSB, accumulatedPowerMSB, instantaneousPowerLSB, instantaneousPowerMSBAndTrainerStatus, feStateAndLapToggle, 0 };
 
+            // Making the checksum
             byte checkSum = returningData[0];
             for (int i = 1; i < returningData.Length - 1; i++)
             {
                 checkSum = (byte)(returningData[i] ^ checkSum);
             }
 
+            // Setting the checksum
             returningData[returningData.Length - 1] = checkSum;
 
             return returningData;

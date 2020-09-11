@@ -32,6 +32,8 @@ namespace FietsDemo
         private int previousTimeElapsed;
         private int timeElapsedCounter = 0;
 
+        private double resistance = 0;
+
         static void Main(string[] args)
         {
             Program program = new Program();
@@ -46,9 +48,7 @@ namespace FietsDemo
             thread.Start();
 
             
-
             initialize();
-
         }
 
         public void startSimulator()
@@ -113,6 +113,11 @@ namespace FietsDemo
                 Console.WriteLine($"Service: {service}");
             }
 
+            //Console.WriteLine("starting sim");
+            //bikeSimulator = new BikeSimulator(this);
+            //Thread thread = new Thread(startSimulator);
+           // thread.Start();
+
             // Set service
             errorCode = await BleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
             // __TODO__ error check
@@ -122,12 +127,12 @@ namespace FietsDemo
             errorCode = await BleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
-            errorCode = await HeartRateSensor.OpenDevice("Avans Bike");
+            errorCode = await bleHeart.OpenDevice("Avans Bike");
 
-            await HeartRateSensor.SetService("HeartRate");
+            await bleHeart.SetService("HeartRate");
 
-            HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            await HeartRateSensor.SubscribeToCharacteristic("HeartRateMeasurement");
+            bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
 
 
 
@@ -236,9 +241,11 @@ namespace FietsDemo
                         this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000.0;
                         this.previousDistanceTraveled = distanceTraveled;
 
+                        resistance = 30.0;
 
                         setValuesInGui("DT", this.distanceTraveledInKM);
                         setValuesInGui("speed", speed);
+                        setValuesInGui("resistance", setResistance(resistance));
 
                         Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
                     }
@@ -372,7 +379,7 @@ namespace FietsDemo
                         setValuesInGui("AP", this.accumulatedPower);
 
 
-
+                        setResistance(40f);
                         Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, accumulatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
                     }
 
@@ -400,26 +407,68 @@ namespace FietsDemo
                 case "elapsedTime":
                     this.gui.getForm().setElapsedTime(value);
                     break;
-                    
+                case "resistance":
+                    this.gui.getForm().setResistance(value);
+                    break;
+
+            }
+
+        }
+
+        public double setResistance(double percentage)
+        {
+            if (percentage <= 200.0 && percentage >= 0.0)
+            {
+                Byte[] byteArray = new byte[13];
+                byteArray[0] = 0x4A;
+                byteArray[1] = 0x09;
+                byteArray[2] = 0x4E;
+                byteArray[3] = 0x05;
+                byteArray[4] = 0x30;
+                byteArray[5] = 0xFF;
+                byteArray[6] = 0xFF;
+                byteArray[7] = 0xFF;
+                byteArray[8] = 0xFF;
+                byteArray[9] = 0xFF;
+                byteArray[10] = 0xFF;
+                byteArray[11] = (byte)percentage;
+
+                byte checksum = 0;
+                int checksumCalculated = byteArray[0];
+                for (int i = 1; i < byteArray.Length - 1; i++)
+                {
+                    checksumCalculated = byteArray[i] ^ checksumCalculated;
+                }
+
+                checksum = (byte)checksumCalculated;
+                byteArray[12] = checksum;
+
+                BleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", byteArray);
+                return percentage * 0.5;
+            }
+            else
+            {
+                throw new System.InvalidOperationException("Parameter outside of acceptable bounds (0-200)");
             }
 
         }
 
         public void setResistance(float percentage)
         {
-            byte[] byteArray = { 0xA4, 0x09, 0x4E, 0x05, 0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, (byte)(percentage * 2), 0 };
+            //byte[] byteArray = { 0xA4, 0x09, 0x4E, 0x05, 0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, (byte)(percentage * 2), 0 };
+            byte[] byteArray = { 0xA4, 0x09, 0x4E, 0x05, 0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 40, 0 };
 
 
-            int checksumCalculated = byteArray[0];
-            for (int i = 1; i < byteArray.Length - 1; i++)
+            int checksumCalculated = 0;
+            for (int i = 0; i < byteArray.Length - 1; i++)
             {
                 checksumCalculated = byteArray[i] ^ checksumCalculated;
             }
 
             byteArray[byteArray.Length - 1] = (byte)checksumCalculated;
 
-            BleBike.WriteCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e", byteArray);
-            bikeSimulator.WriteCharacteristic("Simulator", byteArray);
+            BleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", byteArray);
+            //bikeSimulator.WriteCharacteristic("Simulator", byteArray);
         }
     }
 

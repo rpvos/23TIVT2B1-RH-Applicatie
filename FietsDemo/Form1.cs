@@ -73,6 +73,14 @@ namespace FietsDemo
                 ElapsedTimeValue.Text = timeSpan.ToString(@"hh\:mm\:ss");
             }));
         }
+        public void setResistance(double resistance)
+        {
+            ResistanceValue.Invoke((MethodInvoker)(() =>
+            {
+                ResistanceValue.Text = resistance + " %";
+            }));
+        }
+
 
         public void changeResistance(object sender, MouseEventArgs e)
         {

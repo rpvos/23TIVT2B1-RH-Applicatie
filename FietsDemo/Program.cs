@@ -206,7 +206,7 @@ namespace FietsDemo
                         this.timeElapsedInSeconds = ((64 * timeElapsedCounter) + elapsedTime * 0.25);
                         this.previousTimeElapsed = elapsedTime;
                                               
-                        setValuesInGui("elapsedTime", timeElapsedInSeconds, "");
+                        setValuesInGui("elapsedTime", timeElapsedInSeconds);
 
                         // Calculation distance traveled
                         if (previousDistanceTraveled > distanceTraveled)
@@ -216,8 +216,9 @@ namespace FietsDemo
                         this.previousDistanceTraveled = distanceTraveled;
 
 
-                        setValuesInGui("DT", this.distanceTraveledInKM, "");
-                        setValuesInGui("speed", speed, "");
+                        setValuesInGui("DT", this.distanceTraveledInKM);
+                        setValuesInGui("speed", speed);
+                        setValuesInGui("heartrate", heartRateFromBike);
 
                         Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
                     }
@@ -348,7 +349,7 @@ namespace FietsDemo
                         // Instantaneous power calculation
                         double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8));
 
-                        setValuesInGui("AP", this.accumulatedPower, "");
+                        setValuesInGui("AP", this.accumulatedPower);
 
 
 
@@ -360,7 +361,7 @@ namespace FietsDemo
             }
         }
 
-        public void setValuesInGui(String valueType, double value, String heartrate)
+        public void setValuesInGui(String valueType, double value)
         {
             switch (valueType)
             {

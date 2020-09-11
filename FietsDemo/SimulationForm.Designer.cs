@@ -43,11 +43,11 @@
             // 
             this.SpeedLabel.AutoSize = true;
             this.SpeedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SpeedLabel.Location = new System.Drawing.Point(60, 74);
+            this.SpeedLabel.Location = new System.Drawing.Point(64, 74);
             this.SpeedLabel.Name = "SpeedLabel";
-            this.SpeedLabel.Size = new System.Drawing.Size(176, 31);
+            this.SpeedLabel.Size = new System.Drawing.Size(161, 31);
             this.SpeedLabel.TabIndex = 0;
-            this.SpeedLabel.Text = "Speed (km/h)";
+            this.SpeedLabel.Text = "Speed (m/s)";
             this.SpeedLabel.Click += new System.EventHandler(this.label1_Click);
             // 
             // SpeedTextBox
@@ -134,7 +134,6 @@
             this.minHeartrate.Text = "-";
             this.minHeartrate.UseVisualStyleBackColor = true;
             this.minHeartrate.Click += new System.EventHandler(this.minHeartrate_Click);
-
             // 
             // SimulationForm
             // 

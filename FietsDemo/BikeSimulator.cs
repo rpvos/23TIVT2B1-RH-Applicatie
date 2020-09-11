@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace FietsDemo
 {
-    class BikeSimulator
+    public class BikeSimulator
     {
         public bool running;
         private IBLEcallBack IBLEcallBack;

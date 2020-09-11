@@ -14,6 +14,7 @@ namespace FietsDemo
 
         private GUI gui;
         private Simulator simulator;
+        private BikeSimulator bikeSimulator;
 
         private double accumulatedPower;
         private int accumulatedPowerCounter = 0;
@@ -41,8 +42,7 @@ namespace FietsDemo
             Thread thread = new Thread(startGUI);
             thread.Start();
 
-            Thread thread2 = new Thread(startSimulator);
-            thread2.Start();
+            
 
             initialize();
 
@@ -50,7 +50,7 @@ namespace FietsDemo
 
         public void startSimulator()
         {
-            this.simulator = new Simulator();
+            this.simulator = new Simulator(this.bikeSimulator);
             this.simulator.run();
         }
 
@@ -88,7 +88,9 @@ namespace FietsDemo
             }
 
             Console.WriteLine("starting sim");
-            BikeSimulator b = new BikeSimulator(this);
+            bikeSimulator = new BikeSimulator(this);
+            Thread thread = new Thread(startSimulator);
+            thread.Start();
 
             // Set service
             //errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");

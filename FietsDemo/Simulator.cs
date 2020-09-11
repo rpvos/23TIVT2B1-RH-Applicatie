@@ -8,17 +8,23 @@ using System.Windows.Forms;
 
 namespace FietsDemo
 {
-    class Simulator
+    public class Simulator
     {
 
         private SimulationForm form;
+        private BikeSimulator bikeSimulator;
+
+        public Simulator(BikeSimulator bikeSimulator)
+        {
+            this.bikeSimulator = bikeSimulator;
+        }
 
         public void run()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            this.form = new SimulationForm();
+            this.form = new SimulationForm(this.bikeSimulator);
 
             Application.Run(form);
         }

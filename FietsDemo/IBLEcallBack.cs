@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FietsDemo
 {
-    interface IBLEcallBack
+    public interface IBLEcallBack
     {
         void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e);
     }

@@ -12,8 +12,10 @@ namespace FietsDemo
 {
     public partial class SimulationForm : Form
     {
-        public SimulationForm()
+        private BikeSimulator BikeSimulator;
+        public SimulationForm(BikeSimulator bikeSimulator)
         {
+            this.BikeSimulator = bikeSimulator;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             InitializeComponent();
             this.HeartrateTextBox.MouseWheel += new MouseEventHandler(changeHeartrate);
@@ -85,8 +87,11 @@ namespace FietsDemo
                     i = 228;
                 }
                 HeartrateTextBox.Text = i + "";
+                this.BikeSimulator.setHeartRate((byte)i);
 
-            }else if(e.Delta < 0)
+
+            }
+            else if(e.Delta < 0)
             {
                 int i = Int32.Parse(HeartrateTextBox.Text);
                 i--;
@@ -95,6 +100,8 @@ namespace FietsDemo
                     i = 50;
                 }
                 HeartrateTextBox.Text = i + "";
+                this.BikeSimulator.setHeartRate((byte)i);
+
 
             }
 
@@ -111,6 +118,7 @@ namespace FietsDemo
                     i = 144;
                 }
                 SpeedTextBox.Text = i + "";
+                this.BikeSimulator.setSpeed((byte)i);
 
             }
             else if (e.Delta < 0)
@@ -122,6 +130,8 @@ namespace FietsDemo
                     i = 0;
                 }
                 SpeedTextBox.Text = i + "";
+                this.BikeSimulator.setSpeed((byte)i);
+
 
             }
 

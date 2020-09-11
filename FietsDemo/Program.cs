@@ -9,7 +9,7 @@ using Avans.TI.BLE;
 
 namespace FietsDemo
 {
-    class Program : IBLEcallBack
+    public class Program : IBLEcallBack
     {
 
         private GUI gui;
@@ -82,7 +82,7 @@ namespace FietsDemo
 
         public void startGUI()
         {
-            this.gui = new GUI();
+            this.gui = new GUI(this);
             this.gui.run();
         }
 

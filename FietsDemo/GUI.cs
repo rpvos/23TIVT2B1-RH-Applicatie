@@ -9,17 +9,23 @@ using System.Windows.Forms;
 namespace FietsDemo
 {
 
-    class GUI
+    public class GUI
     {
 
        private MainForm form;
+       private Program program;
+
+        public GUI(Program program)
+        {
+            this.program = program;
+        }
 
        public void run()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            this.form = new MainForm();
+            this.form = new MainForm(this);
 
             Application.Run(form);
         }
@@ -27,6 +33,16 @@ namespace FietsDemo
         public MainForm getForm()
         {
             return this.form;
+        }
+
+        public void stopSimulator()
+        {
+            this.program.stopSimulator();
+        }
+
+        public void startSimulator()
+        {
+            this.program.startSimulator();
         }
     }
 }

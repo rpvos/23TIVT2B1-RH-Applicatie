@@ -223,18 +223,19 @@
             // 
             // ESPSimulatorButton
             // 
+            this.ESPSimulatorButton.BackColor = System.Drawing.Color.LightBlue;
             this.ESPSimulatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ESPSimulatorButton.Location = new System.Drawing.Point(1188, 83);
             this.ESPSimulatorButton.Name = "ESPSimulatorButton";
             this.ESPSimulatorButton.Size = new System.Drawing.Size(203, 50);
             this.ESPSimulatorButton.TabIndex = 16;
             this.ESPSimulatorButton.Text = "ESP Simulator";
-            this.ESPSimulatorButton.UseVisualStyleBackColor = true;
+            this.ESPSimulatorButton.UseVisualStyleBackColor = false;
             this.ESPSimulatorButton.Click += new System.EventHandler(this.ESPSimulatorButton_Click);
             // 
             // SoftwareSimulatorButton
             // 
-            this.SoftwareSimulatorButton.BackColor = System.Drawing.Color.LightBlue;
+            this.SoftwareSimulatorButton.BackColor = System.Drawing.Color.White;
             this.SoftwareSimulatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SoftwareSimulatorButton.Location = new System.Drawing.Point(1133, 27);
             this.SoftwareSimulatorButton.Name = "SoftwareSimulatorButton";

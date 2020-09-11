@@ -13,8 +13,10 @@ namespace FietsDemo
     public partial class MainForm : Form
     {
 
-        public MainForm()
+        private GUI gui;
+        public MainForm(GUI gui)
         {
+            this.gui = gui;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
             InitializeComponent();
@@ -132,12 +134,14 @@ namespace FietsDemo
         {
             SoftwareSimulatorButton.BackColor = Color.White;
             ESPSimulatorButton.BackColor = Color.LightBlue;
+            this.gui.stopSimulator();
         }
 
         private void SoftwareSimulatorButton_Click(object sender, EventArgs e)
         {
             SoftwareSimulatorButton.BackColor = Color.LightBlue;
             ESPSimulatorButton.BackColor = Color.White;
+            this.gui.startSimulator();
         }
     }
 }

@@ -33,5 +33,9 @@ namespace FietsDemo
         {
             return this.form;
         }
+
+        public void stop()
+        {
+        }
     }
 }

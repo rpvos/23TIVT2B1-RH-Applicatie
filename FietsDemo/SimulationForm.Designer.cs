@@ -37,6 +37,8 @@
             this.HeartrateTextBox = new System.Windows.Forms.TextBox();
             this.plusHeartrate = new System.Windows.Forms.Button();
             this.minHeartrate = new System.Windows.Forms.Button();
+            this.ResistanceLabel = new System.Windows.Forms.Label();
+            this.ResistanceValue = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // SpeedLabel
@@ -135,11 +137,32 @@
             this.minHeartrate.UseVisualStyleBackColor = true;
             this.minHeartrate.Click += new System.EventHandler(this.minHeartrate_Click);
             // 
+            // ResistanceLabel
+            // 
+            this.ResistanceLabel.AutoSize = true;
+            this.ResistanceLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResistanceLabel.Location = new System.Drawing.Point(96, 186);
+            this.ResistanceLabel.Name = "ResistanceLabel";
+            this.ResistanceLabel.Size = new System.Drawing.Size(210, 33);
+            this.ResistanceLabel.TabIndex = 9;
+            this.ResistanceLabel.Text = "Resistance %: ";
+            // 
+            // ResistanceValue
+            // 
+            this.ResistanceValue.AutoSize = true;
+            this.ResistanceValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResistanceValue.Location = new System.Drawing.Point(299, 186);
+            this.ResistanceValue.Name = "ResistanceValue";
+            this.ResistanceValue.Size = new System.Drawing.Size(0, 33);
+            this.ResistanceValue.TabIndex = 10;
+            // 
             // SimulationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(544, 257);
+            this.Controls.Add(this.ResistanceValue);
+            this.Controls.Add(this.ResistanceLabel);
             this.Controls.Add(this.minHeartrate);
             this.Controls.Add(this.plusHeartrate);
             this.Controls.Add(this.HeartrateTextBox);
@@ -167,5 +190,7 @@
         private System.Windows.Forms.TextBox HeartrateTextBox;
         private System.Windows.Forms.Button plusHeartrate;
         private System.Windows.Forms.Button minHeartrate;
+        private System.Windows.Forms.Label ResistanceLabel;
+        private System.Windows.Forms.Label ResistanceValue;
     }
 }

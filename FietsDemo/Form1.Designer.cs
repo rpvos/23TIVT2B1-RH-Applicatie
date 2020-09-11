@@ -42,6 +42,9 @@
             this.ResistanceValue = new System.Windows.Forms.Label();
             this.accumalatedPower = new System.Windows.Forms.Label();
             this.APLabel = new System.Windows.Forms.Label();
+            this.plusResistance = new System.Windows.Forms.Button();
+            this.minResistance = new System.Windows.Forms.Button();
+            this.resistanceTextbox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // Speed
@@ -145,11 +148,11 @@
             this.Resistance.AutoSize = true;
             this.Resistance.BackColor = System.Drawing.Color.White;
             this.Resistance.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Resistance.Location = new System.Drawing.Point(202, 355);
+            this.Resistance.Location = new System.Drawing.Point(146, 355);
             this.Resistance.Name = "Resistance";
-            this.Resistance.Size = new System.Drawing.Size(275, 55);
+            this.Resistance.Size = new System.Drawing.Size(331, 55);
             this.Resistance.TabIndex = 9;
-            this.Resistance.Text = "Resistance:";
+            this.Resistance.Text = "Resistance %:";
             // 
             // ResistanceValue
             // 
@@ -182,12 +185,49 @@
             this.APLabel.Size = new System.Drawing.Size(0, 55);
             this.APLabel.TabIndex = 12;
             // 
+            // plusResistance
+            // 
+            this.plusResistance.BackColor = System.Drawing.Color.White;
+            this.plusResistance.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.plusResistance.Location = new System.Drawing.Point(622, 361);
+            this.plusResistance.Name = "plusResistance";
+            this.plusResistance.Size = new System.Drawing.Size(50, 43);
+            this.plusResistance.TabIndex = 13;
+            this.plusResistance.Text = "+";
+            this.plusResistance.UseVisualStyleBackColor = false;
+            this.plusResistance.Click += new System.EventHandler(this.plusResistance_Click);
+            // 
+            // minResistance
+            // 
+            this.minResistance.BackColor = System.Drawing.Color.White;
+            this.minResistance.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.minResistance.Location = new System.Drawing.Point(483, 361);
+            this.minResistance.Name = "minResistance";
+            this.minResistance.Size = new System.Drawing.Size(50, 43);
+            this.minResistance.TabIndex = 14;
+            this.minResistance.Text = "-";
+            this.minResistance.UseVisualStyleBackColor = false;
+            this.minResistance.Click += new System.EventHandler(this.minResistance_Click);
+            // 
+            // resistanceTextbox
+            // 
+            this.resistanceTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.resistanceTextbox.Location = new System.Drawing.Point(539, 361);
+            this.resistanceTextbox.Name = "resistanceTextbox";
+            this.resistanceTextbox.ReadOnly = true;
+            this.resistanceTextbox.Size = new System.Drawing.Size(77, 44);
+            this.resistanceTextbox.TabIndex = 15;
+            this.resistanceTextbox.Text = "0";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(1403, 667);
+            this.Controls.Add(this.resistanceTextbox);
+            this.Controls.Add(this.minResistance);
+            this.Controls.Add(this.plusResistance);
             this.Controls.Add(this.APLabel);
             this.Controls.Add(this.accumalatedPower);
             this.Controls.Add(this.ResistanceValue);
@@ -224,5 +264,8 @@
         private System.Windows.Forms.Label ResistanceValue;
         private System.Windows.Forms.Label accumalatedPower;
         private System.Windows.Forms.Label APLabel;
+        private System.Windows.Forms.Button plusResistance;
+        private System.Windows.Forms.Button minResistance;
+        private System.Windows.Forms.TextBox resistanceTextbox;
     }
 }

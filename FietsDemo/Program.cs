@@ -212,7 +212,7 @@ namespace FietsDemo
                         if (previousDistanceTraveled > distanceTraveled)
                             distanceTraveledCounter++;
 
-                        this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000;
+                        this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000.0;
                         this.previousDistanceTraveled = distanceTraveled;
 
 

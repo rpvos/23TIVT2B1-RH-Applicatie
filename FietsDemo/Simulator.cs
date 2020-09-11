@@ -8,23 +8,22 @@ using System.Windows.Forms;
 
 namespace FietsDemo
 {
-
-    class GUI
+    class Simulator
     {
 
-       private MainForm form;
+        private SimulationForm form;
 
-       public void run()
+        public void run()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            this.form = new MainForm();
+            this.form = new SimulationForm();
 
             Application.Run(form);
         }
 
-        public MainForm getForm()
+        public SimulationForm getForm()
         {
             return this.form;
         }

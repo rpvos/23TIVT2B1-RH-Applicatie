@@ -13,6 +13,7 @@ namespace FietsDemo
     {
 
         private GUI gui;
+        private Simulator simulator;
 
         private double accumulatedPower;
         private int accumulatedPowerCounter = 0;
@@ -40,14 +41,23 @@ namespace FietsDemo
             Thread thread = new Thread(startGUI);
             thread.Start();
 
+            Thread thread2 = new Thread(startSimulator);
+            thread2.Start();
+
             initialize();
 
+        }
+
+        public void startSimulator()
+        {
+            this.simulator = new Simulator();
+            this.simulator.run();
         }
 
         public void startGUI()
         {
             this.gui = new GUI();
-            gui.run();
+            this.gui.run();
         }
 
         public async Task initialize()
@@ -68,7 +78,7 @@ namespace FietsDemo
             }
 
             // Connecting
-            errorCode = await bleBike.OpenDevice("Avans Bike");
+            errorCode = await bleBike.OpenDevice("Avans Bike A918");
             // __TODO__ Error check
 
             var services = bleBike.GetServices;
@@ -86,7 +96,7 @@ namespace FietsDemo
             errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
-            errorCode = await bleHeart.OpenDevice("Avans Bike");
+            errorCode = await bleHeart.OpenDevice("Avans Bike A918");
 
             await bleHeart.SetService("HeartRate");
 

@@ -31,11 +31,13 @@ namespace FietsDemo
         {
            int i = Int32.Parse(SpeedTextBox.Text);
            i+=5;
-            if (i > 144)
+            if (i > 40)
             {
-                i = 144;
+                i = 40;
             }
            SpeedTextBox.Text = i + "";
+            this.BikeSimulator.setSpeed((byte)i);
+
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -47,6 +49,8 @@ namespace FietsDemo
                 i = 0;
             }
             SpeedTextBox.Text = i + "";
+            this.BikeSimulator.setSpeed((byte)i);
+
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -63,6 +67,8 @@ namespace FietsDemo
                 i = 228;
             }
             HeartrateTextBox.Text = i + "";
+            this.BikeSimulator.setHeartRate((byte)i);
+
         }
 
         private void minHeartrate_Click(object sender, EventArgs e)
@@ -74,6 +80,8 @@ namespace FietsDemo
                 i = 50;
             }
             HeartrateTextBox.Text = i + "";
+            this.BikeSimulator.setHeartRate((byte)i);
+
         }
 
         void changeHeartrate(object sender, MouseEventArgs e)
@@ -90,6 +98,7 @@ namespace FietsDemo
                 this.BikeSimulator.setHeartRate((byte)i);
 
 
+
             }
             else if(e.Delta < 0)
             {
@@ -103,6 +112,7 @@ namespace FietsDemo
                 this.BikeSimulator.setHeartRate((byte)i);
 
 
+
             }
 
         }
@@ -113,9 +123,9 @@ namespace FietsDemo
             {
                 int i = Int32.Parse(SpeedTextBox.Text);
                 i++;
-                if (i > 144)
+                if (i > 40)
                 {
-                    i = 144;
+                    i = 40;
                 }
                 SpeedTextBox.Text = i + "";
                 this.BikeSimulator.setSpeed((byte)i);

@@ -129,9 +129,7 @@ namespace FietsDemo
                 }
 
                 Console.WriteLine("{0}: {1}", name, data.ToString());
-                String heartrateString = data.ToString();
-                setValuesInGui("heartrate", 0, heartrateString);
-
+             
 
             }
             else if (name == "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e" || name == "Simulator")
@@ -216,7 +214,7 @@ namespace FietsDemo
                         this.timeElapsedInSeconds = ((64 * timeElapsedCounter) + elapsedTime * 0.25);
                         this.previousTimeElapsed = elapsedTime;
                                               
-                        setValuesInGui("elapsedTime", timeElapsedInSeconds, "");
+                        setValuesInGui("elapsedTime", timeElapsedInSeconds);
 
                         // Calculation distance traveled
                         if (previousDistanceTraveled > distanceTraveled)
@@ -226,8 +224,9 @@ namespace FietsDemo
                         this.previousDistanceTraveled = distanceTraveled;
 
 
-                        setValuesInGui("DT", this.distanceTraveledInKM, "");
-                        setValuesInGui("speed", speed, "");
+                        setValuesInGui("DT", this.distanceTraveledInKM);
+                        setValuesInGui("speed", speed);
+                        setValuesInGui("heartrate", heartRateFromBike);
 
                         Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
                     }
@@ -358,7 +357,7 @@ namespace FietsDemo
                         // Instantaneous power calculation
                         double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8));
 
-                        setValuesInGui("AP", this.accumulatedPower, "");
+                        setValuesInGui("AP", this.accumulatedPower);
 
 
 
@@ -370,7 +369,7 @@ namespace FietsDemo
             }
         }
 
-        public void setValuesInGui(String valueType, double value, String heartrate)
+        public void setValuesInGui(String valueType, double value)
         {
             switch (valueType)
             {
@@ -378,7 +377,7 @@ namespace FietsDemo
                     this.gui.getForm().setSpeed(value);
                     break;
                 case "heartrate":
-                    this.gui.getForm().setHeartrate(heartrate);
+                    this.gui.getForm().setHeartrate(value);
                     break;
                 case "AP":
                     this.gui.getForm().setAP(value);

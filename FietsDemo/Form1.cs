@@ -36,7 +36,7 @@ namespace FietsDemo
             }));
         }
 
-        public void setHeartrate(String heartrate)
+        public void setHeartrate(double heartrate)
         {
             HeartrateValue.Invoke((MethodInvoker)(() =>
             {

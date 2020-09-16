@@ -420,6 +420,12 @@ namespace FietsDemo
 
         public double setResistance(double percentage)
         {
+
+            if(this.simulator != null)
+            {
+                this.simulator.setResistance((int)percentage);
+            }
+            
             if (percentage <= 100.0 && percentage >= 0.0)
             {
                 Byte[] byteArray = new byte[13];

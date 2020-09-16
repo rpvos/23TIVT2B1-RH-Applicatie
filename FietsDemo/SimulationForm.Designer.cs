@@ -50,7 +50,6 @@
             this.SpeedLabel.Size = new System.Drawing.Size(161, 31);
             this.SpeedLabel.TabIndex = 0;
             this.SpeedLabel.Text = "Speed (m/s)";
-            this.SpeedLabel.Click += new System.EventHandler(this.label1_Click);
             // 
             // SpeedTextBox
             // 

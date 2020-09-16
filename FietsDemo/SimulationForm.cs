@@ -53,10 +53,6 @@ namespace FietsDemo
 
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void plusHeartrate_Click(object sender, EventArgs e)
         {
@@ -145,6 +141,14 @@ namespace FietsDemo
 
             }
 
+        }
+
+        public void setResistance(int resistance)
+        {
+            ResistanceValue.Invoke((MethodInvoker)(() =>
+            {
+                ResistanceValue.Text = resistance + " %";
+            }));
         }
 
     

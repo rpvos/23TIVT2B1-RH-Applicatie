@@ -53,9 +53,11 @@ namespace FietsDemo
 
         public void startSimulator()
         {
-            BleBike.Unsubscribe("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
-            HeartRateSensor.Unsubscribe("HeartRateMeasurement");
+            // When starting the simulator, the first thing to do is to unsubscribe from the real BLE device, otherwise they would interfere.
+            this.BleBike.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
+            this.HeartRateSensor.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
             
+            // The second step is to start the simulator and the GUI that comes with it.
             Console.WriteLine("starting simulator...");
             bikeSimulator = new BikeSimulator(this);
 
@@ -70,14 +72,15 @@ namespace FietsDemo
             this.simulator.run();
         }
 
-        public void stopSimulator()
+        public void stopSimulator() 
         {
+            // To stop the simulator we first stop the simulator thread and the GUI.
             Console.WriteLine("Stopping Simulator...");
             this.bikeSimulator.running = false;
             this.simulator.stop();
-
-            BleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
-            HeartRateSensor.SubscribeToCharacteristic("HeartRateMeasurement");
+            // After that we subscribe to the BLE service again to continue measuring.
+            this.BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            this.HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
         }
 
         public void startGUI()

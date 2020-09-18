@@ -87,19 +87,16 @@ namespace TCP_naar_VR
             }
         }
 
-        private void setTime(string time)
+        private void setTime(int time)
         {
             string currentPath = Directory.GetCurrentDirectory();
             string pathFile = currentPath + @"\Json files\TimeSetMessage.json";
-
             JObject message = JObject.Parse(File.ReadAllText(pathFile));
-            JObject data = (JObject)message["data"];
-            data["dest"] = id;
-            JObject data2 = (JObject)data["data"];
-            JObject data3 = (JObject)data2["data"];
-            data3["time"] = time;
 
-            sendMessage(message.ToString());
+            TunnelMessage timeMessage = new TunnelMessage(message, id);
+            timeMessage.getDataContent()["time"] = time;
+
+            sendMessage(timeMessage.ToString());
         }
 
         private void checkTunnelStatus(JObject json)
@@ -112,7 +109,7 @@ namespace TCP_naar_VR
             if(status == "ok")
             {
                 this.id = id;
-                setTime("12");
+                setTime(12);
             }
 
             Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);

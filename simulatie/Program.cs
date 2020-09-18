@@ -89,6 +89,8 @@ namespace TCP_naar_VR
         {
             JObject data = (JObject)json["data"];
             string status = (string)data["status"];
+
+
             string id = (string)data["id"];
             Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
         }
@@ -105,7 +107,9 @@ namespace TCP_naar_VR
 
                 if((string)clientInfo["host"] == Environment.MachineName)
                 {
+                    Console.WriteLine("sending id: {0}", (string)data[i]["id"]);
                     sendTunnelRequest((string)data[i]["id"]);
+                    
                 }
             }
         }

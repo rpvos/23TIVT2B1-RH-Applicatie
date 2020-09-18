@@ -8,7 +8,6 @@ namespace TCP_naar_VR
         {
             TcpClientVR tcpClientVR = new TcpClientVR("145.48.6.10", 6666);
             tcpClientVR.sendKickOff();
-            tcpClientVR.sendTunnelRequest();
         }
     }
 }

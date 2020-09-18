@@ -14,6 +14,7 @@ namespace TCP_naar_VR
         private NetworkStream stream;
         private TcpClient tcpClient;
         private bool receiving;
+        private string id;
         public TcpClientVR(string ip, int port)
         {
             tcpClient = new TcpClient(ip, port);
@@ -28,9 +29,10 @@ namespace TCP_naar_VR
             string jsonS = "{\"id\" : \"session/list\"}";
             sendMessage(jsonS);
         }
-        public void sendTunnelRequest()
+        public void sendTunnelRequest(string id)
         {
-            string jsonS = "{\"id\" : \"tunnel/create\", \"data\" : {\"session\" : \"ce55ab4b-2743-4bf0-83fe-1cf0cfe02b03\", \"key\" : \"keeskroketmetzonnetje\"}}";
+            this.id = id;
+            string jsonS = "{\"id\" : \"tunnel/create\", \"data\" : {\"session\" : \"" + id + "\", \"key\" : \"keeskroketmetzonnetje\"}}";
             sendMessage(jsonS);
         }
 
@@ -100,6 +102,11 @@ namespace TCP_naar_VR
             {
                 JObject clientInfo = (JObject)data[i]["clientinfo"];
                 Console.WriteLine(clientInfo);
+
+                if((string)clientInfo["host"] == Environment.MachineName)
+                {
+                    sendTunnelRequest((string)data[i]["id"]);
+                }
             }
         }
     }

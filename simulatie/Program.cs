@@ -31,7 +31,7 @@ namespace TCP_naar_VR
         }
         public void sendTunnelRequest(string id)
         {
-            string jsonS = "{\"id\" : \"tunnel/create\", \"data\" : {\"session\" : \"" + id + "\", \"key\" : \"keeskroketmetzonnetje\"}}";
+            string jsonS = "{\"id\" : \"tunnel/create\", \"data\" : {\"session\" : \"" + id + "\", \"key\" : \"\"}}";
             sendMessage(jsonS);
         }
 
@@ -70,23 +70,29 @@ namespace TCP_naar_VR
 
                 JObject json = JObject.Parse(jsonS);
 
+                
+
                 string id = (string)json["id"];
 
                 if (id == "session/list")
                 {
                     printUsers(json);
-                }
-
-                if (id == "tunnel/create")
+                } else if (id == "tunnel/create")
                 {
                     checkTunnelStatus(json);
+                } else
+                {
+                    Console.WriteLine(jsonS);
                 }
             }
         }
 
         private void setTime(string time)
         {
-            JObject message = JObject.Parse(File.ReadAllText(@"D:\School\Jaar 2\Periode 1\Proftaak\Project\23TIVT2B1-RH-Applicatie\simulatie\Json files\TimeSetMessage.json"));
+            string currentPath = Directory.GetCurrentDirectory();
+            string pathFile = currentPath + @"\Json files\TimeSetMessage.json";
+
+            JObject message = JObject.Parse(File.ReadAllText(pathFile));
             JObject data = (JObject)message["data"];
             data["dest"] = id;
             JObject data2 = (JObject)data["data"];
@@ -106,7 +112,7 @@ namespace TCP_naar_VR
             if(status == "ok")
             {
                 this.id = id;
-                setTime("1");
+                setTime("12");
             }
 
             Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);

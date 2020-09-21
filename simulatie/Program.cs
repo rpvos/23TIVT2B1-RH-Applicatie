@@ -58,7 +58,7 @@ namespace TCP_naar_VR
 
             double[] heights = new double[1600];
             Random random = new Random();
-            for(int i = 0; i < 1600; i++)
+            for (int i = 0; i < 1600; i++)
             {
                 heights[i] = 0.03 * random.Next(10);
             }
@@ -76,6 +76,35 @@ namespace TCP_naar_VR
             data["normal"] = fileNormal;
             data["diffuse"] = fileDiffuse;
             sendMessage(textureMessage.ToString());
+        }
+
+
+        private void addRoute(RoutePoint[] points)
+        {
+            TunnelMessage routeMessage = GetTunnelMessage("RouteSetMessage.json");
+            JObject data = routeMessage.getDataContent();
+            JArray nodesArray = (JArray)data["nodes"];
+            foreach (RoutePoint p in points)
+            {
+                JObject point = JObject.Parse("{\"pos\": [], \"dir\": []}");
+
+                point["pos"] = new JArray(p.Pos);
+                point["dir"] = new JArray(p.Dir);
+
+                nodesArray.Add(point);
+            }
+            sendMessage(routeMessage.ToString());
+        }
+
+        private struct RoutePoint
+        {
+            public int[] Dir { get; }
+            public int[] Pos { get; }
+            public RoutePoint(int[] pos, int[] dir)
+            {
+                this.Pos = pos;
+                this.Dir = dir;
+            }
         }
 
         private void sendMessage(string message)
@@ -163,7 +192,7 @@ namespace TCP_naar_VR
 
             string id = (string)data["id"];
 
-            if(status == "ok")
+            if (status == "ok")
             {
                 this.id = id;
                 //setTime(1);
@@ -193,7 +222,7 @@ namespace TCP_naar_VR
                 JObject clientInfo = (JObject)data[i]["clientinfo"];
                 Console.WriteLine(clientInfo);
 
-                if((string)clientInfo["host"] == Environment.MachineName)
+                if ((string)clientInfo["host"] == Environment.MachineName)
                 {
                     sendTunnelRequest((string)data[i]["id"]);
                 }
@@ -201,3 +230,7 @@ namespace TCP_naar_VR
         }
     }
 }
+
+
+
+

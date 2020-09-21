@@ -60,7 +60,7 @@ namespace TCP_naar_VR
             Random random = new Random();
             for(int i = 0; i < 1600; i++)
             {
-                heights[i] = 0.01 * random.Next(10);
+                heights[i] = 0.03 * random.Next(10);
             }
 
             JArray jArray = new JArray(heights);
@@ -98,11 +98,7 @@ namespace TCP_naar_VR
                 }
 
                 int length = BitConverter.ToInt32(lenghtBuffer);
-
-
-                Console.WriteLine("Length: {0}", length);
-
-                var buffer = new List<byte>();
+                var buffer = new List<byte>(length);
 
                 for (int i = 0; i < length; i++)
                 {
@@ -110,43 +106,52 @@ namespace TCP_naar_VR
                 }
 
                 string jsonS = Encoding.ASCII.GetString(buffer.ToArray());
-
                 JObject json = JObject.Parse(jsonS);
 
-                
+                receiveMessage(json);
+            }
+        }
 
-                string id = (string)json["id"];
+        private void receiveMessage(JObject json)
+        {
+            string id = (string)json["id"];
 
-                if (id == "session/list")
-                {
-                    printUsers(json);
-                } else if (id == "tunnel/create")
-                {
-                    checkTunnelStatus(json);
-                } else if (id == "tunnel/send")
-                {
-                    
-                    JObject tempdata = (JObject)json["data"];
-                    JObject data = (JObject)tempdata["data"];
+            if (id == "session/list")
+            {
+                printUsers(json);
+            }
+            else if (id == "tunnel/create")
+            {
+                checkTunnelStatus(json);
+            }
+            else if (id == "tunnel/send")
+            {
+                receiveNodeNameAndUuid(json);
+            }
+        }
 
-                    if ((string)data["id"] == "scene/node/add")
-                    {
-                        Console.WriteLine("check");
-                        if ((string) data["status"] == "ok")
-                        {
-                            JObject data2 = (JObject)data["data"];
-                            string name = (string)data2["name"];
-                            string uuid = (string)data2["uuid"];
-                            objects.Add(name,uuid);
-                            Console.WriteLine("Added node to dictionary\nName: {0}\nuuid: {1}", name, uuid);
-                            addTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
-                        }
-                    }
-                    Console.WriteLine(json);
+        private void receiveNodeNameAndUuid(JObject json)
+        {
+            JObject tempdata = (JObject)json["data"];
+            JObject data = (JObject)tempdata["data"];
+
+            if ((string)data["id"] == "scene/node/add")
+            {
+                Console.WriteLine("check");
+                if ((string)data["status"] == "ok")
+                {
+                    JObject data2 = (JObject)data["data"];
+                    string name = (string)data2["name"];
+                    string uuid = (string)data2["uuid"];
+                    objects.Add(name, uuid);
+                    Console.WriteLine("Added node to dictionary\nName: {0}\nuuid: {1}", name, uuid);
+
+                    //TEMP
+                    addTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid);
+                }
+                else
+                {
+                    Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
                 }
             }
         }

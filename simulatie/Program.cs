@@ -96,6 +96,20 @@ namespace TCP_naar_VR
             sendMessage(routeMessage.ToString());
         }
 
+        private void addRoad(string normalTexture, string diffuseTexture, string specularTexture, string uuid)
+        {
+            TunnelMessage roadMessage = GetTunnelMessage("RoadSetMessage.json");
+            JObject data = roadMessage.getDataContent();
+            data["route"] = uuid;
+            data["diffuse"] = diffuseTexture;
+            data["normal"] = normalTexture;
+            data["specular"] = specularTexture;
+
+            Console.WriteLine(roadMessage.ToString());
+
+            sendMessage(roadMessage.ToString());
+        }
+
         private struct RoutePoint
         {
             public int[] Dir { get; }
@@ -136,6 +150,8 @@ namespace TCP_naar_VR
 
                 string jsonS = Encoding.ASCII.GetString(buffer.ToArray());
                 JObject json = JObject.Parse(jsonS);
+
+                Console.WriteLine(json.ToString());
 
                 receiveMessage(json);
             }
@@ -182,13 +198,29 @@ namespace TCP_naar_VR
                             new RoutePoint(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 }),
                             new RoutePoint(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 }),
                             new RoutePoint(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 })});
+
+                    //sendMessage(GetTunnelMessage("RouteSetMessage.json").ToString());
                 }
                 else
                 {
                     Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
                 }
-            }
+            } else if ((string)data["id"] == "route/add")
+                {
+                    if ((string)data["status"] == "ok")
+                    {
+                        JObject data2 = (JObject)data["data"];
+                        string name = "route";
+                        string uuid = (string)data2["uuid"];
+                        objects.Add(name, uuid);
+                        Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
+
+                        addRoad("data/NetworkEngine/textures/tarmac_normale.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", uuid);
+                        
+                    }
+                } 
         }
+
 
         private void checkTunnelStatus(JObject json)
         {

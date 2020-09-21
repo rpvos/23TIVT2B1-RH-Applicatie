@@ -13,10 +13,12 @@ namespace TCP_naar_VR
     {
         private NetworkStream stream;
         private TcpClient tcpClient;
+        private Dictionary<string, string> objects;
         private bool receiving;
         private string id;
         public TcpClientVR(string ip, int port)
         {
+            objects = new Dictionary<string, string>();
             tcpClient = new TcpClient(ip, port);
             stream = tcpClient.GetStream();
 
@@ -33,6 +35,47 @@ namespace TCP_naar_VR
         {
             string jsonS = "{\"id\" : \"tunnel/create\", \"data\" : {\"session\" : \"" + id + "\", \"key\" : \"\"}}";
             sendMessage(jsonS);
+        }
+
+        private void setTime(int time)
+        {
+            TunnelMessage timeMessage = GetTunnelMessage("TimeSetMessage.json");
+            timeMessage.getDataContent()["time"] = time;
+
+            sendMessage(timeMessage.ToString());
+        }
+
+        private void addNode()
+        {
+            TunnelMessage timeMessage = GetTunnelMessage("NodeAdd.json");
+
+            sendMessage(timeMessage.ToString());
+        }
+
+        private void addTerrain(int height)
+        {
+            TunnelMessage timeMessage = GetTunnelMessage("TerrainAdd.json");
+
+            double[] heights = new double[1600];
+            Random random = new Random();
+            for(int i = 0; i < 1600; i++)
+            {
+                heights[i] = 0.01 * random.Next(10);
+            }
+
+            JArray jArray = new JArray(heights);
+            timeMessage.getDataContent()["heights"] = jArray;
+            sendMessage(timeMessage.ToString());
+        }
+
+        private void addTexture(string fileNormal, string fileDiffuse, string uuid)
+        {
+            TunnelMessage textureMessage = GetTunnelMessage("AddTexture.json");
+            JObject data = textureMessage.getDataContent();
+            data["id"] = uuid;
+            data["normal"] = fileNormal;
+            data["diffuse"] = fileDiffuse;
+            sendMessage(textureMessage.ToString());
         }
 
         private void sendMessage(string message)
@@ -80,23 +123,32 @@ namespace TCP_naar_VR
                 } else if (id == "tunnel/create")
                 {
                     checkTunnelStatus(json);
-                } else
+                } else if (id == "tunnel/send")
                 {
-                    Console.WriteLine(jsonS);
+                    
+                    JObject tempdata = (JObject)json["data"];
+                    JObject data = (JObject)tempdata["data"];
+
+                    if ((string)data["id"] == "scene/node/add")
+                    {
+                        Console.WriteLine("check");
+                        if ((string) data["status"] == "ok")
+                        {
+                            JObject data2 = (JObject)data["data"];
+                            string name = (string)data2["name"];
+                            string uuid = (string)data2["uuid"];
+                            objects.Add(name,uuid);
+                            Console.WriteLine("Added node to dictionary\nName: {0}\nuuid: {1}", name, uuid);
+                            addTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
+                        }
+                    }
+                    Console.WriteLine(json);
                 }
             }
-        }
-
-        private void setTime(int time)
-        {
-            string currentPath = Directory.GetCurrentDirectory();
-            string pathFile = currentPath + @"\Json files\TimeSetMessage.json";
-            JObject message = JObject.Parse(File.ReadAllText(pathFile));
-
-            TunnelMessage timeMessage = new TunnelMessage(message, id);
-            timeMessage.getDataContent()["time"] = time;
-
-            sendMessage(timeMessage.ToString());
         }
 
         private void checkTunnelStatus(JObject json)
@@ -109,10 +161,21 @@ namespace TCP_naar_VR
             if(status == "ok")
             {
                 this.id = id;
-                setTime(12);
+                //setTime(1);
+                addTerrain(2);
+                addNode();
             }
 
             Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
+        }
+
+        private TunnelMessage GetTunnelMessage(string jsonName)
+        {
+            string currentPath = Directory.GetCurrentDirectory();
+            string pathFile = currentPath + @"\Json files\" + jsonName;
+            JObject message = JObject.Parse(File.ReadAllText(pathFile));
+            TunnelMessage tunnelMessage = new TunnelMessage(message, id);
+            return tunnelMessage;
         }
 
         private void printUsers(JObject json)

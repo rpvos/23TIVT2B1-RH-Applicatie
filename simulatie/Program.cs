@@ -205,20 +205,22 @@ namespace TCP_naar_VR
                 {
                     Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
                 }
-            } else if ((string)data["id"] == "route/add")
+            }
+            else if ((string)data["id"] == "route/add")
+            {
+                if ((string)data["status"] == "ok")
                 {
-                    if ((string)data["status"] == "ok")
-                    {
-                        JObject data2 = (JObject)data["data"];
-                        string name = "route";
-                        string uuid = (string)data2["uuid"];
-                        objects.Add(name, uuid);
-                        Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
-
-                        addRoad("data/NetworkEngine/textures/tarmac_normale.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", uuid);
-                        
-                    }
-                } 
+                    JObject data2 = (JObject)data["data"];
+                    string name = "route";
+                    string uuid = (string)data2["uuid"];
+                    objects.Add(name, uuid);
+                    Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
+                }
+                else
+                {
+                    Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
+                }
+            }
         }
 
 

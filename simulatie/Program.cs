@@ -177,6 +177,11 @@ namespace TCP_naar_VR
 
                     //TEMP
                     addTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid);
+                    addRoute(new RoutePoint[] { new RoutePoint(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 }),
+                            new RoutePoint(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 }),
+                            new RoutePoint(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 }),
+                            new RoutePoint(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 }),
+                            new RoutePoint(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 })});
                 }
                 else
                 {

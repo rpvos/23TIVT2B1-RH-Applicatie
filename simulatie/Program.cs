@@ -58,7 +58,7 @@ namespace TCP_naar_VR
 
             double[] heights = new double[1600];
             Random random = new Random();
-            for(int i = 0; i < 1600; i++)
+            for (int i = 0; i < 1600; i++)
             {
                 heights[i] = 0.01 * random.Next(10);
             }
@@ -76,6 +76,35 @@ namespace TCP_naar_VR
             data["normal"] = fileNormal;
             data["diffuse"] = fileDiffuse;
             sendMessage(textureMessage.ToString());
+        }
+
+
+        private void addRoute(RoutePoint[] points)
+        {
+            TunnelMessage routeMessage = GetTunnelMessage("RouteSetMessage.json");
+            JObject data = routeMessage.getDataContent();
+            JArray nodesArray = (JArray)data["nodes"];
+            foreach (RoutePoint p in points)
+            {
+                JObject point = JObject.Parse("{\"pos\": [], \"dir\": []}");
+
+                point["pos"] = new JArray(p.Pos);
+                point["dir"] = new JArray(p.Dir);
+
+                nodesArray.Add(point);
+            }
+            sendMessage(routeMessage.ToString());
+        }
+
+        private struct RoutePoint
+        {
+            public int[] Dir { get; }
+            public int[] Pos { get; }
+            public RoutePoint(int[] pos, int[] dir)
+            {
+                this.Pos = pos;
+                this.Dir = dir;
+            }
         }
 
         private void sendMessage(string message)
@@ -113,33 +142,40 @@ namespace TCP_naar_VR
 
                 JObject json = JObject.Parse(jsonS);
 
-                
+
 
                 string id = (string)json["id"];
 
                 if (id == "session/list")
                 {
                     printUsers(json);
-                } else if (id == "tunnel/create")
+                }
+                else if (id == "tunnel/create")
                 {
                     checkTunnelStatus(json);
-                } else if (id == "tunnel/send")
+                }
+                else if (id == "tunnel/send")
                 {
-                    
+
                     JObject tempdata = (JObject)json["data"];
                     JObject data = (JObject)tempdata["data"];
 
                     if ((string)data["id"] == "scene/node/add")
                     {
                         Console.WriteLine("check");
-                        if ((string) data["status"] == "ok")
+                        if ((string)data["status"] == "ok")
                         {
                             JObject data2 = (JObject)data["data"];
                             string name = (string)data2["name"];
                             string uuid = (string)data2["uuid"];
-                            objects.Add(name,uuid);
+                            objects.Add(name, uuid);
                             Console.WriteLine("Added node to dictionary\nName: {0}\nuuid: {1}", name, uuid);
                             addTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid);
+                            addRoute(new RoutePoint[] { new RoutePoint(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 }),
+                            new RoutePoint(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 }),
+                            new RoutePoint(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 }),
+                            new RoutePoint(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 }),
+                            new RoutePoint(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 })});
                         }
                         else
                         {
@@ -158,7 +194,7 @@ namespace TCP_naar_VR
 
             string id = (string)data["id"];
 
-            if(status == "ok")
+            if (status == "ok")
             {
                 this.id = id;
                 //setTime(1);
@@ -188,7 +224,7 @@ namespace TCP_naar_VR
                 JObject clientInfo = (JObject)data[i]["clientinfo"];
                 Console.WriteLine(clientInfo);
 
-                if((string)clientInfo["host"] == Environment.MachineName)
+                if ((string)clientInfo["host"] == Environment.MachineName)
                 {
                     sendTunnelRequest((string)data[i]["id"]);
                 }
@@ -196,3 +232,7 @@ namespace TCP_naar_VR
         }
     }
 }
+
+
+
+

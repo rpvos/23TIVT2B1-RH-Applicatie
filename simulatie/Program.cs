@@ -52,13 +52,31 @@ namespace TCP_naar_VR
             sendMessage(timeMessage.ToString());
         }
 
+        private void addObject(string fileNameModel, string objectName, int x, int y, int z, float scale)
+        {
+            TunnelMessage addObjectMessage = GetTunnelMessage("AddObjectMessage.json");
+            JObject data = addObjectMessage.getDataContent();
+            data["name"] = objectName;
+
+            JObject components = (JObject)data["components"];
+
+            JObject transform = (JObject)components["transform"];
+            transform["position"] = new JArray(new int[] { y, z, x });
+            transform["scale"] = scale;
+
+            JObject model = (JObject)components["model"];
+            model["file"] = fileNameModel;
+            
+            sendMessage(addObjectMessage.ToString());
+        }
+
         private void addTerrain(int height)
         {
             TunnelMessage timeMessage = GetTunnelMessage("TerrainAdd.json");
 
-            double[] heights = new double[1600];
+            double[] heights = new double[40000];
             Random random = new Random();
-            for (int i = 0; i < 1600; i++)
+            for (int i = 0; i < heights.Length; i++)
             {
                 heights[i] = 0.03 * random.Next(10);
             }
@@ -105,8 +123,6 @@ namespace TCP_naar_VR
             data["normal"] = normalTexture;
             data["specular"] = specularTexture;
 
-            Console.WriteLine(roadMessage.ToString());
-
             sendMessage(roadMessage.ToString());
         }
 
@@ -151,8 +167,6 @@ namespace TCP_naar_VR
                 string jsonS = Encoding.ASCII.GetString(buffer.ToArray());
                 JObject json = JObject.Parse(jsonS);
 
-                Console.WriteLine(json.ToString());
-
                 receiveMessage(json);
             }
         }
@@ -182,7 +196,6 @@ namespace TCP_naar_VR
 
             if ((string)data["id"] == "scene/node/add")
             {
-                Console.WriteLine("check");
                 if ((string)data["status"] == "ok")
                 {
                     JObject data2 = (JObject)data["data"];
@@ -192,14 +205,23 @@ namespace TCP_naar_VR
                     Console.WriteLine("Added node to dictionary\nName: {0}\nuuid: {1}", name, uuid);
 
                     //TEMP
-                    addTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid);
-                    addRoute(new RoutePoint[] { new RoutePoint(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 }),
-                            new RoutePoint(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 }),
-                            new RoutePoint(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 }),
-                            new RoutePoint(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 }),
-                            new RoutePoint(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 })});
+                    if (name == "ground")
+                    {
+                        addTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid);
+                        
+                    }
+                    if (name == "tree")
+                    {
+                        //addTexture("data/NetworkEngine/models/trees/fantasy/Tree_07.png", "", uuid);
+                    }
 
-                    //sendMessage(GetTunnelMessage("RouteSetMessage.json").ToString());
+                    //addRoute(new RoutePoint[] { new RoutePoint(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 }),
+                    //        new RoutePoint(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 }),
+                    //        new RoutePoint(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 }),
+                    //        new RoutePoint(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 }),
+                    //        new RoutePoint(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 })});
+
+
                 }
                 else
                 {
@@ -215,15 +237,35 @@ namespace TCP_naar_VR
                     string uuid = (string)data2["uuid"];
                     objects.Add(name, uuid);
                     Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
+                    addRoad("data/NetworkEngine/textures/tarmac_normal.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", uuid);
                 }
                 else
                 {
                     Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
                 }
             }
+            else if ((string)data["id"] == "scene/node/addlayer")
+            {
+                if ((string)data["status"] == "ok")
+                {
+                    sendMessage(GetTunnelMessage("RouteSetMessage.json").ToString());
+                }
+            } else if((string)data["id"] == "scene/road/add")
+            {
+                if ((string)data["status"] == "ok")
+                {
+                    Random random = new Random();
+                    for(int i = 0; i < 1000; i++)
+                    {
+                        int x = -100 + random.Next(200);
+                        int y = -100 + random.Next(200);
+                        int treeNumber = random.Next(11);
+                        float scale = (float)(0.1 * random.Next(20));
+                        addObject("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, x, y, 0, scale);
+                    }
+                }
+            }
         }
-
-
         private void checkTunnelStatus(JObject json)
         {
             JObject data = (JObject)json["data"];

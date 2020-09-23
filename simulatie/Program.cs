@@ -145,26 +145,38 @@ namespace TCP_naar_VR
             stream.Write(buffer);
         }
 
+        public byte[] receiveBytes(int count)
+        {
+            byte[] buffer = new byte[count];
+            int receivedBytes = 0;
+            while(receivedBytes < count)
+                receivedBytes += stream.Read(buffer, receivedBytes, count-receivedBytes);
+            return buffer;
+        }
+
         public void receive()
         {
+
+
+
             while (receiving)
             {
-                byte[] lenghtBuffer = new byte[4];
+                byte[] lenghtBuffer = receiveBytes(4);/* new byte[4];
 
                 for (int i = 0; i < 4; i++)
                 {
                     lenghtBuffer[i] = (byte)stream.ReadByte();
-                }
+                }*/
 
                 int length = BitConverter.ToInt32(lenghtBuffer);
-                var buffer = new List<byte>(length);
+                var buffer = receiveBytes(length); /* new List<byte>(length);
 
                 for (int i = 0; i < length; i++)
                 {
                     buffer.Add((byte)stream.ReadByte());
-                }
+                }*/
 
-                string jsonS = Encoding.ASCII.GetString(buffer.ToArray());
+                string jsonS = Encoding.ASCII.GetString(buffer);
                 JObject json = JObject.Parse(jsonS);
 
                 receiveMessage(json);
@@ -279,6 +291,7 @@ namespace TCP_naar_VR
                 //setTime(1);
                 addTerrain(2);
                 addNode();
+                //followRoute("");
             }
 
             Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
@@ -308,6 +321,15 @@ namespace TCP_naar_VR
                     sendTunnelRequest((string)data[i]["id"]);
                 }
             }
+        }
+        private void followRoute(String node)
+        {
+            TunnelMessage followRouteMessage = GetTunnelMessage("FollowRoute.json");
+            JObject data = followRouteMessage.getDataContent();
+            data["routeid"] = objects["route"];
+            data["nodeid"] = objects["tree1"];
+
+            sendMessage(GetTunnelMessage("FollowRoute.json").ToString());
         }
     }
 }

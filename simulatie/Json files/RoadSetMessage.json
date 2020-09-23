@@ -1,0 +1,10 @@
+{
+  "id": "scene/road/add",
+  "data": {
+    "route": "",
+    "diffuse": "",
+    "normal": "",
+    "specular": "",
+    "heightoffset": 0.01
+  }
+}

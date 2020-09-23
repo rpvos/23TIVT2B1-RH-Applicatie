@@ -1,0 +1,11 @@
+{
+  "id": "scene/node/addlayer",
+  "data": {
+    "id": "" ,
+    "normal": "",
+    "diffuse" : "",
+    "minHeight": 0,
+    "maxHeight": 10,
+    "fadeDist": 1
+  }
+}

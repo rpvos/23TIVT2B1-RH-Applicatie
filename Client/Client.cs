@@ -56,15 +56,11 @@ namespace GameClient
         {
             try
             {
-               
-             this.streamWriter.WriteLine(message);
-             this.streamWriter.Flush();
-                
+                this.streamWriter.WriteLine(message);
+                this.streamWriter.Flush();
             }
-            catch
-            {
-
-            }
+            catch { }
+            
         }
 
         public void ReadTextMessage()
@@ -73,10 +69,7 @@ namespace GameClient
             {
                 try
                 {
-                    
-                 Console.WriteLine(this.streamReader.ReadLine());
-                    
-                }
+                 Console.WriteLine(this.streamReader.ReadLine());                }
                 catch
                 {
                     break;

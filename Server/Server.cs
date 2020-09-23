@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -11,6 +12,7 @@ namespace Server
     {
 
         private List<ServerClient> clients;
+        private List<String> chatlogs;
 
         static void Main(string[] args)
         {
@@ -19,6 +21,7 @@ namespace Server
 
         public Server()
         {
+            this.chatlogs = new List<string>();
             this.clients = new List<ServerClient>();
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
             TcpListener listener = new TcpListener(localhost, 1330);
@@ -31,6 +34,10 @@ namespace Server
         public void AcceptClients(TcpListener listener)
         {
             Console.WriteLine("[Server]: Waiting for people to join...");
+            Console.WriteLine("Type 'Save' to save chatlogs");
+
+            Thread saveThread = new Thread(saveChatLogs);
+            saveThread.Start();
 
             while (true)
             {
@@ -39,9 +46,21 @@ namespace Server
                 ServerClient serverClient = new ServerClient(client);
                 this.clients.Add(serverClient);
 
-
                 Thread thread = new Thread(HandleClientThread);
                 thread.Start(serverClient);
+            }
+        }
+
+        public void saveChatLogs()
+        {
+            String path = System.Environment.CurrentDirectory + "\\chatlogs.txt";
+            while (true)
+            {
+               String a =  Console.ReadLine();
+                if(a == "Save")
+                {
+                    File.WriteAllLines(path,this.chatlogs);
+                }
             }
         }
 
@@ -61,13 +80,15 @@ namespace Server
                 while (true)
                 {
                 string received = client.ReadTextMessage();
-                Console.WriteLine("[" + username + "]: " + received);
+                string message = "<"+DateTime.Now.Hour + ":"+DateTime.Now.Minute+ ">[" + username + "]: " + received;
+                Console.WriteLine(message);
+                this.chatlogs.Add(message);
 
                 foreach(ServerClient clnt in this.clients)
                 {
                     if(clnt != client)
                     {
-                        clnt.WriteTextMessage("[" + username + "]: " + received);
+                        clnt.WriteTextMessage(message);
                     }
                 }
 
@@ -77,8 +98,6 @@ namespace Server
                     break;
                 }
                 
-
-
             }
             client.GetTcpClient().Close();
             Console.WriteLine("[Server]: "+username + " left the game.");

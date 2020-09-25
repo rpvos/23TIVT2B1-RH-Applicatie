@@ -1,32 +1,44 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 public class TunnelMessage
 {
 	private string Id;
 	private JObject DataContent;
+	private JObject data;
 
 	public TunnelMessage(JObject dataContent, string id)
 	{
 		DataContent = dataContent;
 		Id = id;
+		
 	}
 
-	public string getMessageId()
+	public string GetMessageId()
     {
 		return (string) DataContent["id"];
     }
 
-	public JObject getDataContent()
+	public JObject GetDataContent()
     {
+		
 		return (JObject) DataContent["data"];
     }
 
 	public override string ToString()
-    {
-		string header = "{\"id\" : \"tunnel/send\", \"data\" : {\"dest\" : \"" + Id + "\", \"data\" : ";
-		string ending = "}}";
+	{
+		dynamic headerData = new
+		{
+			id = "tunnel/send",
+			data = new
+			{		
+				dest = Id,				
+				data = DataContent               
+			}
+		};
 
-		return header + DataContent.ToString() + ending;
+		string header = Newtonsoft.Json.JsonConvert.SerializeObject(headerData);		
+		return header;
 	}
 }

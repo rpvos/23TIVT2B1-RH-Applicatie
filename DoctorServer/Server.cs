@@ -5,23 +5,22 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Server
+namespace DoctorServer
 {
     class Server
     {
 
         private List<ServerClient> clients;
         private List<String> chatlogs;
-        private int amountOfBikes;
+        private DoctorServer doctorServer;
 
-        static void Main(string[] args)
+        public Server(DoctorServer doctorServer)
         {
-            Server server = new Server();
-        }
-
-        public Server()
-        {
+            this.doctorServer = doctorServer;
             this.chatlogs = new List<string>();
             this.clients = new List<ServerClient>();
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
@@ -44,13 +43,19 @@ namespace Server
             {
 
                 TcpClient client = listener.AcceptTcpClient();
-                ServerClient serverClient = new ServerClient(client,"bike"+amountOfBikes);
+                ServerClient serverClient = new ServerClient(client);
                 this.clients.Add(serverClient);
-                amountOfBikes++;
+                this.doctorServer.addClient(serverClient);
+
 
                 Thread thread = new Thread(HandleClientThread);
                 thread.Start(serverClient);
             }
+        }
+
+        public List<ServerClient> getClients()
+        {
+            return this.clients;
         }
 
         public void saveChatLogs()
@@ -58,10 +63,10 @@ namespace Server
             String path = System.Environment.CurrentDirectory + "\\chatlogs.txt";
             while (true)
             {
-               String a =  Console.ReadLine();
-                if(a == "Save")
+                String a = Console.ReadLine();
+                if (a == "Save")
                 {
-                    File.WriteAllLines(path,this.chatlogs);
+                    File.WriteAllLines(path, this.chatlogs);
                 }
             }
         }
@@ -69,6 +74,8 @@ namespace Server
         public void HandleClientThread(object obj)
         {
             ServerClient client = obj as ServerClient;
+            client.ReadTextMessage(this.doctorServer);
+
 
             //string username = client.ReadTextMessage();
             //Console.WriteLine("[Server]: " + username + " joined");
@@ -79,32 +86,31 @@ namespace Server
             //    clnt.WriteTextMessage("[Server]: " + username + " joined");
             //}
 
-                while (true)
-                {
-                string received = client.ReadTextMessage();
-                //string message = "<"+DateTime.Now.Hour + ":"+DateTime.Now.Minute+ ">[" + username + "]: " + received;
-                Console.WriteLine(client.getBike()+": "+received);
-                this.chatlogs.Add(received);
+            //while (true)
+            //{
+            //string message = "<"+DateTime.Now.Hour + ":"+DateTime.Now.Minute+ ">[" + username + "]: " + received;
+            //Console.WriteLine(client.getBike() + ": " + received);
+            //this.doctorServer.setSpeed(received);
+            //this.chatlogs.Add(received);
 
-                //foreach(ServerClient clnt in this.clients)
-                //{
-                //    if(clnt != client)
-                //    {
-                //        clnt.WriteTextMessage(message);
-                //    }
-                //}
+            //foreach(ServerClient clnt in this.clients)
+            //{
+            //    if(clnt != client)
+            //    {
+            //        clnt.WriteTextMessage(message);
+            //    }
+            //}
 
-                //if (received.Equals("exit"))
-                //{
-                //    client.WriteTextMessage("[Server]: Bye Bye, see you next time :)");
-                //    break;
-                //}
-                
-            }
-            client.GetTcpClient().Close();
+            //if (received.Equals("exit"))
+            //{
+            //    client.WriteTextMessage("[Server]: Bye Bye, see you next time :)");
+            //    break;
+            //}
+
+            //}
+            //client.GetTcpClient().Close();
             //Console.WriteLine("[Server]: "+username + " left the game.");
         }
 
     }
 }
-       

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Avans.TI.BLE;
+using ServerClient;
 
 namespace FietsDemo
 {
@@ -34,6 +35,8 @@ namespace FietsDemo
 
         private double resistance = 0;
 
+        private Client client;
+
         static void Main(string[] args)
         {
             Program program = new Program();
@@ -44,11 +47,19 @@ namespace FietsDemo
 
         public void start()
         {
-            Thread thread = new Thread(startGUI);
-            thread.Start();
+            Thread guiThread = new Thread(startGUI);
+            guiThread.Start();
 
+            Thread clientThread = new Thread(startClient);
+            clientThread.Start(); 
             
             initialize();
+        }
+
+        public void startClient()
+        {
+            this.client = new Client();
+
         }
 
         public void startSimulator()
@@ -77,7 +88,6 @@ namespace FietsDemo
             // To stop the simulator we first stop the simulator thread and the GUI.
             Console.WriteLine("Stopping Simulator...");
             this.bikeSimulator.running = false;
-            this.simulator.stop();
             // After that we subscribe to the BLE service again to continue measuring.
             this.BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
             this.HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
@@ -393,6 +403,8 @@ namespace FietsDemo
 
         public void setValuesInGui(String valueType, double value)
         {
+            this.client.WriteTextMessage(valueType + ": " + value);
+
             switch (valueType)
             {
                 case "speed":

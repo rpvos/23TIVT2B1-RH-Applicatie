@@ -10,25 +10,26 @@ namespace Server
     {
 
         private TcpClient client;
-        private String username;
+        private string bike;
         private StreamWriter streamWriter;
         private StreamReader streamReader;
 
-        public ServerClient(TcpClient client)
+        public ServerClient(TcpClient client, string bike)
         {
             this.client = client;
+            this.bike = bike;
             this.streamWriter = new StreamWriter(client.GetStream(), Encoding.ASCII, -1, true);
             this.streamReader = new StreamReader(client.GetStream(), Encoding.ASCII);
-        }
-
-        public void setUsername(String username)
-        {
-            this.username = username;
         }
 
         public TcpClient GetTcpClient()
         {
             return this.client;
+        }
+
+        public string getBike()
+        {
+            return this.bike;
         }
 
         public void WriteTextMessage(string message)

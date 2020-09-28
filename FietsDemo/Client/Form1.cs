@@ -21,7 +21,6 @@ namespace FietsDemo
 
             InitializeComponent();
             this.resistanceTextbox.MouseWheel += new MouseEventHandler(changeResistance);
-
         }
 
         private void Form1_Load(object sender, EventArgs e)

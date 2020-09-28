@@ -53,11 +53,11 @@ namespace DoctorServer
                         String a = streamReader.ReadLine();
                         if (a[0] == 's' && a[1] == 'p')
                         {
-                            doctorServer.setSpeed(a);
+                            doctorServer.setSpeed(a.Substring(a.IndexOf(":")));
                         }
                         else if (a[0] == 'h' && a[1] == 'e')
                         {
-                            doctorServer.setSpeed(a.Substring(a.IndexOf(':'), a.Length - 1));
+                            doctorServer.setHeartRate(a.Substring(a.IndexOf(":")));
                         }
                     }
                 }

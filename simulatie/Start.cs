@@ -1,4 +1,6 @@
 ﻿
+using Newtonsoft.Json;
+
 namespace TCP_naar_VR
 {
     class Program
@@ -7,7 +9,7 @@ namespace TCP_naar_VR
         static void Main(string[] args)
         {
             TcpClientVR tcpClientVR = new TcpClientVR("145.48.6.10", 6666);
-            tcpClientVR.sendKickOff();
+            tcpClientVR.SendKickOff();
         }
     }
 }

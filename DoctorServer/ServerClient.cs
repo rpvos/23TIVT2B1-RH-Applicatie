@@ -57,7 +57,7 @@ namespace DoctorServer
                         }
                         else if (a[0] == 'h' && a[1] == 'e')
                         {
-                            doctorServer.setHeartRate(a);
+                            doctorServer.setSpeed(a.Substring(a.IndexOf(':'), a.Length - 1));
                         }
                     }
                 }
@@ -73,6 +73,5 @@ namespace DoctorServer
         {
             return "BIKE";
         }
-
     }
 }

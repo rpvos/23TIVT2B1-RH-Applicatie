@@ -19,11 +19,11 @@ namespace DoctorServer
 
         public Form1()
         {
-            Thread checkingSelectedBikeThread = new Thread(checkSelectedBike);
+            //Thread checkingSelectedBikeThread = new Thread(checkSelectedBike);
 
             this.serverClients = new List<ServerClient>();
             InitializeComponent();
-            checkingSelectedBikeThread.Start();
+            //checkingSelectedBikeThread.Start();
 
         }
 
@@ -40,6 +40,8 @@ namespace DoctorServer
 
                     this.serverClients[i].setSelected(true);
                 }
+
+                Thread.Sleep(1000);
             }
         }
 
@@ -55,12 +57,12 @@ namespace DoctorServer
 
         public void setSpeed(string speed)
         {
-            this.SpeedLabel.Text = speed;
+            this.SpeedValue.Text = speed;
         }
 
         public void setHeartrate(string heartrate)
         {
-            this.HeartRateLabel.Text = heartrate;
+            this.HeartrateValue.Text = heartrate;
         }
 
         public void addBike(ServerClient serverClient)
@@ -73,6 +75,30 @@ namespace DoctorServer
         private void ExitButton_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void HeartRateLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SpeedLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void BikeListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int i = BikeListBox.SelectedIndex;
+            foreach (ServerClient v in serverClients)
+                v.setSelected(false);
+
+            this.serverClients[i].setSelected(true);
         }
     }
 }

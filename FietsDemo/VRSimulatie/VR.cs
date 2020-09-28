@@ -20,6 +20,12 @@ namespace TCP_naar_VR
         private bool receiving;
         private string id;
         private CallMethod callMethod;
+        internal double speed { get; set; }
+        internal double heartrate{ get; set; }
+        internal double AP { get; set; }
+        internal double DT { get; set; }
+        internal double elapsedTime { get; set; }
+        internal double resistance { get; set; }
 
         public TcpClientVR(string ip, int port)
         {

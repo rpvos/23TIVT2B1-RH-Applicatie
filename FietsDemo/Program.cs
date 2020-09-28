@@ -38,6 +38,8 @@ namespace FietsDemo
 
         private Client client;
 
+        private TcpClientVR tcpClientVR;
+
         static void Main(string[] args)
         {
             Program program = new Program();
@@ -68,7 +70,7 @@ namespace FietsDemo
 
         public void startVR()
         {
-            TcpClientVR tcpClientVR = new TcpClientVR("145.48.6.10", 6666);
+            tcpClientVR = new TcpClientVR("145.48.6.10", 6666);
             tcpClientVR.SendKickOff();
         }
 
@@ -419,21 +421,27 @@ namespace FietsDemo
             {
                 case "speed":
                     this.gui.getForm().setSpeed(value);
+                    this.tcpClientVR.speed = value;
                     break;
                 case "heartrate":
                     this.gui.getForm().setHeartrate(value);
+                    this.tcpClientVR.heartrate = value;
                     break;
                 case "AP":
                     this.gui.getForm().setAP(value);
+                    this.tcpClientVR.AP = value;
                     break;
                 case "DT":
                     this.gui.getForm().setDT(value);
+                    this.tcpClientVR.DT = value;
                     break;
                 case "elapsedTime":
                     this.gui.getForm().setElapsedTime(value);
+                    this.tcpClientVR.elapsedTime = value;
                     break;
                 case "resistance":
                     this.gui.getForm().setResistance(value);
+                    this.tcpClientVR.resistance = value;
                     break;
 
             }

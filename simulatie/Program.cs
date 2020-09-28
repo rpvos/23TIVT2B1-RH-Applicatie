@@ -133,7 +133,10 @@ namespace TCP_naar_VR
                         objects.Add(name, uuid);
                     } catch (ArgumentException e)
                     {
-                        
+                        if (objects.ContainsValue(uuid))
+                        {
+                            Console.WriteLine("already exists");
+                        }
                     }
                     
                     Console.WriteLine("Added node to dictionary\nName: {0}\nuuid: {1}", name, uuid);
@@ -148,14 +151,7 @@ namespace TCP_naar_VR
                         callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_07.png", "", uuid);
                     }
 
-                    callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
-                    callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 });
-                    callMethod.NewRoutePoints(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 });
-                    callMethod.NewRoutePoints(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 });
-                    callMethod.NewRoutePoints(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 });
-                    callMethod.NewRoutePoints(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 });
-
-                    callMethod.AddRoute();
+                   
 
                                      
                 }
@@ -174,7 +170,16 @@ namespace TCP_naar_VR
                     try
                     {
                         objects.Add(name, uuid);
-                    } catch (ArgumentException e)
+                        callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
+                        callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 });
+                        callMethod.NewRoutePoints(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 });
+                        callMethod.NewRoutePoints(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 });
+                        callMethod.NewRoutePoints(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 });
+                        callMethod.NewRoutePoints(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 });
+                            
+                        callMethod.AddRoute();
+                    }
+                    catch (ArgumentException e)
                     {
                         
                     }

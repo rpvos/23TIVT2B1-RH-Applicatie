@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Avans.TI.BLE;
 using ServerClient;
+using TCP_naar_VR;
 
 namespace FietsDemo
 {
@@ -51,7 +52,10 @@ namespace FietsDemo
             guiThread.Start();
 
             Thread clientThread = new Thread(startClient);
-            clientThread.Start(); 
+            clientThread.Start();
+
+            Thread VRThread = new Thread(startVR);
+            VRThread.Start();
             
             initialize();
         }
@@ -60,6 +64,12 @@ namespace FietsDemo
         {
             this.client = new Client(this);
 
+        }
+
+        public void startVR()
+        {
+            TcpClientVR tcpClientVR = new TcpClientVR("145.48.6.10", 6666);
+            tcpClientVR.SendKickOff();
         }
 
         public void startSimulator()

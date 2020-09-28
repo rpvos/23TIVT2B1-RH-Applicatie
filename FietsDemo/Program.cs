@@ -58,7 +58,7 @@ namespace FietsDemo
 
         public void startClient()
         {
-            this.client = new Client();
+            this.client = new Client(this);
 
         }
 

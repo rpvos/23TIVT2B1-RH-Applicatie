@@ -13,13 +13,18 @@ namespace DoctorServer
         private StreamWriter streamWriter;
         private StreamReader streamReader;
         private bool selected = false;
+        public int resistance { set; get; }
+        public String username { get; set; }
 
-        public ServerClient(TcpClient client)
+        public ServerClient(TcpClient client, String username)
         {
+            this.resistance = 0;
+            this.username = username;
             this.client = client;
             this.streamWriter = new StreamWriter(client.GetStream(), Encoding.ASCII, -1, true);
             this.streamReader = new StreamReader(client.GetStream(), Encoding.ASCII);
         }
+
 
         public TcpClient GetTcpClient()
         {
@@ -53,11 +58,23 @@ namespace DoctorServer
                         String a = streamReader.ReadLine();
                         if (a[0] == 's' && a[1] == 'p')
                         {
-                            doctorServer.setSpeed(a.Substring(a.IndexOf(":")));
+                            doctorServer.setSpeed(a.Substring(a.IndexOf(":")+2));
                         }
                         else if (a[0] == 'h' && a[1] == 'e')
                         {
-                            doctorServer.setHeartRate(a.Substring(a.IndexOf(":")));
+                            doctorServer.setHeartRate(a.Substring(a.IndexOf(":")+2));
+                        }
+                        else if (a[0] == 'D' && a[1] == 'T')
+                        {
+                            doctorServer.setDT(a.Substring(a.IndexOf(":") + 2));
+                        }
+                        else if (a[0] == 'A' && a[1] == 'P')
+                        {
+                            doctorServer.setAP(a.Substring(a.IndexOf(":") + 2));
+                        }
+                        else if (a[0] == 'e' && a[1] == 'l')
+                        {
+                            doctorServer.setElapsedTime(a.Substring(a.IndexOf(":") + 2));
                         }
                     }
                 }
@@ -71,7 +88,7 @@ namespace DoctorServer
 
         public override string ToString()
         {
-            return "BIKE";
+            return this.username;
         }
     }
 }

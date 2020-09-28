@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FietsDemo;
+using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
@@ -12,10 +13,12 @@ namespace ServerClient
         private TcpClient server;
         private StreamWriter streamWriter;
         private StreamReader streamReader;
+        private Program mainProgram;
 
 
-        public Client()
+        public Client(Program program)
         {
+            this.mainProgram = program;
 
             //Console.Write("Username: ");
             //this.username = Console.ReadLine();
@@ -64,7 +67,10 @@ namespace ServerClient
             {
                 try
                 {
-                    Console.WriteLine(this.streamReader.ReadLine());
+                    String a = this.streamReader.ReadLine();
+                    int i = Int32.Parse(a);
+                    this.mainProgram.setResistance(i);
+                    this.mainProgram.setValuesInGui("resistance", i);
                 }
                 catch
                 {

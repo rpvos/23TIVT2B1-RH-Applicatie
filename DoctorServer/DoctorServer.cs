@@ -10,7 +10,7 @@ namespace DoctorServer
     public class DoctorServer
     {
 
-        private Form1 mainForm;
+        private DoctorForm mainForm;
         private Server server;
 
         [STAThread]
@@ -29,7 +29,7 @@ namespace DoctorServer
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
 
-            this.mainForm = new Form1();
+            this.mainForm = new DoctorForm();
 
             Application.Run(mainForm);
         }
@@ -48,6 +48,22 @@ namespace DoctorServer
         {
             this.mainForm.setHeartrate(heartrate);
         }
+
+        public void setDT(string DT)
+        {
+            this.mainForm.setDT(DT);
+        }
+
+        public void setAP(string AP)
+        {
+            this.mainForm.setAP(AP);
+        }
+
+        public void setElapsedTime(string elapsedTime)
+        {
+            this.mainForm.setElapsedTime(elapsedTime);
+        }
+
 
         public void addClient(ServerClient serverClient)
         {

@@ -17,9 +17,11 @@ namespace DoctorServer
         private List<ServerClient> clients;
         private List<String> chatlogs;
         private DoctorServer doctorServer;
+        private int amountOfClients;
 
         public Server(DoctorServer doctorServer)
         {
+            this.amountOfClients = 0;
             this.doctorServer = doctorServer;
             this.chatlogs = new List<string>();
             this.clients = new List<ServerClient>();
@@ -43,14 +45,18 @@ namespace DoctorServer
             {
 
                 TcpClient client = listener.AcceptTcpClient();
-                ServerClient serverClient = new ServerClient(client);
+                ServerClient serverClient = new ServerClient(client,"Bike "+amountOfClients);
                 this.clients.Add(serverClient);
                 this.doctorServer.addClient(serverClient);
+                amountOfClients++;
 
 
                 Thread thread = new Thread(HandleClientThread);
                 thread.Start(serverClient);
             }
+
+           
+            
         }
 
         public List<ServerClient> getClients()
@@ -77,39 +83,7 @@ namespace DoctorServer
             client.ReadTextMessage(this.doctorServer);
 
 
-            //string username = client.ReadTextMessage();
-            //Console.WriteLine("[Server]: " + username + " joined");
-            //client.setUsername(username);
-
-            //foreach (ServerClient clnt in this.clients)
-            //{
-            //    clnt.WriteTextMessage("[Server]: " + username + " joined");
-            //}
-
-            //while (true)
-            //{
-            //string message = "<"+DateTime.Now.Hour + ":"+DateTime.Now.Minute+ ">[" + username + "]: " + received;
-            //Console.WriteLine(client.getBike() + ": " + received);
-            //this.doctorServer.setSpeed(received);
-            //this.chatlogs.Add(received);
-
-            //foreach(ServerClient clnt in this.clients)
-            //{
-            //    if(clnt != client)
-            //    {
-            //        clnt.WriteTextMessage(message);
-            //    }
-            //}
-
-            //if (received.Equals("exit"))
-            //{
-            //    client.WriteTextMessage("[Server]: Bye Bye, see you next time :)");
-            //    break;
-            //}
-
-            //}
-            //client.GetTcpClient().Close();
-            //Console.WriteLine("[Server]: "+username + " left the game.");
+          
         }
 
     }

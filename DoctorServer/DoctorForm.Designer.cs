@@ -1,6 +1,6 @@
 ﻿namespace DoctorServer
 {
-    partial class Form1
+    partial class DoctorForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -79,6 +79,7 @@
             this.Speed.Size = new System.Drawing.Size(177, 55);
             this.Speed.TabIndex = 0;
             this.Speed.Text = "Speed:";
+            this.Speed.Click += new System.EventHandler(this.Speed_Click);
             // 
             // SpeedValue
             // 
@@ -205,6 +206,7 @@
             this.plusResistance.TabIndex = 13;
             this.plusResistance.Text = "+";
             this.plusResistance.UseVisualStyleBackColor = false;
+            this.plusResistance.Click += new System.EventHandler(this.plusResistance_Click_1);
             // 
             // minResistance
             // 
@@ -216,6 +218,7 @@
             this.minResistance.TabIndex = 14;
             this.minResistance.Text = "-";
             this.minResistance.UseVisualStyleBackColor = false;
+            this.minResistance.Click += new System.EventHandler(this.minResistance_Click_1);
             // 
             // resistanceTextbox
             // 

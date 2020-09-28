@@ -23,6 +23,7 @@ namespace Server
 
         private User user;
         private RSAClient rsaClient;
+        private bool encoded;
 
         public ServerClient(TcpClient client, Server server)
         {
@@ -31,6 +32,7 @@ namespace Server
 
             this.buffer = new byte[1024];
             this.stream = client.GetStream();
+            this.encoded = false;
 
             this.rsaClient = new RSAClient();
             this.user = new User();
@@ -40,9 +42,16 @@ namespace Server
 
         public void WriteTextMessage(string message)
         {
-            byte[] dataAsBytes = System.Text.Encoding.ASCII.GetBytes(message + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            stream.Flush();
+            if (!encoded)
+            {
+                byte[] dataAsBytes = System.Text.Encoding.ASCII.GetBytes(message + "\r\n\r\n");
+                stream.Write(dataAsBytes, 0, dataAsBytes.Length);
+                stream.Flush();
+            }
+            else
+            {
+                //encode that shit
+            }
         }
 
         private void OnRead(IAsyncResult ar)
@@ -72,6 +81,9 @@ namespace Server
         {
             try
             {
+                if (encoded)
+                    packet = rsaClient.decryptMessage(packet);
+
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
                     return;
@@ -96,11 +108,7 @@ namespace Server
 
         private void sendConnectionRequest()
         {
-            string x = "hallo";
-            x = rsaClient.encryptMessage(x);
-            Console.WriteLine(x);
-            WriteTextMessage(x);
-            //WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(),rsaClient.getExponent()));
+            WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));
         }
 
         public string getConnectionResponseMessage(byte[] modulus, byte[] exponent)

@@ -1,10 +1,14 @@
 ﻿using Client;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace GameClient
@@ -19,69 +23,104 @@ namespace GameClient
 
         private String username;
         private TcpClient server;
-        private StreamWriter streamWriter;
-        private StreamReader streamReader;
+        private NetworkStream stream;
         private RSAClient rsaClient;
-
+        private byte[] buffer;
+        private string totalBuffer;
 
         public Client()
         {
-            this.rsaClient = new RSAClient(2048);
+            this.rsaClient = new RSAClient();
 
-            Console.Write("Username: ");
-            this.username = Console.ReadLine();
+            this.server = new TcpClient("127.0.0.1", 8080);
 
-            this.server = new TcpClient("127.0.0.1", 1330);
+            this.stream = this.server.GetStream();
+            this.buffer = new byte[1024];
 
-            this.streamWriter = new StreamWriter(server.GetStream(), Encoding.ASCII, -1, true);
-            this.streamReader = new StreamReader(server.GetStream(), Encoding.ASCII);
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
-            Console.WriteLine("Type 'exit' to end connection");
+            Console.WriteLine(getRequestMessage(this.rsaClient.getModulus(), this.rsaClient.getExponent()));
+            WriteTextMessage(getRequestMessage(this.rsaClient.getModulus(), this.rsaClient.getExponent()));
 
-            WriteTextMessage(server, username);
-
-            Thread receiveMessages = new Thread(ReadTextMessage);
-            receiveMessages.Start();
-
-            while (true)
-            {
-                string message = Console.ReadLine();
-
-                WriteTextMessage(server, message);
-
-                if (message.Equals("exit"))
-                {
-                    server.Close();
-                    break;
-                }
-
-            }
+            Console.ReadKey();
         }
 
-        public void WriteTextMessage(TcpClient client, string message)
+        public void WriteTextMessage(string message)
+        {
+            var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(message + "\r\n\r\n");
+            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
+            stream.Flush();
+        }
+
+        private void OnRead(IAsyncResult ar)
+        {
+            int receivedBytes = stream.EndRead(ar);
+            string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
+            totalBuffer += receivedText;
+
+            while (totalBuffer.Contains("\r\n\r\n"))
+            {
+                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
+                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
+                handleData(packet);
+            }
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+        }
+
+        private void handleData(string packet)
         {
             try
             {
-                this.streamWriter.WriteLine(message);
-                this.streamWriter.Flush();
-            }
-            catch { }
+                packet = rsaClient.decryptMessage(packet);
+                Console.WriteLine(packet);
 
+                JObject json = JObject.Parse(packet);
+                if (!checkChecksum(json))
+                    return;
+
+                switch (json["Type"].ToString())
+                {
+                    case "response":
+                        if (handleConnectionResponse((JObject)json["Data"]))
+                            Console.WriteLine("correct :)");
+
+                        break;
+                    default:
+                        Console.WriteLine("Invalid type");
+                        break;
+                }
+            }
+            catch (JsonReaderException)
+            {
+                Console.WriteLine("Invalid message");
+            }
         }
 
-        public void ReadTextMessage()
+        private bool handleConnectionResponse(JObject json)
         {
-            while (true)
+            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
+            byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
+            try
             {
-                try
-                {
-                    Console.WriteLine(this.streamReader.ReadLine());
-                }
-                catch
-                {
-                    break;
-                }
+                rsaClient.setKey(modulus, exponent);
+                return true;
             }
+            catch (CryptographicException)
+            {
+                Console.WriteLine("Wrong key value");
+            }
+            return false;
+        }
+
+
+        private bool checkChecksum(JObject json)
+        {
+            byte checksum = (byte)json["Checksum"];
+            JObject jObject = (JObject)json["Data"];
+            byte[] data = Encoding.ASCII.GetBytes(jObject.ToString());
+            foreach (byte b in data)
+                checksum ^= b;
+            return checksum == 0;
         }
 
         public string getUpdateMessageString(int session, int heartrate, double accDistance, double speed, double instPower, double accPower)
@@ -100,7 +139,7 @@ namespace GameClient
                 Checksum = checksum
             };
 
-            return JsonSerializer.Serialize(json);
+            return System.Text.Json.JsonSerializer.Serialize(json);
         }
 
         public string getMessageString(int session, string message)
@@ -116,24 +155,40 @@ namespace GameClient
                 Checksum = checksum
             };
 
-            return JsonSerializer.Serialize(json);
+            return System.Text.Json.JsonSerializer.Serialize(json);
         }
 
-        public string getRequestMessageString(byte[] publicKey, byte[] exponent)
+        public string getRequestMessage(byte[] modulus, byte[] exponent)
         {
-            int checksum = 0;
+
             dynamic json = new
             {
                 Type = "request",
                 Data = new
                 {
-                    PublicKey = publicKey,
+                    Modulus = modulus,
                     Exponent = exponent
                 },
-                Checksum = checksum
+                Checksum = 0
             };
 
-            return JsonSerializer.Serialize(json);
+            JObject jObject = addChecksum(json);
+
+            return jObject.ToString();
+        }
+
+        private JObject addChecksum(dynamic dynamicJson)
+        {
+            JObject json = JObject.Parse(System.Text.Json.JsonSerializer.Serialize(dynamicJson));
+            byte checksum = 0;
+            byte[] data = Encoding.ASCII.GetBytes(((JObject)json["Data"]).ToString());
+            foreach (byte b in data)
+            {
+                checksum ^= b;
+            }
+            json["Checksum"] = checksum;
+
+            return json;
         }
     }
 }

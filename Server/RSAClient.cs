@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Client
+namespace Server
 {
     class RSAClient
     {

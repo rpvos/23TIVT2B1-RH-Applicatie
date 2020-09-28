@@ -21,7 +21,6 @@ namespace Server
         private byte[] buffer;
         private string totalBuffer;
 
-        private User user;
         private RSAClient rsaClient;
         private bool encoded;
 
@@ -35,7 +34,6 @@ namespace Server
             this.encoded = false;
 
             this.rsaClient = new RSAClient();
-            this.user = new User();
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -88,13 +86,19 @@ namespace Server
                 if (!checkChecksum(json))
                     return;
 
+                JObject data = (JObject)json["Data"];
+
                 switch (json["Type"].ToString())
                 {
                     case "request":
-                        if (handleConnectionRequest((JObject)json["Data"]))
+                        if (handleConnectionRequest(data))
                             sendConnectionRequest();
-
                         break;
+
+                    case "userCredentials":
+                        sendUserCredentialsResponse(handleUserCredentials(data));
+                        break;
+
                     default:
                         Console.WriteLine("Invalid type");
                         break;
@@ -106,12 +110,43 @@ namespace Server
             }
         }
 
+        private void sendUserCredentialsResponse(bool response)
+        {
+            if (response)
+                Console.WriteLine("Login attempt failed");
+            else
+                Console.WriteLine("Login attempt succeeded");
+            WriteTextMessage(getUserCredentialsResponse(response));
+        }
+
+        private string getUserCredentialsResponse(bool response)
+        {
+            dynamic json = new
+            {
+                Type = "userCredentialsResponse",
+                Data = new
+                {
+                    Status = response
+                },
+                Checksum = 0
+            };
+            return addChecksum(json);
+        }
+
+        private bool handleUserCredentials(JObject data)
+        {
+            string username = (string)data["Username"];
+            string password = (string)data["Password"];
+
+            return server.checkUser(username, password);
+        }
+
         private void sendConnectionRequest()
         {
             WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));
         }
 
-        public string getConnectionResponseMessage(byte[] modulus, byte[] exponent)
+        private string getConnectionResponseMessage(byte[] modulus, byte[] exponent)
         {
 
             dynamic json = new
@@ -124,13 +159,10 @@ namespace Server
                 },
                 Checksum = 0
             };
-
-            JObject jObject = addChecksum(json);
-
-            return jObject.ToString();
+            return addChecksum(json);
         }
 
-        private JObject addChecksum(dynamic dynamicJson)
+        private string addChecksum(dynamic dynamicJson)
         {
             JObject json = JObject.Parse(System.Text.Json.JsonSerializer.Serialize(dynamicJson));
             byte checksum = 0;
@@ -141,7 +173,7 @@ namespace Server
             }
             json["Checksum"] = checksum;
 
-            return json;
+            return json.ToString();
         }
 
         private bool handleConnectionRequest(JObject json)

@@ -21,12 +21,13 @@ namespace GameClient
 
         }
 
-        private String username;
         private TcpClient server;
         private NetworkStream stream;
         private RSAClient rsaClient;
         private byte[] buffer;
         private string totalBuffer;
+        private bool encoded;
+        private bool connectedSuccesfully;
 
         public Client()
         {
@@ -36,20 +37,35 @@ namespace GameClient
 
             this.stream = this.server.GetStream();
             this.buffer = new byte[1024];
+            this.encoded = false;
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
-            Console.WriteLine(getRequestMessage(this.rsaClient.getModulus(), this.rsaClient.getExponent()));
             WriteTextMessage(getRequestMessage(this.rsaClient.getModulus(), this.rsaClient.getExponent()));
 
             Console.ReadKey();
         }
 
+        private void run()
+        {
+            while (true)
+            {
+                //send data here
+            }
+        }
+
         public void WriteTextMessage(string message)
         {
-            var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(message + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            stream.Flush();
+            if (!encoded)
+            {
+                var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(message + "\r\n\r\n");
+                stream.Write(dataAsBytes, 0, dataAsBytes.Length);
+                stream.Flush();
+            }
+            else
+            {
+                //encode that shit
+            }
         }
 
         private void OnRead(IAsyncResult ar)
@@ -71,20 +87,32 @@ namespace GameClient
         {
             try
             {
-                packet = rsaClient.decryptMessage(packet);
-                Console.WriteLine(packet);
+                if (encoded)
+                    packet = rsaClient.decryptMessage(packet);
+
 
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
                     return;
 
+                JObject data = (JObject)json["Data"];
+
                 switch (json["Type"].ToString())
                 {
                     case "response":
-                        if (handleConnectionResponse((JObject)json["Data"]))
-                            Console.WriteLine("correct :)");
-
+                        //check if the rsa key is used
+                        if (handleConnectionResponse(data))
+                        {
+                            sendCredentialMessage();
+                            connectedSuccesfully = true;
+                        }
                         break;
+
+                    case "userCredentialsResponse":
+                        if (handleUserCredentialsResponse(data))
+                            run();
+                        break;
+
                     default:
                         Console.WriteLine("Invalid type");
                         break;
@@ -94,6 +122,42 @@ namespace GameClient
             {
                 Console.WriteLine("Invalid message");
             }
+        }
+
+        private bool handleUserCredentialsResponse(JObject data)
+        {
+            //check if connected succesfully
+            if (connectedSuccesfully)
+            {
+                return (string)data["Status"] == "ok";
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void sendCredentialMessage()
+        {
+            string username = "admin";
+            string password = "admin";
+
+            WriteTextMessage(getUserDetails(username, password));
+        }
+
+        private string getUserDetails(string username, string password)
+        {
+            dynamic json = new
+            {
+                Type = "userCredentials",
+                Data = new
+                {
+                    Username = username,
+                    Password = password
+                },
+                Checksum = 0
+            };
+            return addChecksum(json);
         }
 
         private bool handleConnectionResponse(JObject json)
@@ -125,7 +189,6 @@ namespace GameClient
 
         public string getUpdateMessageString(int session, int heartrate, double accDistance, double speed, double instPower, double accPower)
         {
-            int checksum = 0;
             dynamic json = new
             {
                 Session = session,
@@ -136,15 +199,14 @@ namespace GameClient
                     Speed = speed,
                     InstantaniousPower = instPower
                 },
-                Checksum = checksum
+                Checksum = 0
             };
 
-            return System.Text.Json.JsonSerializer.Serialize(json);
+            return addChecksum(json);
         }
 
         public string getMessageString(int session, string message)
         {
-            int checksum = 0;
             dynamic json = new
             {
                 Session = session,
@@ -152,10 +214,10 @@ namespace GameClient
                 {
                     Message = message
                 },
-                Checksum = checksum
+                Checksum = 0
             };
 
-            return System.Text.Json.JsonSerializer.Serialize(json);
+            return addChecksum(json);
         }
 
         public string getRequestMessage(byte[] modulus, byte[] exponent)
@@ -172,12 +234,10 @@ namespace GameClient
                 Checksum = 0
             };
 
-            JObject jObject = addChecksum(json);
-
-            return jObject.ToString();
+            return addChecksum(json);
         }
 
-        private JObject addChecksum(dynamic dynamicJson)
+        private string addChecksum(dynamic dynamicJson)
         {
             JObject json = JObject.Parse(System.Text.Json.JsonSerializer.Serialize(dynamicJson));
             byte checksum = 0;
@@ -188,7 +248,7 @@ namespace GameClient
             }
             json["Checksum"] = checksum;
 
-            return json;
+            return json.ToString();
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Server
 
         private List<ServerClient> clients;
         private TcpListener listener;
+        private Dictionary<string, string> users;
 
         static void Main(string[] args)
         {
@@ -22,6 +23,9 @@ namespace Server
         public Server()
         {
             this.clients = new List<ServerClient>();
+            this.users = new Dictionary<string, string>();
+            fillUsers();
+
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
             this.listener = new TcpListener(localhost, 8080);
 
@@ -31,6 +35,11 @@ namespace Server
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
 
             Console.ReadLine();
+        }
+
+        private void fillUsers()
+        {
+            users.Add("admin", "admin");
         }
 
         private void OnConnect(IAsyncResult ar)
@@ -50,5 +59,15 @@ namespace Server
             Console.WriteLine("Client disconnected");
         }
 
+        internal bool checkUser(string username, string password)
+        {
+            string realPassword;
+            if(!users.TryGetValue(username,out realPassword))
+                if (realPassword == password)
+                    return true;
+                
+
+            return false;
+        }
     }
 }

@@ -112,7 +112,6 @@ namespace Client
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
-                            //__todo__ make an await method
                         }
                         else
                         {
@@ -136,7 +135,7 @@ namespace Client
             //check if connected succesfully
             if (connectedSuccesfully)
             {
-                return (string)data["Status"] == "ok";
+                return (bool)data["Status"];
             }
             else
             {

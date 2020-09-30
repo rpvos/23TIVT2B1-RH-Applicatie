@@ -24,6 +24,8 @@ namespace Server
         private RSAClient rsaClient;
         private bool encoded;
 
+        private int sessionID;
+
         public ServerClient(TcpClient client, Server server)
         {
             this.client = client;
@@ -38,6 +40,7 @@ namespace Server
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
+        #region stream dynamics
         public void WriteTextMessage(string message)
         {
             if (!encoded)
@@ -74,7 +77,9 @@ namespace Server
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
+        #endregion
 
+        #region handle recieved data
         private void handleData(string packet)
         {
             try
@@ -110,30 +115,6 @@ namespace Server
             }
         }
 
-        private void sendUserCredentialsResponse(bool hasSucceeded)
-        {
-            if (!hasSucceeded)
-                Console.WriteLine("Login attempt failed");
-            else
-                Console.WriteLine("Login attempt succeeded");
-
-            WriteTextMessage(getUserCredentialsResponse(hasSucceeded));
-        }
-
-        private string getUserCredentialsResponse(bool hasSucceeded)
-        {
-            dynamic json = new
-            {
-                Type = "userCredentialsResponse",
-                Data = new
-                {
-                    Status = hasSucceeded
-                },
-                Checksum = 0
-            };
-            return addChecksum(json);
-        }
-
         private bool handleUserCredentials(JObject data)
         {
             string username = (string)data["Username"];
@@ -142,11 +123,49 @@ namespace Server
             return server.checkUser(username, password);
         }
 
-        private void sendConnectionRequest()
+        private bool handleConnectionRequest(JObject json)
         {
-            WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));
+            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
+            byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
+            try
+            {
+                rsaClient.setKey(modulus, exponent);
+                return true;
+            }
+            catch (CryptographicException)
+            {
+                Console.WriteLine("Wrong key value");
+            }
+            return false;
         }
 
+        private bool checkChecksum(JObject json)
+        {
+            byte checksum = (byte)json["Checksum"];
+            JObject jObject = (JObject)json["Data"];
+            byte[] data = Encoding.ASCII.GetBytes(jObject.ToString());
+            foreach (byte b in data)
+                checksum ^= b;
+            return checksum == 0;
+        }
+        #endregion
+
+        #region message construction
+        private string getUserCredentialsResponse(bool hasSucceeded)
+        {
+            this.sessionID = server.getSessionID();
+            dynamic json = new
+            {
+                Type = "userCredentialsResponse",
+                Data = new
+                {
+                    Status = hasSucceeded,
+                    Session = sessionID
+                },
+                Checksum = 0
+            };
+            return addChecksum(json);
+        }
         private string getConnectionResponseMessage(byte[] modulus, byte[] exponent)
         {
 
@@ -176,32 +195,28 @@ namespace Server
 
             return json.ToString();
         }
+        #endregion
 
-        private bool handleConnectionRequest(JObject json)
+        #region send handlers
+        private void sendUserCredentialsResponse(bool hasSucceeded)
         {
-            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
-            byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
-            try
+            if (hasSucceeded)
             {
-                rsaClient.setKey(modulus, exponent);
-                return true;
+                Console.WriteLine("Login attempt succeeded");
             }
-            catch (CryptographicException)
-            {
-                Console.WriteLine("Wrong key value");
-            }
-            return false;
+            else
+                Console.WriteLine("Login attempt failed");
+
+            WriteTextMessage(getUserCredentialsResponse(hasSucceeded));
         }
 
-
-        private bool checkChecksum(JObject json)
+        
+        private void sendConnectionRequest()
         {
-            byte checksum = (byte)json["Checksum"];
-            JObject jObject = (JObject)json["Data"];
-            byte[] data = Encoding.ASCII.GetBytes(jObject.ToString());
-            foreach (byte b in data)
-                checksum ^= b;
-            return checksum == 0;
+            WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));
         }
+
+        #endregion
+
     }
 }

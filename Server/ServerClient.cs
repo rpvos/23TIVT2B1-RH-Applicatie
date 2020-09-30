@@ -176,9 +176,6 @@ namespace Server
         private string getUserCredentialsResponse(bool hasSucceeded)
         {
             this.sessionID = server.getSessionID();
-            Console.WriteLine(sessionID);
-            byte[] encrypted = rsaClient.encryptMessage(sessionID);
-            Console.WriteLine(Encoding.UTF8.GetString(encrypted));
 
             dynamic json = new
             {
@@ -186,7 +183,7 @@ namespace Server
                 Data = new
                 {
                     Status = hasSucceeded,
-                    Session = encrypted
+                    Session = sessionID
                 },
                 Checksum = 0
             };

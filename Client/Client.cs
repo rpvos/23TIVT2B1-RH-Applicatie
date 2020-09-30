@@ -127,9 +127,7 @@ namespace Client
         private bool handleUserCredentialsResponse(JObject data)
         {
 
-            this.sessionID = Encoding.UTF8.GetString((byte[])data["Session"]);
-            Console.WriteLine(sessionID);
-            Console.WriteLine(rsaClient.decryptMessage(sessionID));
+            this.sessionID = (string)data["Session"];
             //check if connected succesfully
             if (connectedSuccesfully)
             {

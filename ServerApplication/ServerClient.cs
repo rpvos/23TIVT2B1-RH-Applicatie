@@ -12,7 +12,6 @@ namespace DoctorServer
         private TcpClient client;
         private StreamWriter streamWriter;
         private StreamReader streamReader;
-        private bool selected = true;
         private Server server;
         public int resistance { set; get; }
         public String username { get; set; }
@@ -33,11 +32,7 @@ namespace DoctorServer
             return this.client;
         }
 
-        public void setSelected(bool selected)
-        {
-            this.selected = selected;
-        }
-
+  
 
         public void WriteTextMessage(string message)
         {
@@ -55,12 +50,18 @@ namespace DoctorServer
             {
                 try
                 {
-                    if (selected)
+                    String a = streamReader.ReadLine();
+
+                    if (a.Substring(5, 4) == "RSTE")
                     {
-                        String a = streamReader.ReadLine();
-                        this.server.WriteToAllDoctors(a);
-                        Console.WriteLine(a);
+                        server.WriteToOneClient(a.Substring(5));
                     }
+                    else
+                    {
+                        this.server.WriteToAllDoctors(a);
+
+                    }
+
                 }
                 catch
                 {

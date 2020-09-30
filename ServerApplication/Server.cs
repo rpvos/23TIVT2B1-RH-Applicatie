@@ -61,9 +61,9 @@ namespace DoctorServer
             String a = reader.ReadLine();
             ServerClient serverClient;
             Thread thread = new Thread(HandleClientThread);
-            if (a == "DOCTOR")
+            if (a.Substring(5) == "DOCTOR")
             {
-                serverClient = new ServerClient(client, "Doctor",writer,reader,this);
+                serverClient = new ServerClient(client, a,writer,reader,this);
                 Console.WriteLine("A Doctor joined.");
 
                 this.doctors.Add(serverClient);
@@ -72,7 +72,7 @@ namespace DoctorServer
             }
             else if(a.Substring(5) == "CLIENT")
             {
-                serverClient = new ServerClient(client, "Client",writer,reader,this);
+                serverClient = new ServerClient(client, a,writer,reader,this);
                 Console.WriteLine("A Client joined.");
 
                 this.clients.Add(serverClient);
@@ -118,9 +118,15 @@ namespace DoctorServer
             }
         }
 
-        public void WriteToOneClient(ServerClient client, string message)
+        public void WriteToOneClient(string message)
         {
-            client.WriteTextMessage(message);
+            foreach(ServerClient client in clients)
+            {
+                if(client.username.Substring(0,5) == message.Substring(4,5)){
+                    client.WriteTextMessage(message);
+
+                }
+            }
         }
 
         public void WriteToAllDoctors(string message)

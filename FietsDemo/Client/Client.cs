@@ -54,14 +54,12 @@ namespace ServerClient
                 try
                 {
                     String a = this.streamReader.ReadLine();
-                    if (a[0] == '!' && a[1] == '#')
+                    Console.WriteLine(a);
+                    if(a.Substring(0,4) == "RSTE")
                     {
-                        this.mainProgram.gui.addTextMessage(a.Substring(2));
-                    }
-                    else {
-                        int i = Int32.Parse(a);
-                        this.mainProgram.setResistance(i);
-                        this.mainProgram.setValuesInGui("resistance", i);
+                        double resistance = Int32.Parse(a.Substring(9));
+                        mainProgram.setResistance(resistance);
+                        mainProgram.setValuesInGui("resistance", resistance);
                     }
                 }
                 catch

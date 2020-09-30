@@ -19,9 +19,11 @@ namespace DoctorServer
 
         public Bike selectedBike { get; set; }
         public int selectedIndex { get; set; }
+        private DoctorClient doctorClient;
 
-        public DoctorForm()
+        public DoctorForm(DoctorClient doctorClient)
         {
+            this.doctorClient = doctorClient;
             this.selectedIndex = -1;
             InitializeComponent();
             this.resistanceTextbox.MouseWheel += new MouseEventHandler(changeResistance);
@@ -109,7 +111,7 @@ namespace DoctorServer
 
                 if (this.selectedIndex != -1)
                 {
-                
+                    this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
                 }
             }
             else if (e.Delta < 0)
@@ -124,7 +126,8 @@ namespace DoctorServer
 
                 if (this.selectedIndex != -1)
                 {
-            
+                    this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+
                 }
 
 
@@ -144,7 +147,8 @@ namespace DoctorServer
 
             if (this.selectedIndex != -1)
             {
-               
+                this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+
             }
 
         }
@@ -161,7 +165,8 @@ namespace DoctorServer
 
             if (this.selectedIndex != -1)
             {
-         
+                this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+
             }
         }
 

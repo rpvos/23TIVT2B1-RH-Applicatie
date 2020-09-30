@@ -20,6 +20,8 @@ namespace DoctorServer
         private StreamWriter streamWriter;
         private StreamReader streamReader;
         private List<Bike> bikes;
+        private Random random;
+        public int ID { get; set; }
 
         [STAThread]
         static void Main()
@@ -31,14 +33,21 @@ namespace DoctorServer
 
         public void Start()
         {
+            this.random = new Random();
+            this.ID = generateID();
             startClient();
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
 
-            this.mainForm = new DoctorForm();
+            this.mainForm = new DoctorForm(this);
 
             Application.Run(mainForm);
+        }
+
+        public int generateID()
+        {
+            return random.Next(10000, 99999);
         }
 
         public void startClient()
@@ -60,7 +69,7 @@ namespace DoctorServer
         {
             try
             {
-                this.streamWriter.WriteLine(message);
+                this.streamWriter.WriteLine(this.ID+message);
                 this.streamWriter.Flush();
             }
             catch { }

@@ -227,9 +227,22 @@ namespace TCP_naar_VR
                 }
             }
             //After clearing the panel, call the setMethod to initialize it
-            else if ((string)data["id"] == "route/panel/clear")
+            else if ((string)data["id"] == "scene/panel/clear")
             {
+                Console.WriteLine("GOT THROUGH THE CLEARING PANEL RETURN STATUS");
                 callMethod.SetText("Welcome", objects["panel"], new double[] { 0, 0 });
+
+                string speedValue = this.speed.ToString();
+                string heartRateValue = this.heartRate.ToString();
+                string distanceTravelled = this.DT.ToString();
+                string elapsedTime = this.elapsedTime.ToString();
+                string resistance = this.resistance.ToString();
+
+                callMethod.SetText(speedValue, objects["panel"], new double[] { 0, 20 });
+                callMethod.SetText(heartRateValue, objects["panel"], new double[] { 0, 40 });
+                callMethod.SetText(distanceTravelled, objects["panel"], new double[] { 0, 60 });
+                callMethod.SetText(elapsedTime, objects["panel"], new double[] { 0, 80 });
+                callMethod.SetText(resistance, objects["panel"], new double[] { 0, 100 });
 
                 //foreach (var s in objects)
                 //{
@@ -242,30 +255,13 @@ namespace TCP_naar_VR
                 //}
             }
             //After getting the response of the drawText, add the values of the ebike
-            else if((string)data["id"] == "route/panel/drawtext")
+            else if((string)data["id"] == "scene/panel/drawtext")
             {               
                 string status = (string)data["status"];
                 Console.WriteLine("Status for set text: {0}", status);
                 if((string)data["status"] == "ok")
                 {
-                    foreach (var s in objects)
-                    {
-                        if (s.Key == "panel")
-                        {
-                            string speedValue = this.speed.ToString();
-                            string heartRateValue = this.heartRate.ToString();
-                            string distanceTravelled = this.DT.ToString();
-                            string elapsedTime = this.elapsedTime.ToString();
-                            string resistance = this.resistance.ToString();
-
-                            callMethod.SetText(speedValue, s.Value, new double[] { 0, 20 });
-                            callMethod.SetText(heartRateValue, s.Value, new double[] { 0, 40 });
-                            callMethod.SetText(distanceTravelled, s.Value, new double[] { 0, 60 });
-                            callMethod.SetText(elapsedTime, s.Value, new double[] { 0, 80 });
-                            callMethod.SetText(resistance, s.Value, new double[] { 0, 100 });
-
-                        }
-                    }
+                    callMethod.SwapPanel(objects["panel"]);
                    
                 }
             }

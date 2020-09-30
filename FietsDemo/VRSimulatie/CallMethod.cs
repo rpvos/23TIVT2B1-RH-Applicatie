@@ -164,7 +164,7 @@ namespace simulatie
             data["routeid"] = objects["route"];
             data["nodeid"] = objects["tree1"];
 
-            tcpClient.SendMessage(tcpClient.GetTunnelMessage("FollowRoute.json").ToString());
+            tcpClient.SendMessage(followRouteMessage.ToString());
         }
 
         //Clear a panel in the vr simulator for first use
@@ -178,7 +178,7 @@ namespace simulatie
 
             Console.WriteLine("ID of the clear data: " + (string)data["id"]);
 
-            tcpClient.SendMessage(tcpClient.GetTunnelMessage("ClearPanel.json").ToString());
+            tcpClient.SendMessage(clearPannelMessage.ToString());
         }
 
         //Draw text on a panel in the vr simulator
@@ -192,7 +192,20 @@ namespace simulatie
             data["id"] = uuid;
             data["text"] = text;
             data["postition"] = new JArray(coord);
-            tcpClient.SendMessage(tcpClient.GetTunnelMessage("SetText.json").ToString());
+            tcpClient.SendMessage(setTextMessage.ToString());
+        } 
+        
+        internal void SwapPanel(string uuid)
+        {
+            Console.WriteLine("REACHED SWAPPING PANEL METHOD");
+            TunnelMessage swapPanelMessage = tcpClient.GetTunnelMessage("SwapPanel.json");
+            JObject data = swapPanelMessage.GetDataContent();
+
+            data["id"] = uuid;
+
+            tcpClient.SendMessage(swapPanelMessage.ToString());
         }
     }
+
+   
 }

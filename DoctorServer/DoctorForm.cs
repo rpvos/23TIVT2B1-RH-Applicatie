@@ -181,5 +181,15 @@ namespace DoctorServer
                 this.serverClients[selectedClient].resistance = i;
             }
         }
+
+        private void privateChat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

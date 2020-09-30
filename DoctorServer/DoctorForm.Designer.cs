@@ -45,6 +45,10 @@
             this.plusResistance = new System.Windows.Forms.Button();
             this.minResistance = new System.Windows.Forms.Button();
             this.resistanceTextbox = new System.Windows.Forms.TextBox();
+            this.PrivateChat = new System.Windows.Forms.ListBox();
+            this.GlobalChat = new System.Windows.Forms.ListBox();
+            this.PrivateChatBox = new System.Windows.Forms.TextBox();
+            this.GlobalChatBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // BikeListBox
@@ -230,11 +234,49 @@
             this.resistanceTextbox.TabIndex = 15;
             this.resistanceTextbox.Text = "0";
             // 
-            // Form1
+            // PrivateChat
+            // 
+            this.PrivateChat.FormattingEnabled = true;
+            this.PrivateChat.ItemHeight = 15;
+            this.PrivateChat.Location = new System.Drawing.Point(848, 76);
+            this.PrivateChat.Name = "PrivateChat";
+            this.PrivateChat.Size = new System.Drawing.Size(123, 214);
+            this.PrivateChat.TabIndex = 16;
+            // 
+            // GlobalChat
+            // 
+            this.GlobalChat.FormattingEnabled = true;
+            this.GlobalChat.ItemHeight = 15;
+            this.GlobalChat.Location = new System.Drawing.Point(977, 76);
+            this.GlobalChat.Name = "GlobalChat";
+            this.GlobalChat.Size = new System.Drawing.Size(123, 214);
+            this.GlobalChat.TabIndex = 16;
+            // 
+            // PrivateChatBox
+            // 
+            this.PrivateChatBox.Location = new System.Drawing.Point(848, 280);
+            this.PrivateChatBox.Name = "PrivateChatBox";
+            this.PrivateChatBox.Size = new System.Drawing.Size(123, 23);
+            this.PrivateChatBox.TabIndex = 17;
+            this.PrivateChatBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
+            // GlobalChatBox
+            // 
+            this.GlobalChatBox.Location = new System.Drawing.Point(977, 280);
+            this.GlobalChatBox.Name = "GlobalChatBox";
+            this.GlobalChatBox.Size = new System.Drawing.Size(123, 23);
+            this.GlobalChatBox.TabIndex = 17;
+            this.GlobalChatBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
+            // DoctorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1055, 485);
+            this.ClientSize = new System.Drawing.Size(1132, 485);
+            this.Controls.Add(this.GlobalChatBox);
+            this.Controls.Add(this.PrivateChatBox);
+            this.Controls.Add(this.GlobalChat);
+            this.Controls.Add(this.PrivateChat);
             this.Controls.Add(this.resistanceTextbox);
             this.Controls.Add(this.minResistance);
             this.Controls.Add(this.plusResistance);
@@ -252,7 +294,7 @@
             this.Controls.Add(this.SpeedValue);
             this.Controls.Add(this.Speed);
             this.Controls.Add(this.BikeListBox);
-            this.Name = "Form1";
+            this.Name = "DoctorForm";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
@@ -279,6 +321,10 @@
         private System.Windows.Forms.Button plusResistance;
         private System.Windows.Forms.Button minResistance;
         private System.Windows.Forms.TextBox resistanceTextbox;
+        private System.Windows.Forms.ListBox PrivateChat;
+        private System.Windows.Forms.ListBox GlobalChat;
+        private System.Windows.Forms.TextBox PrivateChatBox;
+        private System.Windows.Forms.TextBox GlobalChatBox;
     }
 }
 

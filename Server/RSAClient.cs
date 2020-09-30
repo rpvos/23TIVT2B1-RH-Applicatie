@@ -15,13 +15,12 @@ namespace Server
 
         public RSAClient()
         {
-            this.sender = new RSACryptoServiceProvider();
-            this.reciever = new RSACryptoServiceProvider();
+            this.sender = new RSACryptoServiceProvider(384);
+            this.reciever = new RSACryptoServiceProvider(384);
         }
 
-                public byte[] encryptMessage(int message)
+        public byte[] encryptMessage(int message)
         {
-            
             return sender.Encrypt(Encoding.UTF8.GetBytes(message.ToString()), false);
         }
 

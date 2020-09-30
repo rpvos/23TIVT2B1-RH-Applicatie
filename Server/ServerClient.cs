@@ -24,6 +24,7 @@ namespace Server
         private RSAClient rsaClient;
 
         private int sessionID;
+        private StringBuilder logger;
 
         public ServerClient(TcpClient client, Server server)
         {
@@ -35,6 +36,9 @@ namespace Server
 
             this.rsaClient = new RSAClient();
 
+            this.logger = new StringBuilder();
+
+
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
@@ -42,10 +46,11 @@ namespace Server
 
         public void WriteTextMessage(string message)
         {
+            logger.Append("\nServer:\n" + message);
+
             byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
             stream.Write(dataAsBytes, 0, dataAsBytes.Length);
             stream.Flush();
-
         }
 
         private void OnRead(IAsyncResult ar)
@@ -59,17 +64,43 @@ namespace Server
             catch (IOException)
             {
                 server.Disconnect(this);
+                log();
                 return;
             }
 
             while (totalBuffer.Contains("\r\n\r\n"))
             {
                 string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
+
+                logger.Append("\nClient:\n" + packet);
+
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 handleData(packet);
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
+
+        private void log()
+        {
+            string location = Environment.CurrentDirectory;
+            if (sessionID != 0)
+            {
+                using (StreamWriter streamWriter = new StreamWriter(location + $"/log{sessionID}.txt", false))
+                {
+                    streamWriter.Write(this.logger.ToString());
+                    streamWriter.Flush();
+                }
+            }
+            else
+            {
+                using (StreamWriter streamWriter = new StreamWriter(location + $"/logUnconnected.txt", true))
+                {
+                    streamWriter.Write(this.logger.ToString());
+                    streamWriter.Flush();
+                }
+            }
+        }
+
         #endregion
 
         #region handle recieved data
@@ -145,14 +176,17 @@ namespace Server
         private string getUserCredentialsResponse(bool hasSucceeded)
         {
             this.sessionID = server.getSessionID();
-            
+            Console.WriteLine(sessionID);
+            byte[] encrypted = rsaClient.encryptMessage(sessionID);
+            Console.WriteLine(Encoding.UTF8.GetString(encrypted));
+
             dynamic json = new
             {
                 Type = "userCredentialsResponse",
                 Data = new
                 {
                     Status = hasSucceeded,
-                    Session = sessionID
+                    Session = encrypted
                 },
                 Checksum = 0
             };

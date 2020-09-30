@@ -15,8 +15,8 @@ namespace Client
 
         public RSAClient()
         {
-            this.sender = new RSACryptoServiceProvider();
-            this.reciever = new RSACryptoServiceProvider();
+            this.sender = new RSACryptoServiceProvider(384);
+            this.reciever = new RSACryptoServiceProvider(384);
         }
 
         

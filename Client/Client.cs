@@ -10,8 +10,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace GameClient
+namespace Client
 {
     class Client
     {
@@ -23,9 +24,12 @@ namespace GameClient
 
         private TcpClient server;
         private NetworkStream stream;
+
         private RSAClient rsaClient;
+
         private byte[] buffer;
         private string totalBuffer;
+
         private bool encoded;
         private bool connectedSuccesfully;
 
@@ -46,15 +50,7 @@ namespace GameClient
             Console.ReadKey();
         }
 
-        private void run()
-        {
-            while (true)
-            {
-                //send data here
-
-            }
-        }
-
+        #region stream dynamics
         public void WriteTextMessage(string message)
         {
             if (!encoded)
@@ -84,7 +80,9 @@ namespace GameClient
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
+        #endregion
 
+        #region handle recieved data
         private void handleData(string packet)
         {
             try
@@ -114,7 +112,7 @@ namespace GameClient
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
-                            run();
+                            //__todo__ make an await method
                         }
                         else
                         {
@@ -145,30 +143,6 @@ namespace GameClient
                 return false;
             }
         }
-
-        private void sendCredentialMessage()
-        {
-            string username = "admin";
-            string password = "dmin";
-
-            WriteTextMessage(getUserDetails(username, password));
-        }
-
-        private string getUserDetails(string username, string password)
-        {
-            dynamic json = new
-            {
-                Type = "userCredentials",
-                Data = new
-                {
-                    Username = username,
-                    Password = password
-                },
-                Checksum = 0
-            };
-            return addChecksum(json);
-        }
-
         private bool handleConnectionResponse(JObject json)
         {
             byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
@@ -184,8 +158,6 @@ namespace GameClient
             }
             return false;
         }
-
-
         private bool checkChecksum(JObject json)
         {
             byte checksum = (byte)json["Checksum"];
@@ -195,7 +167,40 @@ namespace GameClient
                 checksum ^= b;
             return checksum == 0;
         }
+        #endregion
 
+        #region send handlers
+        private void sendCredentialMessage()
+        {
+            string username = "admin";
+            string password = "admin";
+
+            WriteTextMessage(getUserDetails(username, password));
+        }
+
+        internal Task sendUpdatedValues(int session, int heartrate, double accDistance, double speed, double instPower, double accPower)
+        {
+            WriteTextMessage(getUpdateMessageString(session,heartrate,accDistance,speed,instPower,accPower));
+            return Task.CompletedTask;
+        }
+
+        #endregion
+
+        #region message construction
+        private string getUserDetails(string username, string password)
+        {
+            dynamic json = new
+            {
+                Type = "userCredentials",
+                Data = new
+                {
+                    Username = username,
+                    Password = password
+                },
+                Checksum = 0
+            };
+            return addChecksum(json);
+        }
         public string getUpdateMessageString(int session, int heartrate, double accDistance, double speed, double instPower, double accPower)
         {
             dynamic json = new
@@ -206,7 +211,8 @@ namespace GameClient
                     HeartRate = heartrate,
                     AccumulatedDistance = accDistance,
                     Speed = speed,
-                    InstantaniousPower = instPower
+                    InstantaniousPower = instPower,
+                    AccumulatedPower = accPower
                 },
                 Checksum = 0
             };
@@ -259,5 +265,7 @@ namespace GameClient
 
             return json.ToString();
         }
+        #endregion
+
     }
 }

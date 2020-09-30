@@ -110,23 +110,24 @@ namespace Server
             }
         }
 
-        private void sendUserCredentialsResponse(bool response)
+        private void sendUserCredentialsResponse(bool hasSucceeded)
         {
-            if (response)
+            if (!hasSucceeded)
                 Console.WriteLine("Login attempt failed");
             else
                 Console.WriteLine("Login attempt succeeded");
-            WriteTextMessage(getUserCredentialsResponse(response));
+
+            WriteTextMessage(getUserCredentialsResponse(hasSucceeded));
         }
 
-        private string getUserCredentialsResponse(bool response)
+        private string getUserCredentialsResponse(bool hasSucceeded)
         {
             dynamic json = new
             {
                 Type = "userCredentialsResponse",
                 Data = new
                 {
-                    Status = response
+                    Status = hasSucceeded
                 },
                 Checksum = 0
             };

@@ -51,6 +51,7 @@ namespace GameClient
             while (true)
             {
                 //send data here
+
             }
         }
 
@@ -65,6 +66,7 @@ namespace GameClient
             else
             {
                 //encode that shit
+
             }
         }
 
@@ -110,7 +112,14 @@ namespace GameClient
 
                     case "userCredentialsResponse":
                         if (handleUserCredentialsResponse(data))
+                        {
+                            Console.WriteLine("Login succesful");
                             run();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Login failed");
+                        }
                         break;
 
                     default:
@@ -140,7 +149,7 @@ namespace GameClient
         private void sendCredentialMessage()
         {
             string username = "admin";
-            string password = "admin";
+            string password = "dmin";
 
             WriteTextMessage(getUserDetails(username, password));
         }

@@ -61,11 +61,9 @@ namespace Server
 
         internal bool checkUser(string username, string password)
         {
-            string realPassword;
-            if(!users.TryGetValue(username,out realPassword))
-                if (realPassword == password)
+            if (users.ContainsKey(username))
+                if (users[username] == password)
                     return true;
-                
 
             return false;
         }

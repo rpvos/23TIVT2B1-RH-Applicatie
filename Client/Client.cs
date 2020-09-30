@@ -30,8 +30,8 @@ namespace Client
         private byte[] buffer;
         private string totalBuffer;
 
-        private bool encoded;
         private bool connectedSuccesfully;
+        private string sessionID;
 
         public Client()
         {
@@ -41,7 +41,6 @@ namespace Client
 
             this.stream = this.server.GetStream();
             this.buffer = new byte[1024];
-            this.encoded = false;
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
@@ -53,24 +52,24 @@ namespace Client
         #region stream dynamics
         public void WriteTextMessage(string message)
         {
-            if (!encoded)
-            {
-                var dataAsBytes = System.Text.Encoding.ASCII.GetBytes(message + "\r\n\r\n");
-                stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-                stream.Flush();
-            }
-            else
-            {
-                //encode that shit
-
-            }
+            byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
+            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
+            stream.Flush();
         }
 
         private void OnRead(IAsyncResult ar)
         {
-            int receivedBytes = stream.EndRead(ar);
-            string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-            totalBuffer += receivedText;
+            try
+            {
+                int receivedBytes = stream.EndRead(ar);
+                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+                totalBuffer += receivedText;
+            }
+            catch (IOException)
+            {
+                Console.WriteLine("Server disconnected"); ;
+                return;
+            }
 
             while (totalBuffer.Contains("\r\n\r\n"))
             {
@@ -87,10 +86,6 @@ namespace Client
         {
             try
             {
-                if (encoded)
-                    packet = rsaClient.decryptMessage(packet);
-
-
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
                     return;
@@ -100,7 +95,6 @@ namespace Client
                 switch (json["Type"].ToString())
                 {
                     case "response":
-                        //check if the rsa key is used
                         if (handleConnectionResponse(data))
                         {
                             sendCredentialMessage();
@@ -132,6 +126,8 @@ namespace Client
 
         private bool handleUserCredentialsResponse(JObject data)
         {
+            this.sessionID = (string)data["Session"];
+
             //check if connected succesfully
             if (connectedSuccesfully)
             {
@@ -179,7 +175,7 @@ namespace Client
 
         internal Task sendUpdatedValues(int session, int heartrate, double accDistance, double speed, double instPower, double accPower)
         {
-            WriteTextMessage(getUpdateMessageString(session,heartrate,accDistance,speed,instPower,accPower));
+            WriteTextMessage(getUpdateMessageString(session, heartrate, accDistance, speed, instPower, accPower));
             return Task.CompletedTask;
         }
 

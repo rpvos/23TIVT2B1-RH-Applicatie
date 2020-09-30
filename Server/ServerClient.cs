@@ -22,7 +22,6 @@ namespace Server
         private string totalBuffer;
 
         private RSAClient rsaClient;
-        private bool encoded;
 
         private int sessionID;
 
@@ -33,7 +32,6 @@ namespace Server
 
             this.buffer = new byte[1024];
             this.stream = client.GetStream();
-            this.encoded = false;
 
             this.rsaClient = new RSAClient();
 
@@ -41,18 +39,13 @@ namespace Server
         }
 
         #region stream dynamics
+
         public void WriteTextMessage(string message)
         {
-            if (!encoded)
-            {
-                byte[] dataAsBytes = System.Text.Encoding.ASCII.GetBytes(message + "\r\n\r\n");
-                stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-                stream.Flush();
-            }
-            else
-            {
-                //encode that shit
-            }
+            byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
+            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
+            stream.Flush();
+
         }
 
         private void OnRead(IAsyncResult ar)
@@ -60,7 +53,7 @@ namespace Server
             try
             {
                 int receivedBytes = stream.EndRead(ar);
-                string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
+                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
                 totalBuffer += receivedText;
             }
             catch (IOException)
@@ -84,9 +77,6 @@ namespace Server
         {
             try
             {
-                if (encoded)
-                    packet = rsaClient.decryptMessage(packet);
-
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
                     return;
@@ -151,9 +141,11 @@ namespace Server
         #endregion
 
         #region message construction
+
         private string getUserCredentialsResponse(bool hasSucceeded)
         {
             this.sessionID = server.getSessionID();
+            
             dynamic json = new
             {
                 Type = "userCredentialsResponse",
@@ -168,7 +160,6 @@ namespace Server
         }
         private string getConnectionResponseMessage(byte[] modulus, byte[] exponent)
         {
-
             dynamic json = new
             {
                 Type = "response",
@@ -198,19 +189,18 @@ namespace Server
         #endregion
 
         #region send handlers
+
         private void sendUserCredentialsResponse(bool hasSucceeded)
         {
             if (hasSucceeded)
-            {
-                Console.WriteLine("Login attempt succeeded");
-            }
+                Console.WriteLine("Login attempt succesful");
             else
                 Console.WriteLine("Login attempt failed");
 
             WriteTextMessage(getUserCredentialsResponse(hasSucceeded));
         }
 
-        
+
         private void sendConnectionRequest()
         {
             WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));

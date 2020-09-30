@@ -19,14 +19,20 @@ namespace Client
             this.reciever = new RSACryptoServiceProvider();
         }
 
-        public string encryptMessage(string message)
+        
+        public byte[] encryptMessage(byte[] message)
         {
-            return Encoding.ASCII.GetString(sender.Encrypt(Encoding.ASCII.GetBytes(message),false));
+            return sender.Encrypt(message, false);
         }
 
         public string decryptMessage(string message)
         {
-            return Encoding.ASCII.GetString(reciever.Decrypt(Encoding.ASCII.GetBytes(message), false));
+            return Encoding.UTF8.GetString(reciever.Decrypt(Encoding.UTF8.GetBytes(message), false));
+        }
+
+        public string decryptMessage(byte[] message)
+        {
+            return Convert.ToBase64String(reciever.Decrypt(message, false));
         }
 
         public void setKey(byte[] modulus, byte[] exponent)

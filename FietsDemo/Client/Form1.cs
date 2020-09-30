@@ -101,5 +101,11 @@ namespace FietsDemo
         {
 
         }
+
+        public void addMessage(string message)
+        {
+            doctorChat.Items.Add(message);
+        }
     }
+
 }

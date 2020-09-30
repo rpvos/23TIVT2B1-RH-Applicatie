@@ -14,7 +14,7 @@ namespace FietsDemo
     public class Program : IBLEcallBack
     {
 
-        private GUI gui;
+        public GUI gui { get; set; }
         private Simulator simulator;
         private BikeSimulator bikeSimulator;
 
@@ -40,6 +40,8 @@ namespace FietsDemo
 
         private TcpClientVR tcpClientVR;
 
+        private Random random;
+
         static void Main(string[] args)
         {
             Program program = new Program();
@@ -48,8 +50,11 @@ namespace FietsDemo
 
         }
 
+
         public void start()
         {
+            this.random = new Random();
+
             Thread guiThread = new Thread(startGUI);
             guiThread.Start();
 
@@ -64,8 +69,13 @@ namespace FietsDemo
 
         public void startClient()
         {
-            this.client = new Client(this);
+            this.client = new Client(this,generateID());
 
+        }
+
+        public int generateID()
+        {
+            return random.Next(10000, 99999); 
         }
 
         public void startVR()
@@ -415,7 +425,7 @@ namespace FietsDemo
 
         public void setValuesInGui(String valueType, double value)
         {
-            this.client.WriteTextMessage(valueType + ": " + value);
+            this.client.WriteTextMessageToServer(valueType + ": " + value);
 
             switch (valueType)
             {

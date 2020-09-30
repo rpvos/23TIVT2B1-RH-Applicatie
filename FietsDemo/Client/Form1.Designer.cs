@@ -45,6 +45,9 @@
             this.ESPSimulatorButton = new System.Windows.Forms.Button();
             this.SoftwareSimulatorButton = new System.Windows.Forms.Button();
             this.ResistanceLabel = new System.Windows.Forms.Label();
+            this.doctorChat = new System.Windows.Forms.ListBox();
+            this.chatTextBox = new System.Windows.Forms.TextBox();
+            this.sendDocButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Speed
@@ -219,12 +222,39 @@
             this.ResistanceLabel.Size = new System.Drawing.Size(0, 55);
             this.ResistanceLabel.TabIndex = 18;
             // 
+            // doctorChat
+            // 
+            this.doctorChat.FormattingEnabled = true;
+            this.doctorChat.Location = new System.Drawing.Point(1133, 166);
+            this.doctorChat.Name = "doctorChat";
+            this.doctorChat.Size = new System.Drawing.Size(247, 277);
+            this.doctorChat.TabIndex = 19;
+            // 
+            // chatTextBox
+            // 
+            this.chatTextBox.Location = new System.Drawing.Point(1133, 450);
+            this.chatTextBox.Name = "chatTextBox";
+            this.chatTextBox.Size = new System.Drawing.Size(204, 20);
+            this.chatTextBox.TabIndex = 20;
+            // 
+            // sendDocButton
+            // 
+            this.sendDocButton.Location = new System.Drawing.Point(1343, 450);
+            this.sendDocButton.Name = "sendDocButton";
+            this.sendDocButton.Size = new System.Drawing.Size(37, 20);
+            this.sendDocButton.TabIndex = 21;
+            this.sendDocButton.Text = ">";
+            this.sendDocButton.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(1403, 667);
+            this.Controls.Add(this.sendDocButton);
+            this.Controls.Add(this.chatTextBox);
+            this.Controls.Add(this.doctorChat);
             this.Controls.Add(this.ResistanceLabel);
             this.Controls.Add(this.SoftwareSimulatorButton);
             this.Controls.Add(this.ESPSimulatorButton);
@@ -267,5 +297,8 @@
         private System.Windows.Forms.Button ESPSimulatorButton;
         private System.Windows.Forms.Button SoftwareSimulatorButton;
         private System.Windows.Forms.Label ResistanceLabel;
+        private System.Windows.Forms.ListBox doctorChat;
+        private System.Windows.Forms.TextBox chatTextBox;
+        private System.Windows.Forms.Button sendDocButton;
     }
 }

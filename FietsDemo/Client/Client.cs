@@ -14,63 +14,55 @@ namespace ServerClient
         private StreamWriter streamWriter;
         private StreamReader streamReader;
         private Program mainProgram;
+        private int ID;
 
 
-        public Client(Program program)
+        public Client(Program program, int ID)
         {
+            this.ID = ID;
             this.mainProgram = program;
 
-            //Console.Write("Username: ");
-            //this.username = Console.ReadLine();
 
             this.server = new TcpClient("127.0.0.1", 1330);
 
             this.streamWriter = new StreamWriter(server.GetStream(), Encoding.ASCII, 1, true);
             this.streamReader = new StreamReader(server.GetStream(), Encoding.ASCII);
+            WriteTextMessageToServer("CLIENT");
 
-            //Console.WriteLine("Type 'exit' to end connection");
 
-            //WriteTextMessage(server, username);
 
-            Thread receiveMessages = new Thread(ReadTextMessage);
+            Thread receiveMessages = new Thread(ReadTextMessageFromServer);
             receiveMessages.Start();
 
-            //while (true)
-            //{
-            //    string message = Console.ReadLine();
-            //
-            //    WriteTextMessage(message);
-            //
-            //    if (message.Equals("exit"))
-            //    {
-            //        server.Close();
-            //        break;
-            //    }
-            //
-            //}
         }
 
-        public void WriteTextMessage(string message)
+        public void WriteTextMessageToServer(string message)
         {
             try
             {
-                this.streamWriter.WriteLine(message);
+                this.streamWriter.WriteLine(this.ID +""+message);
                 this.streamWriter.Flush();
             }
             catch { }
 
         }
 
-        public void ReadTextMessage()
+        public void ReadTextMessageFromServer()
         {
             while (true)
             {
                 try
                 {
                     String a = this.streamReader.ReadLine();
-                    int i = Int32.Parse(a);
-                    this.mainProgram.setResistance(i);
-                    this.mainProgram.setValuesInGui("resistance", i);
+                    if (a[0] == '!' && a[1] == '#')
+                    {
+                        this.mainProgram.gui.addTextMessage(a.Substring(2));
+                    }
+                    else {
+                        int i = Int32.Parse(a);
+                        this.mainProgram.setResistance(i);
+                        this.mainProgram.setValuesInGui("resistance", i);
+                    }
                 }
                 catch
                 {

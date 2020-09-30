@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DoctorApplication;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,13 +17,12 @@ namespace DoctorServer
     public partial class DoctorForm : Form
     {
 
-        private List<ServerClient> serverClients;
-        private int selectedClient = -1;
+        public Bike selectedBike { get; set; }
+        public int selectedIndex { get; set; }
 
         public DoctorForm()
         {
-
-            this.serverClients = new List<ServerClient>();
+            this.selectedIndex = -1;
             InitializeComponent();
             this.resistanceTextbox.MouseWheel += new MouseEventHandler(changeResistance);
 
@@ -34,40 +34,57 @@ namespace DoctorServer
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         public void setSpeed(string speed)
         {
-            this.SpeedValue.Text = speed;
+
+            SpeedValue.Invoke((MethodInvoker)(() =>
+            {
+                this.SpeedValue.Text = speed;
+            }));
         }
 
         public void setHeartrate(string heartrate)
         {
-            this.HeartrateValue.Text = heartrate;
+            HeartrateValue.Invoke((MethodInvoker)(() =>
+            {
+                this.HeartrateValue.Text = heartrate;
+            }));
         }
 
         public void setDT(string DT)
         {
-            this.DistanceTraveledValue.Text = DT;
+            DistanceTraveledValue.Invoke((MethodInvoker)(() =>
+            {
+                this.DistanceTraveledValue.Text = DT;
+            }));
         }
 
         public void setAP(string AP)
         {
-            this.APLabel.Text = AP;
+            APLabel.Invoke((MethodInvoker)(() =>
+            {
+                this.APLabel.Text = AP;
+            }));
+
         }
 
         public void setElapsedTime(string elapsedTime)
         {
-            this.ElapsedTimeValue.Text = elapsedTime;
+            ElapsedTimeValue.Invoke((MethodInvoker)(() =>
+            {
+                this.ElapsedTimeValue.Text = elapsedTime;
+            }));
         }
 
-        public void addBike(ServerClient serverClient)
+        public void addBike(Bike bike)
         {
-            BikeListBox.Items.Add(serverClient);
-            this.serverClients.Add(serverClient);
+
+            BikeListBox.Invoke((MethodInvoker)(() =>
+            {
+                BikeListBox.Items.Add(bike);
+            }));
+            
             
         }
 
@@ -76,36 +93,6 @@ namespace DoctorServer
             Application.Exit();
         }
 
-        private void HeartRateLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void SpeedLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void BikeListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            this.selectedClient = BikeListBox.SelectedIndex;
-            foreach (ServerClient v in serverClients)
-                v.setSelected(false);
-
-            this.serverClients[this.selectedClient].setSelected(true);
-            this.resistanceTextbox.Text = this.serverClients[this.selectedClient].resistance + "";
-
-        }
-
-        private void Speed_Click(object sender, EventArgs e)
-        {
-
-        }
 
 
         public void changeResistance(object sender, MouseEventArgs e)
@@ -120,10 +107,9 @@ namespace DoctorServer
                 }
                 resistanceTextbox.Text = i + "";
 
-                if (this.selectedClient != -1)
+                if (this.selectedIndex != -1)
                 {
-                    this.serverClients[selectedClient].WriteTextMessage(resistanceTextbox.Text);
-                    this.serverClients[selectedClient].resistance = i;
+                
                 }
             }
             else if (e.Delta < 0)
@@ -136,10 +122,9 @@ namespace DoctorServer
                 }
                 resistanceTextbox.Text = i + "";
 
-                if (this.selectedClient != -1)
+                if (this.selectedIndex != -1)
                 {
-                    this.serverClients[selectedClient].WriteTextMessage(resistanceTextbox.Text);
-                    this.serverClients[selectedClient].resistance = i;
+            
                 }
 
 
@@ -157,10 +142,9 @@ namespace DoctorServer
             }
             resistanceTextbox.Text = i + "";
 
-            if (this.selectedClient != -1)
+            if (this.selectedIndex != -1)
             {
-                this.serverClients[selectedClient].WriteTextMessage(resistanceTextbox.Text);
-                this.serverClients[selectedClient].resistance = i;
+               
             }
 
         }
@@ -175,21 +159,38 @@ namespace DoctorServer
             }
             resistanceTextbox.Text = i + "";
 
-            if (this.selectedClient != -1)
+            if (this.selectedIndex != -1)
             {
-                this.serverClients[selectedClient].WriteTextMessage(resistanceTextbox.Text);
-                this.serverClients[selectedClient].resistance = i;
+         
             }
         }
 
         private void privateChat_SelectedIndexChanged(object sender, EventArgs e)
         {
+          
 
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
 
+        private void privSendButton_Click(object sender, EventArgs e)
+        {
+            if (this.selectedIndex != -1 && PrivateChatBox.Text != "") 
+            {
+         
+
+            }
+        }
+
+        private void globalSendButton_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void BikeListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.selectedBike = (Bike)BikeListBox.SelectedItem;
+            this.selectedIndex = BikeListBox.SelectedIndex;
+            Console.WriteLine(selectedBike);
         }
     }
 }

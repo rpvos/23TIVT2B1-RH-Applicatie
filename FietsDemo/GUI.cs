@@ -49,5 +49,12 @@ namespace FietsDemo
         {
             program.setResistance(resistance);
         }
+
+        public void addTextMessage(string message)
+        {
+            this.form.addMessage(message);
+        }
+
+   
     }
 }

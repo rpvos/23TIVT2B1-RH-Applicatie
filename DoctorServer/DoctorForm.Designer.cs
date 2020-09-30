@@ -49,6 +49,8 @@
             this.GlobalChat = new System.Windows.Forms.ListBox();
             this.PrivateChatBox = new System.Windows.Forms.TextBox();
             this.GlobalChatBox = new System.Windows.Forms.TextBox();
+            this.privSendButton = new System.Windows.Forms.Button();
+            this.globalSendButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BikeListBox
@@ -78,19 +80,18 @@
             this.Speed.AutoSize = true;
             this.Speed.BackColor = System.Drawing.Color.White;
             this.Speed.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.Speed.Location = new System.Drawing.Point(499, 76);
+            this.Speed.Location = new System.Drawing.Point(396, 15);
             this.Speed.Name = "Speed";
             this.Speed.Size = new System.Drawing.Size(177, 55);
             this.Speed.TabIndex = 0;
             this.Speed.Text = "Speed:";
-            this.Speed.Click += new System.EventHandler(this.Speed_Click);
             // 
             // SpeedValue
             // 
             this.SpeedValue.AutoSize = true;
             this.SpeedValue.BackColor = System.Drawing.Color.White;
             this.SpeedValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.SpeedValue.Location = new System.Drawing.Point(682, 76);
+            this.SpeedValue.Location = new System.Drawing.Point(579, 15);
             this.SpeedValue.Name = "SpeedValue";
             this.SpeedValue.Size = new System.Drawing.Size(0, 55);
             this.SpeedValue.TabIndex = 1;
@@ -100,7 +101,7 @@
             this.Heartrate.AutoSize = true;
             this.Heartrate.BackColor = System.Drawing.Color.White;
             this.Heartrate.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.Heartrate.Location = new System.Drawing.Point(438, 143);
+            this.Heartrate.Location = new System.Drawing.Point(335, 82);
             this.Heartrate.Name = "Heartrate";
             this.Heartrate.Size = new System.Drawing.Size(238, 55);
             this.Heartrate.TabIndex = 2;
@@ -111,7 +112,7 @@
             this.HeartrateValue.AutoSize = true;
             this.HeartrateValue.BackColor = System.Drawing.Color.White;
             this.HeartrateValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.HeartrateValue.Location = new System.Drawing.Point(682, 143);
+            this.HeartrateValue.Location = new System.Drawing.Point(579, 82);
             this.HeartrateValue.Name = "HeartrateValue";
             this.HeartrateValue.Size = new System.Drawing.Size(0, 55);
             this.HeartrateValue.TabIndex = 3;
@@ -121,7 +122,7 @@
             this.ElapsedTime.AutoSize = true;
             this.ElapsedTime.BackColor = System.Drawing.Color.White;
             this.ElapsedTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.ElapsedTime.Location = new System.Drawing.Point(346, 212);
+            this.ElapsedTime.Location = new System.Drawing.Point(243, 151);
             this.ElapsedTime.Name = "ElapsedTime";
             this.ElapsedTime.Size = new System.Drawing.Size(330, 55);
             this.ElapsedTime.TabIndex = 4;
@@ -132,7 +133,7 @@
             this.ElapsedTimeValue.AutoSize = true;
             this.ElapsedTimeValue.BackColor = System.Drawing.Color.White;
             this.ElapsedTimeValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.ElapsedTimeValue.Location = new System.Drawing.Point(682, 212);
+            this.ElapsedTimeValue.Location = new System.Drawing.Point(579, 151);
             this.ElapsedTimeValue.Name = "ElapsedTimeValue";
             this.ElapsedTimeValue.Size = new System.Drawing.Size(0, 55);
             this.ElapsedTimeValue.TabIndex = 5;
@@ -142,7 +143,7 @@
             this.DistanceTraveled.AutoSize = true;
             this.DistanceTraveled.BackColor = System.Drawing.Color.White;
             this.DistanceTraveled.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.DistanceTraveled.Location = new System.Drawing.Point(252, 280);
+            this.DistanceTraveled.Location = new System.Drawing.Point(149, 219);
             this.DistanceTraveled.Name = "DistanceTraveled";
             this.DistanceTraveled.Size = new System.Drawing.Size(424, 55);
             this.DistanceTraveled.TabIndex = 6;
@@ -153,7 +154,7 @@
             this.DistanceTraveledValue.AutoSize = true;
             this.DistanceTraveledValue.BackColor = System.Drawing.Color.White;
             this.DistanceTraveledValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.DistanceTraveledValue.Location = new System.Drawing.Point(682, 280);
+            this.DistanceTraveledValue.Location = new System.Drawing.Point(579, 219);
             this.DistanceTraveledValue.Name = "DistanceTraveledValue";
             this.DistanceTraveledValue.Size = new System.Drawing.Size(0, 55);
             this.DistanceTraveledValue.TabIndex = 7;
@@ -163,7 +164,7 @@
             this.Resistance.AutoSize = true;
             this.Resistance.BackColor = System.Drawing.Color.White;
             this.Resistance.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.Resistance.Location = new System.Drawing.Point(345, 348);
+            this.Resistance.Location = new System.Drawing.Point(242, 287);
             this.Resistance.Name = "Resistance";
             this.Resistance.Size = new System.Drawing.Size(331, 55);
             this.Resistance.TabIndex = 9;
@@ -174,7 +175,7 @@
             this.ResistanceValue.AutoSize = true;
             this.ResistanceValue.BackColor = System.Drawing.Color.White;
             this.ResistanceValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.ResistanceValue.Location = new System.Drawing.Point(682, 350);
+            this.ResistanceValue.Location = new System.Drawing.Point(579, 289);
             this.ResistanceValue.Name = "ResistanceValue";
             this.ResistanceValue.Size = new System.Drawing.Size(0, 55);
             this.ResistanceValue.TabIndex = 10;
@@ -184,7 +185,7 @@
             this.accumalatedPower.AutoSize = true;
             this.accumalatedPower.BackColor = System.Drawing.Color.White;
             this.accumalatedPower.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.accumalatedPower.Location = new System.Drawing.Point(211, 414);
+            this.accumalatedPower.Location = new System.Drawing.Point(108, 353);
             this.accumalatedPower.Name = "accumalatedPower";
             this.accumalatedPower.Size = new System.Drawing.Size(465, 55);
             this.accumalatedPower.TabIndex = 11;
@@ -195,7 +196,7 @@
             this.APLabel.AutoSize = true;
             this.APLabel.BackColor = System.Drawing.Color.White;
             this.APLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.APLabel.Location = new System.Drawing.Point(682, 414);
+            this.APLabel.Location = new System.Drawing.Point(579, 353);
             this.APLabel.Name = "APLabel";
             this.APLabel.Size = new System.Drawing.Size(0, 55);
             this.APLabel.TabIndex = 12;
@@ -204,7 +205,7 @@
             // 
             this.plusResistance.BackColor = System.Drawing.Color.White;
             this.plusResistance.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.plusResistance.Location = new System.Drawing.Point(821, 354);
+            this.plusResistance.Location = new System.Drawing.Point(718, 293);
             this.plusResistance.Name = "plusResistance";
             this.plusResistance.Size = new System.Drawing.Size(50, 43);
             this.plusResistance.TabIndex = 13;
@@ -216,7 +217,7 @@
             // 
             this.minResistance.BackColor = System.Drawing.Color.White;
             this.minResistance.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.minResistance.Location = new System.Drawing.Point(682, 354);
+            this.minResistance.Location = new System.Drawing.Point(579, 293);
             this.minResistance.Name = "minResistance";
             this.minResistance.Size = new System.Drawing.Size(50, 43);
             this.minResistance.TabIndex = 14;
@@ -227,7 +228,7 @@
             // resistanceTextbox
             // 
             this.resistanceTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.resistanceTextbox.Location = new System.Drawing.Point(738, 354);
+            this.resistanceTextbox.Location = new System.Drawing.Point(635, 293);
             this.resistanceTextbox.Name = "resistanceTextbox";
             this.resistanceTextbox.ReadOnly = true;
             this.resistanceTextbox.Size = new System.Drawing.Size(77, 44);
@@ -238,41 +239,61 @@
             // 
             this.PrivateChat.FormattingEnabled = true;
             this.PrivateChat.ItemHeight = 15;
-            this.PrivateChat.Location = new System.Drawing.Point(848, 76);
+            this.PrivateChat.Location = new System.Drawing.Point(865, 15);
             this.PrivateChat.Name = "PrivateChat";
-            this.PrivateChat.Size = new System.Drawing.Size(123, 214);
+            this.PrivateChat.Size = new System.Drawing.Size(285, 274);
             this.PrivateChat.TabIndex = 16;
             // 
             // GlobalChat
             // 
             this.GlobalChat.FormattingEnabled = true;
             this.GlobalChat.ItemHeight = 15;
-            this.GlobalChat.Location = new System.Drawing.Point(977, 76);
+            this.GlobalChat.Location = new System.Drawing.Point(1166, 15);
             this.GlobalChat.Name = "GlobalChat";
-            this.GlobalChat.Size = new System.Drawing.Size(123, 214);
+            this.GlobalChat.Size = new System.Drawing.Size(279, 274);
             this.GlobalChat.TabIndex = 16;
             // 
             // PrivateChatBox
             // 
-            this.PrivateChatBox.Location = new System.Drawing.Point(848, 280);
+            this.PrivateChatBox.Location = new System.Drawing.Point(865, 295);
             this.PrivateChatBox.Name = "PrivateChatBox";
-            this.PrivateChatBox.Size = new System.Drawing.Size(123, 23);
+            this.PrivateChatBox.Size = new System.Drawing.Size(225, 23);
             this.PrivateChatBox.TabIndex = 17;
-            this.PrivateChatBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // GlobalChatBox
             // 
-            this.GlobalChatBox.Location = new System.Drawing.Point(977, 280);
+            this.GlobalChatBox.Location = new System.Drawing.Point(1167, 296);
             this.GlobalChatBox.Name = "GlobalChatBox";
-            this.GlobalChatBox.Size = new System.Drawing.Size(123, 23);
+            this.GlobalChatBox.Size = new System.Drawing.Size(226, 23);
             this.GlobalChatBox.TabIndex = 17;
-            this.GlobalChatBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
+            // privSendButton
+            // 
+            this.privSendButton.Location = new System.Drawing.Point(1097, 295);
+            this.privSendButton.Name = "privSendButton";
+            this.privSendButton.Size = new System.Drawing.Size(53, 24);
+            this.privSendButton.TabIndex = 18;
+            this.privSendButton.Text = ">";
+            this.privSendButton.UseVisualStyleBackColor = true;
+            this.privSendButton.Click += new System.EventHandler(this.privSendButton_Click);
+            // 
+            // globalSendButton
+            // 
+            this.globalSendButton.Location = new System.Drawing.Point(1400, 296);
+            this.globalSendButton.Name = "globalSendButton";
+            this.globalSendButton.Size = new System.Drawing.Size(45, 23);
+            this.globalSendButton.TabIndex = 19;
+            this.globalSendButton.Text = ">";
+            this.globalSendButton.UseVisualStyleBackColor = true;
+            this.globalSendButton.Click += new System.EventHandler(this.globalSendButton_Click);
             // 
             // DoctorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1132, 485);
+            this.ClientSize = new System.Drawing.Size(1513, 618);
+            this.Controls.Add(this.globalSendButton);
+            this.Controls.Add(this.privSendButton);
             this.Controls.Add(this.GlobalChatBox);
             this.Controls.Add(this.PrivateChatBox);
             this.Controls.Add(this.GlobalChat);
@@ -325,6 +346,8 @@
         private System.Windows.Forms.ListBox GlobalChat;
         private System.Windows.Forms.TextBox PrivateChatBox;
         private System.Windows.Forms.TextBox GlobalChatBox;
+        private System.Windows.Forms.Button privSendButton;
+        private System.Windows.Forms.Button globalSendButton;
     }
 }
 

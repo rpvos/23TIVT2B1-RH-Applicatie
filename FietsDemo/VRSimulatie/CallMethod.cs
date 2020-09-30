@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Cache;
 using System.Text;
 using TCP_naar_VR;
 
@@ -21,11 +22,11 @@ namespace simulatie
         }
 
         internal void SetTime(int time)
-        {            
+        {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TimeSetMessage.json");
-            timeMessage.GetDataContent()["time"] = time;           
+            timeMessage.GetDataContent()["time"] = time;
             tcpClient.SendMessage(timeMessage.ToString());
-            
+
         }
 
         internal void AddNode()
@@ -33,6 +34,37 @@ namespace simulatie
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
             tcpClient.SendMessage(timeMessage.ToString());
         }
+
+        internal void AddUniversalNode(string name, int[] pos, int[] rotation)
+        {
+            TunnelMessage universalNodeAdd = tcpClient.GetTunnelMessage("UniversalNodeAdd.json");
+            JObject data = universalNodeAdd.GetDataContent();
+            data["name"] = name;
+
+           
+            //dynamic data = new
+            //{
+            //    id = "scene/node/add",
+            //    data = new
+            //    {
+            //        name= name,
+            //        components = new
+            //        {
+
+            //        }
+            //    }
+            //};
+
+            JObject components = (JObject)data["components"];
+            JObject transform = (JObject)components["transform"];
+            transform["position"] = new JArray(pos);
+            transform["rotate"] = new JArray(rotation);
+
+            Console.WriteLine(universalNodeAdd.ToString());
+
+            tcpClient.SendMessage(universalNodeAdd.ToString());
+        }
+
 
         internal void AddObject(string fileNameModel, string objectName, int x, int y, int z, float scale)
         {
@@ -91,17 +123,17 @@ namespace simulatie
 
         internal void AddRoute()
         {
-            ArrayList points = routePoints; 
+            ArrayList points = routePoints;
             TunnelMessage routeMessage = tcpClient.GetTunnelMessage("RouteSetMessage.json");
             JObject data = routeMessage.GetDataContent();
             JArray nodesArray = (JArray)data["nodes"];
             foreach (RoutePoint p in points)
-            {              
+            {
                 JObject point = JObject.Parse("{\"pos\": [], \"dir\": []}");
 
                 point["pos"] = new JArray(p.Pos);
                 point["dir"] = new JArray(p.Dir);
-               
+
                 nodesArray.Add(point);
             }
             tcpClient.SendMessage(routeMessage.ToString());
@@ -112,7 +144,7 @@ namespace simulatie
             routePoints.Add(new RoutePoint(coord, coord2));
         }
 
-        
+
 
         internal struct RoutePoint
         {
@@ -133,6 +165,34 @@ namespace simulatie
             data["nodeid"] = objects["tree1"];
 
             tcpClient.SendMessage(tcpClient.GetTunnelMessage("FollowRoute.json").ToString());
+        }
+
+        //Clear a panel in the vr simulator for first use
+        internal void ClearPanel(string uuid)
+        {
+            Console.WriteLine("CLEARING PANEL");
+            TunnelMessage clearPannelMessage = tcpClient.GetTunnelMessage("ClearPanel.json");
+            JObject data = clearPannelMessage.GetDataContent();
+            
+            data["id"] = uuid;
+
+            Console.WriteLine("ID of the clear data: " + (string)data["id"]);
+
+            tcpClient.SendMessage(tcpClient.GetTunnelMessage("ClearPanel.json").ToString());
+        }
+
+        //Draw text on a panel in the vr simulator
+        internal void SetText(string text, string uuid, double[] coord)
+        {
+            Console.WriteLine("REACHED SETTEXT METHOD!!!");
+            Console.WriteLine("TEXT: {0}", text);
+            TunnelMessage setTextMessage = tcpClient.GetTunnelMessage("SetText.json");
+            JObject data = setTextMessage.GetDataContent();
+
+            data["id"] = uuid;
+            data["text"] = text;
+            data["postition"] = new JArray(coord);
+            tcpClient.SendMessage(tcpClient.GetTunnelMessage("SetText.json").ToString());
         }
     }
 }

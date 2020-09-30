@@ -425,7 +425,7 @@ namespace FietsDemo
                     break;
                 case "heartrate":
                     this.gui.getForm().setHeartrate(value);
-                    this.tcpClientVR.heartrate = value;
+                    this.tcpClientVR.heartRate = value;
                     break;
                 case "AP":
                     this.gui.getForm().setAP(value);

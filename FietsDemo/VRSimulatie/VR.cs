@@ -21,7 +21,7 @@ namespace TCP_naar_VR
         private string id;
         private CallMethod callMethod;
         internal double speed { get; set; }
-        internal double heartrate{ get; set; }
+        internal double heartRate{ get; set; }
         internal double AP { get; set; }
         internal double DT { get; set; }
         internal double elapsedTime { get; set; }
@@ -127,6 +127,8 @@ namespace TCP_naar_VR
             JObject tempdata = (JObject)json["data"];
             JObject data = (JObject)tempdata["data"];
 
+            Console.WriteLine(data);
+
             if ((string)data["id"] == "scene/node/add")
             {
                 if ((string)data["status"] == "ok")
@@ -157,9 +159,11 @@ namespace TCP_naar_VR
                     {
                         callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_07.png", "", uuid);
                     }
-
-
-
+                    //If name equals to "panel", clear the panel for first use
+                    if (name == "panel")
+                    {
+                        callMethod.ClearPanel(uuid);
+                    }
 
                 }
                 else
@@ -210,6 +214,7 @@ namespace TCP_naar_VR
             {
                 if ((string)data["status"] == "ok")
                 {
+                    //Add 10 trees on random positions
                     Random random = new Random();
                     for (int i = 0; i < 10; i++)
                     {
@@ -219,6 +224,49 @@ namespace TCP_naar_VR
                         float scale = (float)(0.1 * random.Next(20));
                         callMethod.AddObject("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, x, y, 0, scale);
                     }
+                }
+            }
+            //After clearing the panel, call the setMethod to initialize it
+            else if ((string)data["id"] == "route/panel/clear")
+            {
+                callMethod.SetText("Welcome", objects["panel"], new double[] { 0, 0 });
+
+                //foreach (var s in objects)
+                //{
+                //    if (s.Key == "panel")
+                //    {
+                //        Console.WriteLine("GOT THROUGH PANELCLEAR METHOD");
+                //        Console.WriteLine("FIRST CALL OF SETTEXT METHOD");
+                //        callMethod.SetText("Welcome", s.Value, new double[] { 0, 0 });
+                //    }
+                //}
+            }
+            //After getting the response of the drawText, add the values of the ebike
+            else if((string)data["id"] == "route/panel/drawtext")
+            {               
+                string status = (string)data["status"];
+                Console.WriteLine("Status for set text: {0}", status);
+                if((string)data["status"] == "ok")
+                {
+                    foreach (var s in objects)
+                    {
+                        if (s.Key == "panel")
+                        {
+                            string speedValue = this.speed.ToString();
+                            string heartRateValue = this.heartRate.ToString();
+                            string distanceTravelled = this.DT.ToString();
+                            string elapsedTime = this.elapsedTime.ToString();
+                            string resistance = this.resistance.ToString();
+
+                            callMethod.SetText(speedValue, s.Value, new double[] { 0, 20 });
+                            callMethod.SetText(heartRateValue, s.Value, new double[] { 0, 40 });
+                            callMethod.SetText(distanceTravelled, s.Value, new double[] { 0, 60 });
+                            callMethod.SetText(elapsedTime, s.Value, new double[] { 0, 80 });
+                            callMethod.SetText(resistance, s.Value, new double[] { 0, 100 });
+
+                        }
+                    }
+                   
                 }
             }
         }
@@ -231,16 +279,17 @@ namespace TCP_naar_VR
             string id = (string)data["id"];
 
             if (status == "ok")
-            {
+            { 
+                Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
                 this.id = id;
                 //callMethod.SetTime(12);
                 callMethod.AddTerrain();
                 callMethod.AddNode();
-
+                callMethod.AddUniversalNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0});
                 //followRoute("");
             }
 
-            Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
+           
         }
 
         private void PrintUsers(JObject json)

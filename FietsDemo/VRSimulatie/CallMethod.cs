@@ -126,9 +126,21 @@ namespace simulatie
 
             double[] heights = new double[40000];
             Random random = new Random();
+            double lastInt = 0.0;
+            double reduction = 1;
             for (int i = 0; i < heights.Length; i++)
             {
-                heights[i] = 0.03 * random.Next(10);
+                if (i > 200)
+                {
+                    lastInt = (heights[i - 200] + heights[i - 1]) / 2;
+                }
+                if (i % 1000 == 0)
+                {
+                    reduction += ((random.NextDouble() * 2) - 1) / 50;
+                }
+                heights[i] = (lastInt + ((random.NextDouble() * 2 - reduction) / 10));
+                lastInt = heights[i];
+
             }
 
             JArray jArray = new JArray(heights);

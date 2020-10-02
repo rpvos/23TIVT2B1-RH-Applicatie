@@ -69,14 +69,10 @@ namespace FietsDemo
 
         public void startClient()
         {
-            this.client = new Client(this,generateID());
+            this.client = new Client(this);
 
         }
 
-        public int generateID()
-        {
-            return random.Next(10000, 99999); 
-        }
 
         public void startVR()
         {

@@ -14,12 +14,10 @@ namespace ServerClient
         private StreamWriter streamWriter;
         private StreamReader streamReader;
         private Program mainProgram;
-        private int ID;
 
 
-        public Client(Program program, int ID)
+        public Client(Program program)
         {
-            this.ID = ID;
             this.mainProgram = program;
 
 
@@ -40,7 +38,7 @@ namespace ServerClient
         {
             try
             {
-                this.streamWriter.WriteLine(this.ID +""+message);
+                this.streamWriter.WriteLine(message);
                 this.streamWriter.Flush();
             }
             catch { }
@@ -54,13 +52,7 @@ namespace ServerClient
                 try
                 {
                     String a = this.streamReader.ReadLine();
-                    Console.WriteLine(a);
-                    if(a.Substring(0,4) == "RSTE")
-                    {
-                        double resistance = Int32.Parse(a.Substring(9));
-                        mainProgram.setResistance(resistance);
-                        mainProgram.setValuesInGui("resistance", resistance);
-                    }
+                    
                 }
                 catch
                 {

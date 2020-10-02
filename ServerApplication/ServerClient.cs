@@ -52,16 +52,6 @@ namespace DoctorServer
                 {
                     String a = streamReader.ReadLine();
 
-                    if (a.Substring(5, 4) == "RSTE")
-                    {
-                        server.WriteToOneClient(a.Substring(5));
-                    }
-                    else
-                    {
-                        this.server.WriteToAllDoctors(a);
-
-                    }
-
                 }
                 catch
                 {

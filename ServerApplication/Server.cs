@@ -61,7 +61,7 @@ namespace DoctorServer
             String a = reader.ReadLine();
             ServerClient serverClient;
             Thread thread = new Thread(HandleClientThread);
-            if (a.Substring(5) == "DOCTOR")
+            if (a == "DOCTOR")
             {
                 serverClient = new ServerClient(client, a,writer,reader,this);
                 Console.WriteLine("A Doctor joined.");
@@ -70,13 +70,12 @@ namespace DoctorServer
                 thread.Start(serverClient);
 
             }
-            else if(a.Substring(5) == "CLIENT")
+            else if(a == "CLIENT")
             {
                 serverClient = new ServerClient(client, a,writer,reader,this);
                 Console.WriteLine("A Client joined.");
 
                 this.clients.Add(serverClient);
-                this.WriteToAllDoctors("NEW" + a.Substring(0,5));
                 thread.Start(serverClient);
 
 
@@ -90,19 +89,6 @@ namespace DoctorServer
         {
             return this.clients;
         }
-
-        //public void saveChatLogs()
-        //{
-        //    String path = System.Environment.CurrentDirectory + "\\chatlogs.txt";
-        //    while (true)
-        //    {
-        //        String a = Console.ReadLine();
-        //        if (a == "Save")
-        //        {
-        //            File.WriteAllLines(path, this.chatlogs);
-        //        }
-        //    }
-        //}
 
         public void HandleClientThread(object obj)
         {
@@ -118,20 +104,14 @@ namespace DoctorServer
             }
         }
 
-        public void WriteToOneClient(string message)
+        public void WriteToOneClient(ServerClient client, string message)
         {
-            foreach(ServerClient client in clients)
-            {
-                if(client.username.Substring(0,5) == message.Substring(4,5)){
-                    client.WriteTextMessage(message);
-
-                }
-            }
+                client.WriteTextMessage(message);
         }
 
         public void WriteToAllDoctors(string message)
         {
-            foreach(ServerClient client in doctors)
+            foreach(ServerClient client in this.doctors)
             {
                 client.WriteTextMessage(message);
             }

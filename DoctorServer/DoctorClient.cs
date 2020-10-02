@@ -21,7 +21,6 @@ namespace DoctorServer
         private StreamReader streamReader;
         private List<Bike> bikes;
         private Random random;
-        public int ID { get; set; }
 
         [STAThread]
         static void Main()
@@ -34,7 +33,6 @@ namespace DoctorServer
         public void Start()
         {
             this.random = new Random();
-            this.ID = generateID();
             startClient();
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
@@ -45,10 +43,7 @@ namespace DoctorServer
             Application.Run(mainForm);
         }
 
-        public int generateID()
-        {
-            return random.Next(10000, 99999);
-        }
+  
 
         public void startClient()
         {
@@ -69,7 +64,7 @@ namespace DoctorServer
         {
             try
             {
-                this.streamWriter.WriteLine(this.ID+message);
+                this.streamWriter.WriteLine(message);
                 this.streamWriter.Flush();
             }
             catch { }
@@ -84,44 +79,7 @@ namespace DoctorServer
                 {
                     String a = this.streamReader.ReadLine();
 
-                    if (a.Substring(0, 3) == "NEW")
-                    {
-                        Bike bike = new Bike(a.Substring(3));
-                        this.bikes.Add(bike);
-                        this.mainForm.addBike(bike);
-                    }
-
-                    else if (mainForm.selectedIndex != -1)
-                    {
-                        if (a.Substring(0, 5) == mainForm.selectedBike.ID)
-                        {
-
-                            if (a[5] == 's' && a[6] == 'p')
-                            {
-                                this.mainForm.setSpeed(a.Substring(a.IndexOf(":") + 2));
-                            }
-                            else if (a[5] == 'h' && a[6] == 'e')
-                            {
-                                this.mainForm.setHeartrate(a.Substring(a.IndexOf(":") + 2));
-
-                            }
-                            else if (a[5] == 'D' && a[6] == 'T')
-                            {
-                                this.mainForm.setDT(a.Substring(a.IndexOf(":") + 2));
-
-                            }
-                            else if (a[5] == 'A' && a[6] == 'P')
-                            {
-                                this.mainForm.setAP(a.Substring(a.IndexOf(":") + 2));
-
-                            }
-                            else if (a[5] == 'e' && a[6] == 'l')
-                            {
-                                this.mainForm.setElapsedTime(a.Substring(a.IndexOf(":") + 2));
-
-                            }
-                        }
-                    }
+                    
                 }
                 catch
                 {

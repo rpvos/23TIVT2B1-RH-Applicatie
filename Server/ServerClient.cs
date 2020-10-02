@@ -23,7 +23,7 @@ namespace Server
 
         private RSAClient rsaClient;
 
-        private int sessionID;
+        private string username;
         private StringBuilder logger;
 
         public ServerClient(TcpClient client, Server server)
@@ -83,9 +83,9 @@ namespace Server
         private void log()
         {
             string location = Environment.CurrentDirectory;
-            if (sessionID != 0)
+            if (username != null)
             {
-                using (StreamWriter streamWriter = new StreamWriter(location + $"/log{sessionID}.txt", false))
+                using (StreamWriter streamWriter = new StreamWriter(location + $"/log{username}.txt", false))
                 {
                     streamWriter.Write(this.logger.ToString());
                     streamWriter.Flush();
@@ -138,7 +138,7 @@ namespace Server
 
         private bool handleUserCredentials(JObject data)
         {
-            string username = (string)data["Username"];
+            this.username = (string)data["Username"];
             string password = (string)data["Password"];
 
             return server.checkUser(username, password);
@@ -175,15 +175,12 @@ namespace Server
 
         private string getUserCredentialsResponse(bool hasSucceeded)
         {
-            this.sessionID = server.getSessionID();
-
             dynamic json = new
             {
                 Type = "userCredentialsResponse",
                 Data = new
                 {
-                    Status = hasSucceeded,
-                    Session = sessionID
+                    Status = hasSucceeded
                 },
                 Checksum = 0
             };

@@ -12,8 +12,11 @@ namespace Server
     {
 
         private List<ServerClient> clients;
+        private List<ServerClient> doctors;
+
         private TcpListener listener;
-        private Dictionary<string, string> users;
+        private Dictionary<string, string> clientDataBase;
+        private Dictionary<string, string> doktorDataBase;
 
 
         static void Main(string[] args)
@@ -24,7 +27,10 @@ namespace Server
         public Server()
         {
             this.clients = new List<ServerClient>();
-            this.users = new Dictionary<string, string>();
+            this.doctors = new List<ServerClient>();
+
+            this.clientDataBase = new Dictionary<string, string>();
+            this.doktorDataBase = new Dictionary<string, string>();
             fillUsers();
 
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
@@ -40,7 +46,8 @@ namespace Server
 
         private void fillUsers()
         {
-            users.Add("admin", "admin");
+            clientDataBase.Add("admin", "admin");
+            doktorDataBase.Add("admin", "admin");
         }
 
         private void OnConnect(IAsyncResult ar)
@@ -60,10 +67,11 @@ namespace Server
             Console.WriteLine("Client disconnected");
         }
 
+        //todo check if it is a doktor or patient
         internal bool checkUser(string username, string password)
         {
-            if (users.ContainsKey(username))
-                if (users[username] == password)
+            if (clientDataBase.ContainsKey(username))
+                if (clientDataBase[username] == password)
                     return true;
 
             return false;

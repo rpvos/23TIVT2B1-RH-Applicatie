@@ -22,7 +22,7 @@ namespace DoctorServer
         private List<Bike> bikes;
         private Random random;
 
-        [STAThread]
+        
         static void Main()
         {
             DoctorClient doctorServer = new DoctorClient();
@@ -48,7 +48,7 @@ namespace DoctorServer
         public void startClient()
         {
             this.bikes = new List<Bike>();
-            this.server = new TcpClient("127.0.0.1", 1330);
+            this.server = new TcpClient("127.0.0.1", 8080);
 
             this.streamWriter = new StreamWriter(server.GetStream(), Encoding.ASCII, 1, true);
             this.streamReader = new StreamReader(server.GetStream(), Encoding.ASCII);

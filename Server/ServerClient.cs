@@ -125,6 +125,10 @@ namespace Server
                         sendUserCredentialsResponse(handleUserCredentials(data));
                         break;
 
+                    case "updateType":
+                        handleUpdateInformation(data);
+                        break;
+
                     default:
                         Console.WriteLine("Invalid type");
                         break;
@@ -134,6 +138,12 @@ namespace Server
             {
                 Console.WriteLine("Invalid message");
             }
+        }
+
+        private void handleUpdateInformation(JObject data)
+        {
+            //todo handle update information
+            throw new NotImplementedException();
         }
 
         private bool handleUserCredentials(JObject data)
@@ -173,7 +183,7 @@ namespace Server
 
         #region message construction
 
-        private string getJsonObject(string type, JObject data)
+        private string getJsonObject(string type, dynamic data)
         {
             dynamic json = new
             {

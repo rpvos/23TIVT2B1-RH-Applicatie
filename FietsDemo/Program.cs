@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Avans.TI.BLE;
-using ServerClient;
+using Client;
 using TCP_naar_VR;
 
 namespace FietsDemo
@@ -36,7 +36,7 @@ namespace FietsDemo
 
         private double resistance = 0;
 
-        private Client client;
+        private Client.Client client;
 
         private TcpClientVR tcpClientVR;
 
@@ -69,7 +69,7 @@ namespace FietsDemo
 
         public void startClient()
         {
-            this.client = new Client(this);
+            this.client = new Client.Client();
 
         }
 
@@ -421,7 +421,7 @@ namespace FietsDemo
 
         public void setValuesInGui(String valueType, double value)
         {
-            this.client.WriteTextMessageToServer(valueType + ": " + value);
+            this.client.sendUpdatedValues(valueType,value);
 
             switch (valueType)
             {

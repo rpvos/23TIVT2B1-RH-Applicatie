@@ -90,8 +90,9 @@ namespace Client
                     return;
 
                 JObject data = (JObject)json["Data"];
+                string type = json["Type"].ToString();
 
-                switch (json["Type"].ToString())
+                switch (type)
                 {
                     case "response":
                         if (handleConnectionResponse(data))

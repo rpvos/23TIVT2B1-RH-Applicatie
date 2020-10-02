@@ -39,8 +39,5 @@ namespace FietsDemo
             this.form.setResistance(resistance);
         }
 
-        public void stop()
-        {
-        }
     }
 }

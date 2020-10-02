@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Client
+namespace Server
 {
     class RSAClient
     {
@@ -19,20 +19,14 @@ namespace Client
             this.reciever = new RSACryptoServiceProvider(384);
         }
 
-        
-        public byte[] encryptMessage(byte[] message)
+        public byte[] encryptMessage(int message)
         {
-            return sender.Encrypt(message, false);
+            return sender.Encrypt(Encoding.UTF8.GetBytes(message.ToString()), false);
         }
 
         public string decryptMessage(string message)
         {
-            return Encoding.UTF8.GetString(reciever.Decrypt(Encoding.UTF8.GetBytes(message), false));
-        }
-
-        public string decryptMessage(byte[] message)
-        {
-            return Convert.ToBase64String(reciever.Decrypt(message, false));
+            return Encoding.ASCII.GetString(reciever.Decrypt(Encoding.UTF8.GetBytes(message), false));
         }
 
         public void setKey(byte[] modulus, byte[] exponent)

@@ -6,48 +6,41 @@ using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
+using System.Threading.Tasks;
 
-namespace Server
+namespace Client
 {
-    internal class ServerClient
+    class Client
     {
-
-        private TcpClient client;
-        private Server server;
-
+        private TcpClient server;
         private NetworkStream stream;
+
+        private RSAClient rsaClient;
 
         private byte[] buffer;
         private string totalBuffer;
 
-        private RSAClient rsaClient;
+        private bool connectedSuccesfully;
 
-        private string username;
-        private StringBuilder logger;
-
-        public ServerClient(TcpClient client, Server server)
+        public Client()
         {
-            this.client = client;
-            this.server = server;
-
-            this.buffer = new byte[1024];
-            this.stream = client.GetStream();
-
             this.rsaClient = new RSAClient();
 
-            this.logger = new StringBuilder();
+            this.server = new TcpClient("127.0.0.1", 8080);
 
+            this.stream = this.server.GetStream();
+            this.buffer = new byte[1024];
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+
+            WriteTextMessage(getRequestMessage(this.rsaClient.getModulus(), this.rsaClient.getExponent()));
+
+            Console.ReadKey();
         }
 
         #region stream dynamics
-
         public void WriteTextMessage(string message)
         {
-            logger.Append("\nServer:\n" + message);
-
             byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
             stream.Write(dataAsBytes, 0, dataAsBytes.Length);
             stream.Flush();
@@ -63,44 +56,18 @@ namespace Server
             }
             catch (IOException)
             {
-                server.Disconnect(this);
-                log();
+                Console.WriteLine("Server disconnected"); ;
                 return;
             }
 
             while (totalBuffer.Contains("\r\n\r\n"))
             {
                 string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-
-                logger.Append("\nClient:\n" + packet);
-
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 handleData(packet);
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
-
-        private void log()
-        {
-            string location = Environment.CurrentDirectory;
-            if (username != null)
-            {
-                using (StreamWriter streamWriter = new StreamWriter(location + $"/log{username}.txt", false))
-                {
-                    streamWriter.Write(this.logger.ToString());
-                    streamWriter.Flush();
-                }
-            }
-            else
-            {
-                using (StreamWriter streamWriter = new StreamWriter(location + $"/logUnconnected.txt", true))
-                {
-                    streamWriter.Write(this.logger.ToString());
-                    streamWriter.Flush();
-                }
-            }
-        }
-
         #endregion
 
         #region handle recieved data
@@ -113,20 +80,30 @@ namespace Server
                     return;
 
                 JObject data = (JObject)json["Data"];
+                string type = json["Type"].ToString();
 
-                switch (json["Type"].ToString())
+
+
+                switch (type)
                 {
-                    case "request":
-                        if (handleConnectionRequest(data))
-                            sendConnectionRequest();
+                    case "response":
+                        if (handleConnectionResponse(data))
+                        {
+                            //todo get username and pasword from client
+                            sendCredentialMessage("", "");
+                            connectedSuccesfully = true;
+                        }
                         break;
 
-                    case "userCredentials":
-                        sendUserCredentialsResponse(handleUserCredentials(data));
-                        break;
-
-                    case "updateType":
-                        handleUpdateInformation(data);
+                    case "userCredentialsResponse":
+                        if (handleUserCredentialsResponse(data))
+                        {
+                            Console.WriteLine("Login succesful");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Login failed");
+                        }
                         break;
 
                     default:
@@ -140,21 +117,19 @@ namespace Server
             }
         }
 
-        private void handleUpdateInformation(JObject data)
+        private bool handleUserCredentialsResponse(JObject data)
         {
-            //todo handle update information
-            throw new NotImplementedException();
+            //check if connected succesfully
+            if (connectedSuccesfully)
+            {
+                return (bool)data["Status"];
+            }
+            else
+            {
+                return false;
+            }
         }
-
-        private bool handleUserCredentials(JObject data)
-        {
-            this.username = (string)data["Username"];
-            string password = (string)data["Password"];
-
-            return server.checkUser(username, password);
-        }
-
-        private bool handleConnectionRequest(JObject json)
+        private bool handleConnectionResponse(JObject json)
         {
             byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
             byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
@@ -181,6 +156,31 @@ namespace Server
         }
         #endregion
 
+        #region send handlers
+        private void sendCredentialMessage(string username, string password)
+        {
+            username = "admin";
+            password = "admin";
+
+            WriteTextMessage(getUserDetails(username, password));
+        }
+
+        internal Task sendUpdatedValues(int heartrate, double accDistance, double speed, double instPower, double accPower)
+        {
+            WriteTextMessage(getUpdateMessageString(heartrate, accDistance, speed, instPower, accPower));
+            return Task.CompletedTask;
+        }
+
+        internal Task sendUpdatedValues(string type, double value)
+        {
+            WriteTextMessage(getUpdateMessageString(type, value));
+            return Task.CompletedTask;
+        }
+
+
+
+        #endregion
+
         #region message construction
 
         private string getJsonObject(string type, dynamic data)
@@ -194,25 +194,42 @@ namespace Server
             return addChecksum(json);
         }
 
-        private string getUserCredentialsResponse(bool hasSucceeded)
+        private string getUserDetails(string username, string password)
         {
             dynamic data = new
             {
-                Status = hasSucceeded
+                Username = username,
+                Password = password
             };
 
-            return getJsonObject("userCredentialsResponse", data);
+            return getJsonObject("userCredentials", data);
+        }
+        private string getUpdateMessageString(int heartrate, double accDistance, double speed, double instPower, double accPower)
+        {
+            dynamic data = new
+            {
+                HeartRate = heartrate,
+                AccumulatedDistance = accDistance,
+                Speed = speed,
+                InstantaniousPower = instPower,
+                AccumulatedPower = accPower
+            };
+
+            return getJsonObject("update", data);
         }
 
-        private string getConnectionResponseMessage(byte[] modulus, byte[] exponent)
+        private string getUpdateMessageString(string type, double value)
         {
             dynamic data = new
             {
-                Modulus = modulus,
-                Exponent = exponent
+                Type = type,
+                Data = new
+                {
+                    Value = value
+                }
             };
 
-            return getJsonObject("response", data);
+            return getJsonObject("updateType", data);
         }
 
         private string getMessageString(string message)
@@ -225,9 +242,21 @@ namespace Server
             return getJsonObject("message", data);
         }
 
+        private string getRequestMessage(byte[] modulus, byte[] exponent)
+        {
+
+            dynamic data = new
+            {
+                Modulus = modulus,
+                Exponent = exponent
+            };
+
+            return getJsonObject("request", data);
+        }
+
         private string addChecksum(dynamic dynamicJson)
         {
-            JObject json = JObject.Parse(System.Text.Json.JsonSerializer.Serialize(dynamicJson));
+            JObject json = JObject.Parse(JsonConvert.SerializeObject(dynamicJson));
             byte checksum = 0;
             byte[] data = Encoding.ASCII.GetBytes(((JObject)json["Data"]).ToString());
             foreach (byte b in data)
@@ -238,31 +267,6 @@ namespace Server
 
             return json.ToString();
         }
-        #endregion
-
-        #region send handlers
-
-        private void sendUserCredentialsResponse(bool hasSucceeded)
-        {
-            if (hasSucceeded)
-                Console.WriteLine("Login attempt succesful");
-            else
-                Console.WriteLine("Login attempt failed");
-
-            WriteTextMessage(getUserCredentialsResponse(hasSucceeded));
-        }
-
-
-        private void sendConnectionRequest()
-        {
-            WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));
-        }
-
-        internal void sendMessage(string message)
-        {
-            WriteTextMessage(getMessageString(message));
-        }
-
         #endregion
 
     }

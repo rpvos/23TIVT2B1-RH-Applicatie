@@ -20,8 +20,6 @@ namespace FietsDemo
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
             InitializeComponent();
-            this.resistanceTextbox.MouseWheel += new MouseEventHandler(changeResistance);
-
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -77,67 +75,12 @@ namespace FietsDemo
         {
             ResistanceValue.Invoke((MethodInvoker)(() =>
             {
-                ResistanceValue.Text = resistance + " %";
+                ResistanceValue.Text = resistance+"%";
             }));
         }
 
 
-        public void changeResistance(object sender, MouseEventArgs e)
-        {
-            if (e.Delta > 0)
-            {
-                int i = Int32.Parse(resistanceTextbox.Text);
-                i++;
-                if (i > 100)
-                {
-                    i = 100;
-                }
-                resistanceTextbox.Text = i + "";
-
-                gui.setResistance(i);
-            }
-            else if (e.Delta < 0)
-            {
-                int i = Int32.Parse(resistanceTextbox.Text);
-                i--;
-                if (i < 0)
-                {
-                    i = 0;
-                }
-                resistanceTextbox.Text = i + "";
-
-                gui.setResistance(i);
-
-            }
-
-        }
-
-        private void minResistance_Click(object sender, EventArgs e)
-        {
-            int i = Int32.Parse(resistanceTextbox.Text);
-            i -= 5;
-            if (i < 0)
-            {
-                i = 0;
-            }
-            resistanceTextbox.Text = i + "";
-            gui.setResistance(i);
-
-        }
-
-        private void plusResistance_Click(object sender, EventArgs e)
-        {
-            int i = Int32.Parse(resistanceTextbox.Text);
-            i += 5;
-            if (i > 100)
-            {
-                i = 100;
-            }
-            resistanceTextbox.Text = i + "";
-            gui.setResistance(i);
-
-        }
-
+       
 
 
         private void ESPSimulatorButton_Click(object sender, EventArgs e)
@@ -153,5 +96,16 @@ namespace FietsDemo
             ESPSimulatorButton.BackColor = Color.White;
             this.gui.startSimulator();
         }
+
+        private void Speed_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        public void addMessage(string message)
+        {
+            doctorChat.Items.Add(message);
+        }
     }
+
 }

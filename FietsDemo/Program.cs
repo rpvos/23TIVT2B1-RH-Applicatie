@@ -6,13 +6,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Avans.TI.BLE;
+using Client;
+using TCP_naar_VR;
 
 namespace FietsDemo
 {
     public class Program : IBLEcallBack
     {
 
-        private GUI gui;
+        public GUI gui { get; set; }
         private Simulator simulator;
         private BikeSimulator bikeSimulator;
 
@@ -34,6 +36,12 @@ namespace FietsDemo
 
         private double resistance = 0;
 
+        private Client.Client client;
+
+        private TcpClientVR tcpClientVR;
+
+        private Random random;
+
         static void Main(string[] args)
         {
             Program program = new Program();
@@ -42,13 +50,34 @@ namespace FietsDemo
 
         }
 
+
         public void start()
         {
-            Thread thread = new Thread(startGUI);
-            thread.Start();
+            this.random = new Random();
 
+            Thread guiThread = new Thread(startGUI);
+            guiThread.Start();
+
+            Thread clientThread = new Thread(startClient);
+            clientThread.Start();
+
+            Thread VRThread = new Thread(startVR);
+            VRThread.Start();
             
             initialize();
+        }
+
+        public void startClient()
+        {
+            this.client = new Client.Client();
+
+        }
+
+
+        public void startVR()
+        {
+            tcpClientVR = new TcpClientVR("145.48.6.10", 6666);
+            tcpClientVR.SendKickOff();
         }
 
         public void startSimulator()
@@ -77,7 +106,6 @@ namespace FietsDemo
             // To stop the simulator we first stop the simulator thread and the GUI.
             Console.WriteLine("Stopping Simulator...");
             this.bikeSimulator.running = false;
-            this.simulator.stop();
             // After that we subscribe to the BLE service again to continue measuring.
             this.BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
             this.HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
@@ -393,25 +421,33 @@ namespace FietsDemo
 
         public void setValuesInGui(String valueType, double value)
         {
+            this.client.sendUpdatedValues(valueType,value);
+
             switch (valueType)
             {
                 case "speed":
                     this.gui.getForm().setSpeed(value);
+                    this.tcpClientVR.speed = value;
                     break;
                 case "heartrate":
                     this.gui.getForm().setHeartrate(value);
+                    this.tcpClientVR.heartrate = value;
                     break;
                 case "AP":
                     this.gui.getForm().setAP(value);
+                    this.tcpClientVR.AP = value;
                     break;
                 case "DT":
                     this.gui.getForm().setDT(value);
+                    this.tcpClientVR.DT = value;
                     break;
                 case "elapsedTime":
                     this.gui.getForm().setElapsedTime(value);
+                    this.tcpClientVR.elapsedTime = value;
                     break;
                 case "resistance":
                     this.gui.getForm().setResistance(value);
+                    this.tcpClientVR.resistance = value;
                     break;
 
             }

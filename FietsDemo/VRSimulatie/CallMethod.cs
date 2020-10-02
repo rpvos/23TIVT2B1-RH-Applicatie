@@ -20,7 +20,21 @@ namespace simulatie
             this.objects = objects;
             this.routePoints = new ArrayList();
         }
+        internal void DeleteGroundPlane()
+        {
+            Console.WriteLine(FindNode("GroundPlane"));
+            //findNode returns a uuid of the given node, then use this uuid to delete the node
+            //deleteNode takes a uuid of the desired node to delete
+            DeleteNode(FindNode("GroundPlane"));
+        }
+        internal void GetScene()
+        {
+            TunnelMessage getSceneMessage = tcpClient.GetTunnelMessage("SceneGet.json");
+            Console.WriteLine(getSceneMessage.ToString());
+            tcpClient.SendMessage(getSceneMessage.ToString());
+        }
 
+        
         internal void SetTime(int time)
         {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TimeSetMessage.json");
@@ -65,6 +79,28 @@ namespace simulatie
             tcpClient.SendMessage(universalNodeAdd.ToString());
         }
 
+        internal string FindNode(string name)
+        {
+            TunnelMessage findNodeMessage = tcpClient.GetTunnelMessage("NodeFind.json");
+            JObject data = findNodeMessage.GetDataContent();
+            JObject children = (JObject)data["children"];
+            //JObject data2 -(JObject)children["components"];
+            if((string)children["name"] == name)
+            {
+                Console.WriteLine("NAME: " + (string)children["name"] + "\t UUID: " + (string) children["uuid"]);
+
+            }
+            return (string)children["uuid"];
+        }
+
+        internal void DeleteNode(string id)
+        {
+            TunnelMessage deleteNodeMessage = tcpClient.GetTunnelMessage("NodeDelete.json");
+            JObject data = deleteNodeMessage.GetDataContent();
+            data["id"] = id;
+
+            tcpClient.SendMessage(deleteNodeMessage.ToString());
+        }
 
         internal void AddObject(string fileNameModel, string objectName, int x, int y, int z, float scale)
         {
@@ -195,6 +231,7 @@ namespace simulatie
             tcpClient.SendMessage(setTextMessage.ToString());
         } 
         
+        //Swap the buffered panel to show the text
         internal void SwapPanel(string uuid)
         {
             Console.WriteLine("REACHED SWAPPING PANEL METHOD");
@@ -204,8 +241,6 @@ namespace simulatie
             data["id"] = uuid;
 
             tcpClient.SendMessage(swapPanelMessage.ToString());
-        }
+        }        
     }
-
-   
 }

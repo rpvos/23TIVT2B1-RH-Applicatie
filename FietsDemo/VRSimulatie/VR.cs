@@ -128,6 +128,7 @@ namespace TCP_naar_VR
             JObject data = (JObject)tempdata["data"];
 
             Console.WriteLine(data);
+           
 
             if ((string)data["id"] == "scene/node/add")
             {
@@ -164,12 +165,27 @@ namespace TCP_naar_VR
                     {
                         callMethod.ClearPanel(uuid);
                     }
-
                 }
                 else
                 {
                     Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
                 }
+            }
+            //After finding a specific node, delete this one
+            //else if ((string)data["id"] == "scene/node/find")
+            //{
+            //    Console.WriteLine("FOUND NODE: " + (string) data["name"]);
+            //}
+
+            //Get scene, if scene found then delete groundplane
+            else if ((string)data["id"] == "scene/get")
+            {
+                if((string)data["status"] == "ok")
+                {
+                    Console.WriteLine("GOT A SCENE");
+                    callMethod.DeleteGroundPlane();
+                }
+                
             }
             else if ((string)data["id"] == "route/add")
             {
@@ -278,10 +294,12 @@ namespace TCP_naar_VR
             { 
                 Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
                 this.id = id;
+                callMethod.GetScene();
+                //callMethod.FindNode("GroundPlane");
                 //callMethod.SetTime(12);
-                callMethod.AddTerrain();
-                callMethod.AddNode();
-                callMethod.AddUniversalNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0});
+                //callMethod.AddTerrain();
+                //callMethod.AddNode();
+                //callMethod.AddUniversalNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0});
                 //followRoute("");
             }
 

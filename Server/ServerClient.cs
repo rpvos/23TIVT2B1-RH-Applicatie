@@ -205,6 +205,16 @@ namespace Server
             return getJsonObject("response", data);
         }
 
+        private string getMessageString(string message)
+        {
+            dynamic data = new
+            {
+                Message = message
+            };
+
+            return getJsonObject("message", data);
+        }
+
         private string addChecksum(dynamic dynamicJson)
         {
             JObject json = JObject.Parse(System.Text.Json.JsonSerializer.Serialize(dynamicJson));
@@ -236,6 +246,11 @@ namespace Server
         private void sendConnectionRequest()
         {
             WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));
+        }
+
+        internal void sendMessage(string message)
+        {
+            WriteTextMessage(getMessageString(message));
         }
 
         #endregion

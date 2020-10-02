@@ -1,15 +1,10 @@
-﻿using Client;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client
@@ -166,17 +161,17 @@ namespace Client
         #endregion
 
         #region send handlers
-        private void sendCredentialMessage()
+        private void sendCredentialMessage(string username, string password)
         {
-            string username = "admin";
-            string password = "admin";
+            username = "admin";
+            password = "admin";
 
             WriteTextMessage(getUserDetails(username, password));
         }
 
-        internal Task sendUpdatedValues(int session, int heartrate, double accDistance, double speed, double instPower, double accPower)
+        internal Task sendUpdatedValues(int heartrate, double accDistance, double speed, double instPower, double accPower)
         {
-            WriteTextMessage(getUpdateMessageString(session, heartrate, accDistance, speed, instPower, accPower));
+            WriteTextMessage(getUpdateMessageString(heartrate, accDistance, speed, instPower, accPower));
             return Task.CompletedTask;
         }
 
@@ -205,7 +200,7 @@ namespace Client
 
             return getJsonObject("userCredentials", data);
         }
-        public string getUpdateMessageString(int heartrate, double accDistance, double speed, double instPower, double accPower)
+        private string getUpdateMessageString(int heartrate, double accDistance, double speed, double instPower, double accPower)
         {
             dynamic data = new
             {
@@ -219,7 +214,7 @@ namespace Client
             return getJsonObject("update", data);
         }
 
-        public string getMessageString(string message)
+        private string getMessageString(string message)
         {
             dynamic data = new
             {
@@ -229,7 +224,7 @@ namespace Client
             return getJsonObject("message", data);
         }
 
-        public string getRequestMessage(byte[] modulus, byte[] exponent)
+        private string getRequestMessage(byte[] modulus, byte[] exponent)
         {
 
             dynamic data = new

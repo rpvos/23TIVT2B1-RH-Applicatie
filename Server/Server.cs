@@ -14,8 +14,6 @@ namespace Server
         private List<ServerClient> clients;
         private TcpListener listener;
         private Dictionary<string, string> users;
-        private List<int> sessionIDs;
-        private Random random;
 
 
         static void Main(string[] args)
@@ -28,8 +26,6 @@ namespace Server
             this.clients = new List<ServerClient>();
             this.users = new Dictionary<string, string>();
             fillUsers();
-            this.sessionIDs = new List<int>();
-            this.random = new Random();
 
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
             this.listener = new TcpListener(localhost, 8080);
@@ -73,19 +69,10 @@ namespace Server
             return false;
         }
 
-        internal int getSessionID()
+        internal void broadcast(string message)
         {
-            int r = this.random.Next();
-            if (!sessionIDs.Contains(r))
-            {
-                sessionIDs.Add(r);
-                return r;
-            }
-            else
-            {
-                return getSessionID();
-            }
-
+            foreach (ServerClient client in clients)
+                client.sendMessage(message);
         }
     }
 }

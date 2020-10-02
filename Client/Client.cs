@@ -31,7 +31,6 @@ namespace Client
         private string totalBuffer;
 
         private bool connectedSuccesfully;
-        private string sessionID;
 
         public Client()
         {
@@ -126,8 +125,6 @@ namespace Client
 
         private bool handleUserCredentialsResponse(JObject data)
         {
-
-            this.sessionID = (string)data["Session"];
             //check if connected succesfully
             if (connectedSuccesfully)
             {

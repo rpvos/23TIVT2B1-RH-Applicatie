@@ -12,8 +12,9 @@ namespace Server
     {
 
         private List<ServerClient> clients;
-        private List<String> chatlogs;
-        private int amountOfBikes;
+        private TcpListener listener;
+        private Dictionary<string, string> users;
+
 
         static void Main(string[] args)
         {
@@ -22,89 +23,56 @@ namespace Server
 
         public Server()
         {
-            this.chatlogs = new List<string>();
             this.clients = new List<ServerClient>();
+            this.users = new Dictionary<string, string>();
+            fillUsers();
+
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
-            TcpListener listener = new TcpListener(localhost, 1330);
+            this.listener = new TcpListener(localhost, 8080);
+
+            Console.WriteLine("Starting server");
 
             listener.Start();
+            listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
 
-            AcceptClients(listener);
+            Console.ReadLine();
         }
 
-        public void AcceptClients(TcpListener listener)
+        private void fillUsers()
         {
-            Console.WriteLine("[Server]: Waiting for people to join...");
-            Console.WriteLine("Type 'Save' to save chatlogs");
+            users.Add("admin", "admin");
+        }
 
-            Thread saveThread = new Thread(saveChatLogs);
-            saveThread.Start();
+        private void OnConnect(IAsyncResult ar)
+        {
+            var tcpClient = listener.EndAcceptTcpClient(ar);
+            Console.WriteLine($"Client connected from {tcpClient.Client.RemoteEndPoint}");
+            clients.Add(new ServerClient(tcpClient, this));
+            listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
+        }
 
-            while (true)
+        internal void Disconnect(ServerClient client)
+        {
+            lock (clients)
             {
-
-                TcpClient client = listener.AcceptTcpClient();
-                ServerClient serverClient = new ServerClient(client,"bike"+amountOfBikes);
-                this.clients.Add(serverClient);
-                amountOfBikes++;
-
-                Thread thread = new Thread(HandleClientThread);
-                thread.Start(serverClient);
+                clients.Remove(client);
             }
+            Console.WriteLine("Client disconnected");
         }
 
-        public void saveChatLogs()
+        internal bool checkUser(string username, string password)
         {
-            String path = System.Environment.CurrentDirectory + "\\chatlogs.txt";
-            while (true)
-            {
-               String a =  Console.ReadLine();
-                if(a == "Save")
-                {
-                    File.WriteAllLines(path,this.chatlogs);
-                }
-            }
+            if (users.ContainsKey(username))
+                if (users[username] == password)
+                    return true;
+
+            return false;
         }
 
-        public void HandleClientThread(object obj)
+        internal void broadcast(string message)
         {
-            ServerClient client = obj as ServerClient;
-
-            //string username = client.ReadTextMessage();
-            //Console.WriteLine("[Server]: " + username + " joined");
-            //client.setUsername(username);
-
-            //foreach (ServerClient clnt in this.clients)
-            //{
-            //    clnt.WriteTextMessage("[Server]: " + username + " joined");
-            //}
-
-                while (true)
-                {
-                string received = client.ReadTextMessage();
-                //string message = "<"+DateTime.Now.Hour + ":"+DateTime.Now.Minute+ ">[" + username + "]: " + received;
-                Console.WriteLine(client.getBike()+": "+received);
-                this.chatlogs.Add(received);
-
-                //foreach(ServerClient clnt in this.clients)
-                //{
-                //    if(clnt != client)
-                //    {
-                //        clnt.WriteTextMessage(message);
-                //    }
-                //}
-
-                //if (received.Equals("exit"))
-                //{
-                //    client.WriteTextMessage("[Server]: Bye Bye, see you next time :)");
-                //    break;
-                //}
-                
-            }
-            client.GetTcpClient().Close();
-            //Console.WriteLine("[Server]: "+username + " left the game.");
+            foreach (ServerClient client in clients)
+                client.sendMessage(message);
         }
-
     }
 }
-       

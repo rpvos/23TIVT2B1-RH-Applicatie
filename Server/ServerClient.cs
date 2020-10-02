@@ -173,32 +173,36 @@ namespace Server
 
         #region message construction
 
-        private string getUserCredentialsResponse(bool hasSucceeded)
+        private string getJsonObject(string type, JObject data)
         {
             dynamic json = new
             {
-                Type = "userCredentialsResponse",
-                Data = new
-                {
-                    Status = hasSucceeded
-                },
+                Type = type,
+                Data = data,
                 Checksum = 0
             };
             return addChecksum(json);
         }
+
+        private string getUserCredentialsResponse(bool hasSucceeded)
+        {
+            dynamic data = new
+            {
+                Status = hasSucceeded
+            };
+
+            return getJsonObject("userCredentialsResponse", data);
+        }
+
         private string getConnectionResponseMessage(byte[] modulus, byte[] exponent)
         {
-            dynamic json = new
+            dynamic data = new
             {
-                Type = "response",
-                Data = new
-                {
-                    Modulus = modulus,
-                    Exponent = exponent
-                },
-                Checksum = 0
+                Modulus = modulus,
+                Exponent = exponent
             };
-            return addChecksum(json);
+
+            return getJsonObject("response", data);
         }
 
         private string addChecksum(dynamic dynamicJson)

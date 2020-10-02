@@ -92,6 +92,8 @@ namespace Client
                 JObject data = (JObject)json["Data"];
                 string type = json["Type"].ToString();
 
+
+
                 switch (type)
                 {
                     case "response":
@@ -151,6 +153,7 @@ namespace Client
             }
             return false;
         }
+
         private bool checkChecksum(JObject json)
         {
             byte checksum = (byte)json["Checksum"];
@@ -180,69 +183,62 @@ namespace Client
         #endregion
 
         #region message construction
+
+        private string getJsonObject(string type, JObject data)
+        {
+            dynamic json = new
+            {
+                Type = type,
+                Data = data,
+                Checksum = 0
+            };
+            return addChecksum(json);
+        }
+
         private string getUserDetails(string username, string password)
         {
-            dynamic json = new
+            dynamic data = new
             {
-                Type = "userCredentials",
-                Data = new
-                {
-                    Username = username,
-                    Password = password
-                },
-                Checksum = 0
-            };
-            return addChecksum(json);
-        }
-        public string getUpdateMessageString(int session, int heartrate, double accDistance, double speed, double instPower, double accPower)
-        {
-            dynamic json = new
-            {
-                Session = session,
-                data = new
-                {
-                    HeartRate = heartrate,
-                    AccumulatedDistance = accDistance,
-                    Speed = speed,
-                    InstantaniousPower = instPower,
-                    AccumulatedPower = accPower
-                },
-                Checksum = 0
+                Username = username,
+                Password = password
             };
 
-            return addChecksum(json);
+            return getJsonObject("userCredentials", data);
+        }
+        public string getUpdateMessageString(int heartrate, double accDistance, double speed, double instPower, double accPower)
+        {
+            dynamic data = new
+            {
+                HeartRate = heartrate,
+                AccumulatedDistance = accDistance,
+                Speed = speed,
+                InstantaniousPower = instPower,
+                AccumulatedPower = accPower
+            };
+
+            return getJsonObject("update", data);
         }
 
-        public string getMessageString(int session, string message)
+        public string getMessageString(string message)
         {
-            dynamic json = new
+            dynamic data = new
             {
-                Session = session,
-                data = new
-                {
-                    Message = message
-                },
-                Checksum = 0
+                Message = message
             };
 
-            return addChecksum(json);
+            return getJsonObject("message", data);
         }
 
         public string getRequestMessage(byte[] modulus, byte[] exponent)
         {
 
-            dynamic json = new
+            dynamic data = new
             {
-                Type = "request",
-                Data = new
-                {
-                    Modulus = modulus,
-                    Exponent = exponent
-                },
-                Checksum = 0
+                Modulus = modulus,
+                Exponent = exponent
             };
 
-            return addChecksum(json);
+            return getJsonObject("request", data);
         }
 
         private string addChecksum(dynamic dynamicJson)

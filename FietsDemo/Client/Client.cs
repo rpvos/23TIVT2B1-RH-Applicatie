@@ -1,5 +1,4 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shared;
 using System;
@@ -21,9 +20,6 @@ namespace Client
         private byte[] buffer;
         private string totalBuffer;
 
-        private bool connectedSuccesfully;
-        private bool loginSuccesful;
-
         public Client()
         {
 
@@ -32,12 +28,50 @@ namespace Client
             this.stream = this.server.GetStream();
             this.buffer = new byte[1024];
 
-            this.loginSuccesful = false;
-
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-            WriteTextMessage(getUserDetailsMessageString("stoeptegel","123"));
+            WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
 
             Console.ReadKey();
+        }
+
+        private byte[] EncryptStringToBytes(string plainText, byte[] Key, byte[] IV)
+        {
+            // Check arguments.
+            if (plainText == null || plainText.Length <= 0)
+                throw new ArgumentNullException("plainText");
+            if (Key == null || Key.Length <= 0)
+                throw new ArgumentNullException("Key");
+            if (IV == null || IV.Length <= 0)
+                throw new ArgumentNullException("IV");
+            byte[] encrypted;
+            // Create an Rijndael object
+            // with the specified key and IV.
+            using (Rijndael rijAlg = Rijndael.Create())
+            {
+                rijAlg.Key = Key;
+                rijAlg.IV = IV;
+
+                // Create an encryptor to perform the stream transform.
+                ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
+
+                // Create the streams used for encryption.
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        {
+
+                            //Write all data to the stream.
+                            swEncrypt.Write(plainText);
+                        }
+                        encrypted = msEncrypt.ToArray();
+                    }
+                }
+            }
+
+            // Return the encrypted bytes from the memory stream.
+            return encrypted;
         }
 
         #region stream dynamics
@@ -91,8 +125,6 @@ namespace Client
                     case "userCredentialsResponse":
                         if (handleUserCredentialsResponse(data))
                         {
-                            loginSuccesful = true;
-
                             Console.WriteLine("Login succesful");
                         }
                         else
@@ -115,14 +147,7 @@ namespace Client
         private bool handleUserCredentialsResponse(JObject data)
         {
             //check if connected succesfully
-            if (connectedSuccesfully)
-            {
-                return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Patient;
-            }
-            else
-            {
-                return false;
-            }
+            return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Patient;
         }
 
         private bool checkChecksum(JObject json)

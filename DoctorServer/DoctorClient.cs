@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 using System.IO;
 using System.Net.Sockets;
@@ -8,7 +7,6 @@ using System.Text;
 using Shared;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Security.Cryptography;
 
 namespace DoctorApplication
 {
@@ -134,10 +132,8 @@ namespace DoctorApplication
 
         private bool handleUserCredentialsResponse(JObject data)
         {
-
             // Check if the status is ok and the user is a doctor that is signing in
             return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Doctor;
-
         }
 
 

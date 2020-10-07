@@ -13,6 +13,7 @@ namespace DoctorServer
         public Login(DoctorClient doctorServer)
         {
             this.loginForm = new LoginForm(doctorServer);
+            this.loginForm.FormBorderStyle = FormBorderStyle.FixedDialog;
             //this.loginForm.ShowDialog();
             Application.Run(this.loginForm);
         }

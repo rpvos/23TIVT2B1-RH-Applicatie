@@ -18,6 +18,7 @@ namespace DoctorServer
         {
             this.doctorClient = doctorClient;
             InitializeComponent();
+            
         }
 
         private void ButtonLogin_Click(object sender, EventArgs e)

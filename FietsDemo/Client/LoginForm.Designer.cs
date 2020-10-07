@@ -65,10 +65,12 @@
             // 
             // PasswordTextbox
             // 
+            this.PasswordTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PasswordTextbox.Location = new System.Drawing.Point(94, 104);
             this.PasswordTextbox.Name = "PasswordTextbox";
             this.PasswordTextbox.Size = new System.Drawing.Size(133, 20);
             this.PasswordTextbox.TabIndex = 2;
+            this.PasswordTextbox.UseSystemPasswordChar = true;
             // 
             // ExitButton
             // 

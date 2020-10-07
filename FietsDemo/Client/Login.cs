@@ -14,6 +14,7 @@ namespace FietsDemo
         public Login(Program program)
         {
             this.loginForm = new LoginForm(program);
+            this.loginForm.FormBorderStyle = FormBorderStyle.FixedDialog;
             Application.Run(this.loginForm);
         }
     }

@@ -38,6 +38,7 @@ namespace DoctorServer
             Application.EnableVisualStyles();
 
             this.mainForm = new DoctorForm(this);
+            //ShowDialog() instead of Application.Run() could affect the working a bit
             this.mainForm.ShowDialog();
             //Application.Run(mainForm);
         }

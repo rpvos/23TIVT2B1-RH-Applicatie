@@ -102,31 +102,46 @@ namespace simulatie
             tcpClient.SendMessage(addObjectMessage.ToString());
         }
 
-        internal void AddTerrain()
+        internal void AddTerrain(int size)
         {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TerrainAdd.json");
 
-            double[] heights = new double[40000];
+            double[] heights = new double[size];
             Random random = new Random();
             double lastInt = 0.0;
             double reduction = 1;
             for (int i = 0; i < heights.Length; i++)
             {
-                if (i > 200)
+                //After one row completed, the height will look at the previous row and the int next to it.
+                if (i > Math.Sqrt(size))
                 {
-                    lastInt = (heights[i - 200] + heights[i - 1]) / 2;
+                    lastInt = (heights[i - (int)Math.Sqrt(size)] + heights[i - 1]) / 2;
                 }
+                //Extra randomness
                 if (i % 1000 == 0)
                 {
                     reduction += ((random.NextDouble() * 2) - 1) / 50;
                 }
+                //Calculates height
                 heights[i] = (lastInt + ((random.NextDouble() * 2 - reduction) / 10));
                 lastInt = heights[i];
 
+                //Height cant be below zero
+                if (heights[i] < 0)
+                {
+                    heights[i] = 0;
+                    reduction -= 0.2;
+                }
+                //Height cant be above six.
+                if (heights[i] > 6)
+                {
+                    reduction += 0.2;
+                }
             }
-
-            JArray jArray = new JArray(heights);
-            timeMessage.GetDataContent()["heights"] = jArray;
+            JArray jArraySize = new JArray((int)Math.Sqrt(size), (int)Math.Sqrt(size));
+            JArray jArrayHeights = new JArray(heights);
+            timeMessage.GetDataContent()["heights"] = jArrayHeights;
+            timeMessage.GetDataContent()["size"] = jArraySize;
             tcpClient.SendMessage(timeMessage.ToString());
         }
 

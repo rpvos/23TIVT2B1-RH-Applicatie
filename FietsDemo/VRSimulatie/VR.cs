@@ -278,7 +278,7 @@ namespace TCP_naar_VR
                 callMethod.GetScene();
                 //callMethod.FindNode("GroundPlane");
                 //callMethod.SetTime(12);
-                callMethod.AddTerrain();
+                callMethod.AddTerrain(1000000);
                 callMethod.AddNode();                
                 callMethod.AddUniversalNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
                 

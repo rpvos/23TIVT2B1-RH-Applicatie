@@ -45,11 +45,8 @@ namespace FietsDemo
         static void Main(string[] args)
         {
             Program program = new Program();
-            program.start();
-
-
+            Login login = new Login(program);                       
         }
-
 
         public void start()
         {
@@ -70,9 +67,7 @@ namespace FietsDemo
         public void startClient()
         {
             this.client = new Client.Client();
-
         }
-
 
         public void startVR()
         {

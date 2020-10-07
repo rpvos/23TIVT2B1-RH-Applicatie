@@ -29,7 +29,7 @@ namespace Client
 
         public string decryptMessage(byte[] message)
         {
-            return Convert.ToBase64String(reciever.Decrypt(message, false));
+            return Encoding.UTF8.GetString(reciever.Decrypt(message, false));
         }
 
         public void setKey(byte[] modulus, byte[] exponent)

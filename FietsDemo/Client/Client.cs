@@ -18,8 +18,6 @@ namespace Client
         private TcpClient server;
         private NetworkStream stream;
 
-        private RSAClient rsaClient;
-
         private byte[] buffer;
         private string totalBuffer;
 
@@ -28,7 +26,6 @@ namespace Client
 
         public Client()
         {
-            this.rsaClient = new RSAClient();
 
             this.server = new TcpClient("127.0.0.1", 8080);
 
@@ -38,8 +35,7 @@ namespace Client
             this.loginSuccesful = false;
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-
-            WriteTextMessage(getRequestMessage(this.rsaClient.getModulus(), this.rsaClient.getExponent()));
+            WriteTextMessage(getUserDetailsMessageString("stoeptegel","123"));
 
             Console.ReadKey();
         }
@@ -92,16 +88,6 @@ namespace Client
 
                 switch (type)
                 {
-                    case "response":
-                        if (handleConnectionResponse(data))
-                        {
-                            connectedSuccesfully = true;
-
-                            //TODO get username and pasword from client
-                            sendCredentialMessage("", "");
-                        }
-                        break;
-
                     case "userCredentialsResponse":
                         if (handleUserCredentialsResponse(data))
                         {
@@ -137,21 +123,6 @@ namespace Client
             {
                 return false;
             }
-        }
-        private bool handleConnectionResponse(JObject json)
-        {
-            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
-            byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
-            try
-            {
-                rsaClient.setKey(modulus, exponent);
-                return true;
-            }
-            catch (CryptographicException)
-            {
-                Console.WriteLine("Wrong key value");
-            }
-            return false;
         }
 
         private bool checkChecksum(JObject json)
@@ -219,7 +190,7 @@ namespace Client
 
             return getJsonObject("userCredentials", data);
         }
-        private string getUpdateMessageString(ValueType valueType,double value)
+        private string getUpdateMessageString(ValueType valueType, double value)
         {
             dynamic data = new
             {

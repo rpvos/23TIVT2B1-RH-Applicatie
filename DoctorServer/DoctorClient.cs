@@ -18,15 +18,11 @@ namespace DoctorApplication
         private DoctorForm mainForm;
         private TcpClient server;
         private NetworkStream stream;
-        private RSAClient rsaClient;
 
         private List<string> usernames;
 
         private byte[] buffer;
         private string totalBuffer;
-
-        private bool connectedSuccesfully;
-        private bool loginSuccesful;
 
         static void Main()
         {
@@ -52,18 +48,16 @@ namespace DoctorApplication
 
         public void startClient()
         {
-            this.rsaClient = new RSAClient();
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.stream = this.server.GetStream();
             this.buffer = new byte[1024];
 
             this.usernames = new List<string>();
-            this.loginSuccesful = false;
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
-            WriteTextMessage(getRequestMessage(this.rsaClient.getModulus(), this.rsaClient.getExponent()));
+            WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
 
             Console.ReadKey();
         }
@@ -116,21 +110,9 @@ namespace DoctorApplication
 
                 switch (type)
                 {
-                    case "response":
-                        if (handleConnectionResponse(data))
-                        {
-                            connectedSuccesfully = true;
-
-                            //TODO get username and pasword from client
-                            sendCredentialMessage("stoeptegel", "123");
-                        }
-                        break;
-
                     case "userCredentialsResponse":
                         if (handleUserCredentialsResponse(data))
                         {
-                            loginSuccesful = true;
-
                             Console.WriteLine("Login succesful");
                         }
                         else
@@ -152,32 +134,12 @@ namespace DoctorApplication
 
         private bool handleUserCredentialsResponse(JObject data)
         {
-            //check if connected succesfully
-            if (connectedSuccesfully)
-            {
-                // Check if the status is ok and the user is a doctor that is signing in
-                return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Doctor;
-            }
-            else
-            {
-                return false;
-            }
+
+            // Check if the status is ok and the user is a doctor that is signing in
+            return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Doctor;
+
         }
-        private bool handleConnectionResponse(JObject json)
-        {
-            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
-            byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
-            try
-            {
-                rsaClient.setKey(modulus, exponent);
-                return true;
-            }
-            catch (CryptographicException)
-            {
-                Console.WriteLine("Wrong key value");
-            }
-            return false;
-        }
+
 
         private bool checkChecksum(JObject json)
         {
@@ -223,17 +185,6 @@ namespace DoctorApplication
             return getJsonObject("userCredentials", data);
         }
 
-        private string getRequestMessage(byte[] modulus, byte[] exponent)
-        {
-
-            dynamic data = new
-            {
-                Modulus = modulus,
-                Exponent = exponent
-            };
-
-            return getJsonObject("request", data);
-        }
 
         private string addChecksum(dynamic dynamicJson)
         {

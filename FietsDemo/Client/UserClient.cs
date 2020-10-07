@@ -12,7 +12,7 @@ using ValueType = Shared.ValueType;
 
 namespace Client
 {
-    class Client
+    class UserClient
     {
         private TcpClient server;
         private NetworkStream stream;
@@ -20,7 +20,7 @@ namespace Client
         private byte[] buffer;
         private string totalBuffer;
 
-        public Client()
+        public UserClient()
         {
 
             this.server = new TcpClient("127.0.0.1", 8080);
@@ -31,7 +31,6 @@ namespace Client
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
 
-            Console.ReadKey();
         }
 
         private byte[] EncryptStringToBytes(string plainText, byte[] Key, byte[] IV)

@@ -1,12 +1,15 @@
 ﻿
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Shared;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ValueType = Shared.ValueType;
 
 namespace Client
 {
@@ -94,7 +97,7 @@ namespace Client
                         {
                             connectedSuccesfully = true;
 
-                            //todo get username and pasword from client
+                            //TODO get username and pasword from client
                             sendCredentialMessage("", "");
                         }
                         break;
@@ -171,7 +174,7 @@ namespace Client
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
-        internal Task sendUpdatedValues(ValueType valueType, double value)
+        internal Task sendUpdatedValues(Shared.ValueType valueType, double value)
         {
             WriteTextMessage(getUpdateMessageString(valueType, value));
             return Task.CompletedTask;
@@ -267,11 +270,12 @@ namespace Client
 
         private string getRequestMessage(byte[] modulus, byte[] exponent)
         {
-
+            List<byte> modulusList = new List<byte>(modulus);
+            List<byte> exponentList = new List<byte>(exponent);
             dynamic data = new
             {
-                Modulus = modulus,
-                Exponent = exponent
+                Modulus = modulusList,
+                Exponent = exponentList
             };
 
             return getJsonObject("request", data);

@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Avans.TI.BLE;
 using Client;
+using Shared;
 using TCP_naar_VR;
+using ValueType = Shared.ValueType;
 
 namespace FietsDemo
 {
@@ -429,7 +431,8 @@ namespace FietsDemo
                     break;
                 case ValueType.Heartrate:
                     this.gui.getForm().setHeartrate(value);
-                    this.tcpClientVR.heartrate = value;
+                    //TODO heartrate is one word
+                    this.tcpClientVR.heartRate = value;
                     break;
                 case ValueType.AccumulatedPower:
                     this.gui.getForm().setAP(value);
@@ -512,17 +515,5 @@ namespace FietsDemo
         //    //bikeSimulator.WriteCharacteristic("Simulator", byteArray);
         //}
     }
-
-    public enum ValueType
-    {
-        Heartrate,
-        Speed,
-        AccumulatedPower,
-        InstantaniousPower,
-        AccumulatedDistance,
-        ElapsedTime,
-        Resistance
-    }
-
 }
 

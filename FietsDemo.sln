@@ -11,7 +11,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoctorApplication", "DoctorServer\DoctorApplication.csproj", "{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedItems", "SharedItems\SharedItems.shproj", "{A7508E68-1F8F-403F-866E-CBB0D8639D33}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		SharedItems\SharedItems.projitems*{5099da36-fa39-4a74-b49c-0ef3bbb1bdd5}*SharedItemsImports = 5
+		SharedItems\SharedItems.projitems*{a7508e68-1f8f-403f-866e-cbb0d8639d33}*SharedItemsImports = 13
+		SharedItems\SharedItems.projitems*{a9d7f8f6-4386-425e-844b-4f4cbcb4ff7b}*SharedItemsImports = 5
+		SharedItems\SharedItems.projitems*{dec0782d-d22f-4f80-a2ef-77c887bf1d19}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

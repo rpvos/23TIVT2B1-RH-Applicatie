@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
-
+using Shared;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Security.Cryptography;
@@ -121,7 +121,7 @@ namespace DoctorApplication
                         {
                             connectedSuccesfully = true;
 
-                            //todo get username and pasword from client
+                            //TODO get username and pasword from client
                             sendCredentialMessage("stoeptegel", "123");
                         }
                         break;

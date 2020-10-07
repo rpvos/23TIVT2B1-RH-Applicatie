@@ -1,7 +1,9 @@
 ﻿
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Shared;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -72,6 +74,8 @@ namespace Server
                 string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
 
                 logger.Append("\nClient:\n" + packet);
+
+                Console.WriteLine(packet);
 
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 handleData(packet);
@@ -164,11 +168,14 @@ namespace Server
         /// <returns>return true if the data send is correct</returns>
         private bool handleConnectionRequest(JObject json)
         {
-            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
+            List<byte> modulus = json["Modulus"].ToObject<List<byte>>();
             byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
+
+            Console.WriteLine(modulus);
+
             try
             {
-                rsaClient.setKey(modulus, exponent);
+                //rsaClient.setKey(modulus, exponent);
                 return true;
             }
             catch (CryptographicException)

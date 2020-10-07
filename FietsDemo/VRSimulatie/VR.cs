@@ -197,14 +197,14 @@ namespace TCP_naar_VR
                     try
                     {
                         objects.Add(name, uuid);
-                        callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
-                        callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 });
-                        callMethod.NewRoutePoints(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 });
-                        callMethod.NewRoutePoints(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 });
-                        callMethod.NewRoutePoints(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 });
-                        callMethod.NewRoutePoints(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 });
+                        //callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
+                        //callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 });
+                        //callMethod.NewRoutePoints(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 });
+                        //callMethod.NewRoutePoints(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 });
+                        //callMethod.NewRoutePoints(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 });
+                        //callMethod.NewRoutePoints(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 });
 
-                        callMethod.AddRoute();
+                        //callMethod.AddRoute();
                     }
                     catch (ArgumentException e)
                     {
@@ -223,7 +223,9 @@ namespace TCP_naar_VR
             {
                 if ((string)data["status"] == "ok")
                 {
-                    SendMessage(GetTunnelMessage("RouteSetMessage.json").ToString());
+                    //SendMessage(GetTunnelMessage("RouteSetMessage.json").ToString());
+                    setRoute();
+
                 }
             }
             else if ((string)data["id"] == "scene/road/add")
@@ -254,7 +256,7 @@ namespace TCP_naar_VR
                 string elapsedTime = this.elapsedTime.ToString();
                 string resistance = this.resistance.ToString();
 
-                callMethod.SetText("Speed in km/h: "+speedValue, objects["panel"], new double[] { 20, 100 });
+                callMethod.SetText("Speed in km/h: "+ speedValue, objects["panel"], new double[] { 20, 100 });
                 callMethod.SetText("Heart rate in bpm: " + heartRateValue, objects["panel"], new double[] { 20, 150 });
                 callMethod.SetText("Distance travelled in meters: "+ distanceTravelled, objects["panel"], new double[] { 20, 200 });
                 callMethod.SetText("Elapsed time in seconds: " + elapsedTime, objects["panel"], new double[] { 20, 250 });
@@ -262,27 +264,7 @@ namespace TCP_naar_VR
 
 
                 callMethod.SwapPanel(objects["panel"]);
-                //foreach (var s in objects)
-                //{
-                //    if (s.Key == "panel")
-                //    {
-                //        Console.WriteLine("GOT THROUGH PANELCLEAR METHOD");
-                //        Console.WriteLine("FIRST CALL OF SETTEXT METHOD");
-                //        callMethod.SetText("Welcome", s.Value, new double[] { 0, 0 });
-                //    }
-                //}
             }
-            //After getting the response of the drawText, add the values of the ebike
-            //else if((string)data["id"] == "scene/panel/drawtext")
-            //{               
-            //    string status = (string)data["status"];
-            //    //Console.WriteLine("Status for set text: {0}", status);
-            //    if((string)data["status"] == "ok")
-            //    {
-            //        callMethod.SwapPanel(objects["panel"]);
-                   
-            //    }
-            //}
         }
 
         private void CheckTunnelStatus(JObject json)
@@ -323,6 +305,18 @@ namespace TCP_naar_VR
                     SendTunnelRequest((string)data[i]["id"]);
                 }
             }
+        }
+
+        private void setRoute()
+        {
+            callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 10, 0, 0 }, new int[] { 0, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 10, 0, -10 }, new int[] { 0, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 0, 0, -10 }, new int[] { 0, 0, 0 });
+
+
+            callMethod.AddRoute();
+            
         }
     }
 }

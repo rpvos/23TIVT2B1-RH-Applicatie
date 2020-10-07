@@ -21,9 +21,14 @@ namespace FietsDemo
 
         private void ButtonLogin_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Epstein didn't kill himself");
             this.Hide();
+            MessageBox.Show("Epstein didn't kill himself");            
             this.program.start();
+        }
+
+        private void ExitButton_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

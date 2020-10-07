@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Net.Cache;
 using System.Text;
 using TCP_naar_VR;
@@ -20,20 +21,17 @@ namespace simulatie
             this.objects = objects;
             this.routePoints = new ArrayList();
         }
-        internal void DeleteGroundPlane()
+
+        internal void DeleteGroundPlane(string uuid)
         {
-            Console.WriteLine(FindNode("GroundPlane"));
-            //findNode returns a uuid of the given node, then use this uuid to delete the node
-            //deleteNode takes a uuid of the desired node to delete
-            DeleteNode(FindNode("GroundPlane"));
+            DeleteNode(uuid);
         }
+
         internal void GetScene()
         {
             TunnelMessage getSceneMessage = tcpClient.GetTunnelMessage("SceneGet.json");
-            //Console.WriteLine(getSceneMessage.ToString());
             tcpClient.SendMessage(getSceneMessage.ToString());
         }
-
         
         internal void SetTime(int time)
         {
@@ -55,20 +53,6 @@ namespace simulatie
             JObject data = universalNodeAdd.GetDataContent();
             data["name"] = name;
 
-           
-            //dynamic data = new
-            //{
-            //    id = "scene/node/add",
-            //    data = new
-            //    {
-            //        name= name,
-            //        components = new
-            //        {
-
-            //        }
-            //    }
-            //};
-
             JObject components = (JObject)data["components"];
             JObject transform = (JObject)components["transform"];
             transform["position"] = new JArray(pos);
@@ -79,18 +63,16 @@ namespace simulatie
             tcpClient.SendMessage(universalNodeAdd.ToString());
         }
 
-        internal string FindNode(string name)
+        internal void FindNode(string name)
         {
             TunnelMessage findNodeMessage = tcpClient.GetTunnelMessage("NodeFind.json");
             JObject data = findNodeMessage.GetDataContent();
-            JObject children = (JObject)data["children"];
-            //JObject data2 -(JObject)children["components"];
-            if((string)children["name"] == name)
-            {
-                Console.WriteLine("NAME: " + (string)children["name"] + "\t UUID: " + (string) children["uuid"]);
+            data["name"] = name;
 
-            }
-            return (string)children["uuid"];
+            tcpClient.SendMessage(findNodeMessage.ToString());
+            Console.WriteLine(findNodeMessage.GetDataContent());
+
+
         }
 
         internal void DeleteNode(string id)

@@ -38,7 +38,7 @@ namespace FietsDemo
 
         private double resistance = 0;
 
-        private Client.Client client;
+        private UserClient client;
 
         private TcpClientVR tcpClientVR;
 
@@ -70,7 +70,7 @@ namespace FietsDemo
 
         public void startClient()
         {
-            this.client = new Client.Client();
+            this.client = new UserClient();
 
         }
 

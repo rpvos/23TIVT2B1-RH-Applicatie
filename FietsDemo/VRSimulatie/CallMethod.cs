@@ -30,7 +30,7 @@ namespace simulatie
         internal void GetScene()
         {
             TunnelMessage getSceneMessage = tcpClient.GetTunnelMessage("SceneGet.json");
-            Console.WriteLine(getSceneMessage.ToString());
+            //Console.WriteLine(getSceneMessage.ToString());
             tcpClient.SendMessage(getSceneMessage.ToString());
         }
 
@@ -74,7 +74,7 @@ namespace simulatie
             transform["position"] = new JArray(pos);
             transform["rotate"] = new JArray(rotation);
 
-            Console.WriteLine(universalNodeAdd.ToString());
+            //Console.WriteLine(universalNodeAdd.ToString());
 
             tcpClient.SendMessage(universalNodeAdd.ToString());
         }
@@ -239,7 +239,7 @@ namespace simulatie
 
             data["id"] = uuid;
             data["text"] = text;
-            data["postition"] = new JArray(coord);
+            data["position"] = new JArray(coord);
             tcpClient.SendMessage(setTextMessage.ToString());
         } 
         
@@ -252,6 +252,7 @@ namespace simulatie
 
             data["id"] = uuid;
 
+            Console.WriteLine(swapPanelMessage.ToString());
             tcpClient.SendMessage(swapPanelMessage.ToString());
         }        
     }

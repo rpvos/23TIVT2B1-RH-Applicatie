@@ -183,7 +183,7 @@ namespace TCP_naar_VR
                 if((string)data["status"] == "ok")
                 {
                     Console.WriteLine("GOT A SCENE");
-                    callMethod.DeleteGroundPlane();
+                    //callMethod.DeleteGroundPlane();
                 }
                 
             }
@@ -211,7 +211,7 @@ namespace TCP_naar_VR
 
                     }
 
-                    Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
+                    //Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
                     callMethod.AddRoad("data/NetworkEngine/textures/tarmac_normal.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", uuid);
                 }
                 else
@@ -246,7 +246,7 @@ namespace TCP_naar_VR
             else if ((string)data["id"] == "scene/panel/clear")
             {
                 Console.WriteLine("GOT THROUGH THE CLEARING PANEL RETURN STATUS");
-                callMethod.SetText("Welcome", objects["panel"], new double[] { 0, 0 });
+                callMethod.SetText("Welcome", objects["panel"], new double[] { 20, 50 });
 
                 string speedValue = this.speed.ToString();
                 string heartRateValue = this.heartRate.ToString();
@@ -254,12 +254,14 @@ namespace TCP_naar_VR
                 string elapsedTime = this.elapsedTime.ToString();
                 string resistance = this.resistance.ToString();
 
-                callMethod.SetText(speedValue, objects["panel"], new double[] { 0, 20 });
-                callMethod.SetText(heartRateValue, objects["panel"], new double[] { 0, 40 });
-                callMethod.SetText(distanceTravelled, objects["panel"], new double[] { 0, 60 });
-                callMethod.SetText(elapsedTime, objects["panel"], new double[] { 0, 80 });
-                callMethod.SetText(resistance, objects["panel"], new double[] { 0, 100 });
+                callMethod.SetText("Speed in km/h: "+speedValue, objects["panel"], new double[] { 20, 100 });
+                callMethod.SetText("Heart rate in bpm: " + heartRateValue, objects["panel"], new double[] { 20, 150 });
+                callMethod.SetText("Distance travelled in meters: "+ distanceTravelled, objects["panel"], new double[] { 20, 200 });
+                callMethod.SetText("Elapsed time in seconds: " + elapsedTime, objects["panel"], new double[] { 20, 250 });
+                callMethod.SetText("Resistance in %: " + resistance, objects["panel"], new double[] { 20, 300 });
 
+
+                callMethod.SwapPanel(objects["panel"]);
                 //foreach (var s in objects)
                 //{
                 //    if (s.Key == "panel")
@@ -271,16 +273,16 @@ namespace TCP_naar_VR
                 //}
             }
             //After getting the response of the drawText, add the values of the ebike
-            else if((string)data["id"] == "scene/panel/drawtext")
-            {               
-                string status = (string)data["status"];
-                Console.WriteLine("Status for set text: {0}", status);
-                if((string)data["status"] == "ok")
-                {
-                    callMethod.SwapPanel(objects["panel"]);
+            //else if((string)data["id"] == "scene/panel/drawtext")
+            //{               
+            //    string status = (string)data["status"];
+            //    //Console.WriteLine("Status for set text: {0}", status);
+            //    if((string)data["status"] == "ok")
+            //    {
+            //        callMethod.SwapPanel(objects["panel"]);
                    
-                }
-            }
+            //    }
+            //}
         }
 
         private void CheckTunnelStatus(JObject json)
@@ -297,9 +299,9 @@ namespace TCP_naar_VR
                 callMethod.GetScene();
                 //callMethod.FindNode("GroundPlane");
                 //callMethod.SetTime(12);
-                //callMethod.AddTerrain();
-                //callMethod.AddNode();
-                //callMethod.AddUniversalNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0});
+                callMethod.AddTerrain();
+                callMethod.AddNode();
+                callMethod.AddUniversalNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
                 //followRoute("");
             }
 

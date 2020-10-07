@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace DoctorServer
+namespace DoctorApplication
 {
     public partial class DoctorForm : Form
     {
 
-        public Bike selectedBike { get; set; }
+        public string selectedBike { get; set; }
         public int selectedIndex { get; set; }
         private DoctorClient doctorClient;
 
@@ -79,12 +79,12 @@ namespace DoctorServer
             }));
         }
 
-        public void addBike(Bike bike)
+        public void addBike(string username)
         {
 
             BikeListBox.Invoke((MethodInvoker)(() =>
             {
-                BikeListBox.Items.Add(bike);
+                BikeListBox.Items.Add(username);
             }));
             
             
@@ -111,7 +111,7 @@ namespace DoctorServer
 
                 if (this.selectedIndex != -1)
                 {
-                    this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                    //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
                 }
             }
             else if (e.Delta < 0)
@@ -126,7 +126,7 @@ namespace DoctorServer
 
                 if (this.selectedIndex != -1)
                 {
-                    this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                    //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
 
                 }
 
@@ -147,7 +147,7 @@ namespace DoctorServer
 
             if (this.selectedIndex != -1)
             {
-                this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
 
             }
 
@@ -165,7 +165,7 @@ namespace DoctorServer
 
             if (this.selectedIndex != -1)
             {
-                this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
 
             }
         }
@@ -193,7 +193,7 @@ namespace DoctorServer
 
         private void BikeListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.selectedBike = (Bike)BikeListBox.SelectedItem;
+            this.selectedBike = (string)BikeListBox.SelectedItem;
             this.selectedIndex = BikeListBox.SelectedIndex;
             Console.WriteLine(selectedBike);
         }

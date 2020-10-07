@@ -12,11 +12,9 @@ namespace Server
     {
 
         private List<ServerClient> clients;
-        private List<ServerClient> doctors;
 
         private TcpListener listener;
-        private Dictionary<string, string> clientDataBase;
-        private Dictionary<string, string> doktorDataBase;
+        private Dictionary<string, User> dataBase;
 
 
         static void Main(string[] args)
@@ -27,10 +25,8 @@ namespace Server
         public Server()
         {
             this.clients = new List<ServerClient>();
-            this.doctors = new List<ServerClient>();
 
-            this.clientDataBase = new Dictionary<string, string>();
-            this.doktorDataBase = new Dictionary<string, string>();
+            this.dataBase = new Dictionary<string, User>();
             fillUsers();
 
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
@@ -46,8 +42,7 @@ namespace Server
 
         private void fillUsers()
         {
-            clientDataBase.Add("admin", "admin");
-            doktorDataBase.Add("admin", "admin");
+            dataBase.Add("stoeptegel", new User("Stijn","stoeptegel","123",Role.Doctor));
         }
 
         private void OnConnect(IAsyncResult ar)
@@ -67,20 +62,30 @@ namespace Server
             Console.WriteLine("Client disconnected");
         }
 
-        //todo check if it is a doktor or patient
-        internal bool checkUser(string username, string password)
-        {
-            if (clientDataBase.ContainsKey(username))
-                if (clientDataBase[username] == password)
-                    return true;
 
-            return false;
+        internal User checkUser(string username, string password)
+        {
+            if (dataBase.ContainsKey(username))
+                if (dataBase[username].checkPassword(password))
+                    return dataBase[username];
+
+            return null;
         }
 
         internal void broadcast(string message)
         {
             foreach (ServerClient client in clients)
                 client.sendMessage(message);
+        }
+
+        internal void SendToDoctors(string jsonMessage)
+        {
+            foreach(ServerClient client in clients)
+            {
+                if (client.user.getRole() == Role.Doctor)
+                    client.WriteTextMessage(jsonMessage);
+            }
+
         }
     }
 }

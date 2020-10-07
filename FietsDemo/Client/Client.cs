@@ -21,6 +21,7 @@ namespace Client
         private string totalBuffer;
 
         private bool connectedSuccesfully;
+        private bool loginSuccesful;
 
         public Client()
         {
@@ -30,6 +31,8 @@ namespace Client
 
             this.stream = this.server.GetStream();
             this.buffer = new byte[1024];
+
+            this.loginSuccesful = false;
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
@@ -89,15 +92,18 @@ namespace Client
                     case "response":
                         if (handleConnectionResponse(data))
                         {
+                            connectedSuccesfully = true;
+
                             //todo get username and pasword from client
                             sendCredentialMessage("", "");
-                            connectedSuccesfully = true;
                         }
                         break;
 
                     case "userCredentialsResponse":
                         if (handleUserCredentialsResponse(data))
                         {
+                            loginSuccesful = true;
+
                             Console.WriteLine("Login succesful");
                         }
                         else
@@ -122,7 +128,7 @@ namespace Client
             //check if connected succesfully
             if (connectedSuccesfully)
             {
-                return (bool)data["Status"];
+                return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Patient;
             }
             else
             {
@@ -162,7 +168,13 @@ namespace Client
             username = "admin";
             password = "admin";
 
-            WriteTextMessage(getUserDetails(username, password));
+            WriteTextMessage(getUserDetailsMessageString(username, password));
+        }
+
+        internal Task sendUpdatedValues(ValueType valueType, double value)
+        {
+            WriteTextMessage(getUpdateMessageString(valueType, value));
+            return Task.CompletedTask;
         }
 
         internal Task sendUpdatedValues(int heartrate, double accDistance, double speed, double instPower, double accPower)
@@ -194,7 +206,7 @@ namespace Client
             return addChecksum(json);
         }
 
-        private string getUserDetails(string username, string password)
+        private string getUserDetailsMessageString(string username, string password)
         {
             dynamic data = new
             {
@@ -204,6 +216,17 @@ namespace Client
 
             return getJsonObject("userCredentials", data);
         }
+        private string getUpdateMessageString(ValueType valueType,double value)
+        {
+            dynamic data = new
+            {
+                ValueType = valueType.ToString(),
+                Value = value
+            };
+
+            return getJsonObject("update", data);
+        }
+
         private string getUpdateMessageString(int heartrate, double accDistance, double speed, double instPower, double accPower)
         {
             dynamic data = new

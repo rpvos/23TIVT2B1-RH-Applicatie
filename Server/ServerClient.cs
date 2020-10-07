@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using ValueType = Shared.ValueType;
 
 namespace Server
 {
@@ -69,8 +70,6 @@ namespace Server
                 string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
 
                 logger.Append("\nClient:\n" + packet);
-
-                Console.WriteLine(packet);
 
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 handleData(packet);
@@ -136,7 +135,16 @@ namespace Server
         
         private void handleUpdateInformation(JObject data)
         {
-            this.server.SendToDoctors(getJsonObject("update",data,this.user));
+            ValueType valueType = (ValueType)Enum.Parse(typeof(ValueType), (string)data["ValueType"], true);
+            double value = (double)data["Value"];
+            
+            dynamic parsedData = new 
+            {
+                ValueType = valueType.ToString(),
+                Value = value
+            };
+
+            this.server.SendToDoctors(getJsonObject("update",parsedData,this.user));
         }
 
         private Role handleUserCredentials(JObject data)

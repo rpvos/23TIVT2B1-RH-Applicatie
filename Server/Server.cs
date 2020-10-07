@@ -43,7 +43,8 @@ namespace Server
 
         private void fillUsers()
         {
-            dataBase.Add("stoeptegel", new User("Stijn","stoeptegel","123",Role.Doctor));
+            dataBase.Add("stoeptegel", new User("Stijn","stoeptegel","123",Role.Patient));
+            dataBase.Add("dokter", new User("dokter","dokter","123",Role.Doctor));
         }
 
         private void OnConnect(IAsyncResult ar)

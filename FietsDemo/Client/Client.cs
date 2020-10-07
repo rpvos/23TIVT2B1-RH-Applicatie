@@ -30,8 +30,6 @@ namespace Client
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
-
-            Console.ReadKey();
         }
 
         private byte[] EncryptStringToBytes(string plainText, byte[] Key, byte[] IV)
@@ -176,19 +174,6 @@ namespace Client
             return Task.CompletedTask;
         }
 
-        internal Task sendUpdatedValues(int heartrate, double accDistance, double speed, double instPower, double accPower)
-        {
-            WriteTextMessage(getUpdateMessageString(heartrate, accDistance, speed, instPower, accPower));
-            return Task.CompletedTask;
-        }
-
-        internal Task sendUpdatedValues(string type, double value)
-        {
-            WriteTextMessage(getUpdateMessageString(type, value));
-            return Task.CompletedTask;
-        }
-
-
 
         #endregion
 
@@ -226,29 +211,13 @@ namespace Client
             return getJsonObject("update", data);
         }
 
-        private string getUpdateMessageString(int heartrate, double accDistance, double speed, double instPower, double accPower)
-        {
-            dynamic data = new
-            {
-                HeartRate = heartrate,
-                AccumulatedDistance = accDistance,
-                Speed = speed,
-                InstantaniousPower = instPower,
-                AccumulatedPower = accPower
-            };
-
-            return getJsonObject("update", data);
-        }
 
         private string getUpdateMessageString(string type, double value)
         {
             dynamic data = new
             {
                 Type = type,
-                Data = new
-                {
-                    Value = value
-                }
+                Value = value
             };
 
             return getJsonObject("updateType", data);

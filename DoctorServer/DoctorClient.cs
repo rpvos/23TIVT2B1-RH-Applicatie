@@ -55,7 +55,7 @@ namespace DoctorApplication
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
-            WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
+            WriteTextMessage(getUserDetailsMessageString("dokter", "123"));
 
             Console.ReadKey();
         }

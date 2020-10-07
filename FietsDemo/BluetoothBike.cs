@@ -46,6 +46,7 @@ namespace FietsDemo
 
         static void Main(string[] args)
         {
+            Console.ReadKey();
             BluetoothBike program = new BluetoothBike();
             program.start();
         }

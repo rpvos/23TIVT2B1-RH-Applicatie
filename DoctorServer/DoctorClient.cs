@@ -26,8 +26,7 @@ namespace DoctorServer
         static void Main()
         {
             DoctorClient doctorServer = new DoctorClient();
-            doctorServer.Start();
-              
+            Login login = new Login(doctorServer);
         }
 
         public void Start()
@@ -39,11 +38,9 @@ namespace DoctorServer
             Application.EnableVisualStyles();
 
             this.mainForm = new DoctorForm(this);
-
-            Application.Run(mainForm);
+            this.mainForm.ShowDialog();
+            //Application.Run(mainForm);
         }
-
-  
 
         public void startClient()
         {

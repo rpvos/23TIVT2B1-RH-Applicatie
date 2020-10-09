@@ -1,7 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SharedItems;
-using SharedItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,14 +8,12 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using UpdateType = SharedItems.UpdateType;
 
 namespace FietsDemo
 {
     public class UserClient
     {
         private TcpClient server;
-        private NetworkStream stream;
 
         private byte[] buffer;
         private Crypto crypto;
@@ -28,9 +24,8 @@ namespace FietsDemo
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
-            this.stream = this.server.GetStream();
             this.buffer = new byte[1024];
-            this.crypto = new Crypto(stream);
+            this.crypto = new Crypto.receivingStream(server.GetStream());
 
             crypto.receivingStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
@@ -42,14 +37,13 @@ namespace FietsDemo
             byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
             crypto.sendingStream.Write(dataAsBytes, 0, dataAsBytes.Length);
             crypto.sendingStream.FlushFinalBlock();
-            stream.Flush();
         }
 
         private void OnRead(IAsyncResult ar)
         {
             try
             {
-                int receivedBytes = stream.EndRead(ar);
+                int receivedBytes = crypto.receivingStream.EndRead(ar);
                 string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
                 totalBuffer += receivedText;
             }

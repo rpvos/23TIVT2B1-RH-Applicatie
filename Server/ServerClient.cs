@@ -18,7 +18,6 @@ namespace Server
         private TcpClient client;
         private Server server;
 
-        private NetworkStream stream;
         private Crypto crypto;
         private byte[] buffer;
         private string totalBuffer;
@@ -32,7 +31,7 @@ namespace Server
             this.server = server;
 
             this.buffer = new byte[1024];
-            this.stream = client.GetStream();
+            var stream = client.GetStream();
             this.crypto = new Crypto(stream);
 
 
@@ -52,14 +51,13 @@ namespace Server
             byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
             crypto.sendingStream.Write(dataAsBytes, 0, dataAsBytes.Length);
             crypto.sendingStream.Flush();
-            stream.Flush();
         }
 
         private void OnRead(IAsyncResult ar)
         {
             try
             {
-                int receivedBytes = stream.EndRead(ar);
+                int receivedBytes = crypto.receivingStream.EndRead(ar);
                 string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
                 totalBuffer += receivedText;
             }

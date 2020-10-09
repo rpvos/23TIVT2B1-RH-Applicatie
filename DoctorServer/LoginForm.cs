@@ -23,8 +23,9 @@ namespace DoctorServer
 
         private void ButtonLogin_Click(object sender, EventArgs e)
         {
+            this.doctorClient.startClient(UsernameTextbox.Text, PasswordTextbox.Text);
             this.Hide();
-            this.doctorClient.Start();
+
         }
 
         private void ExitButton_Click(object sender, EventArgs e)

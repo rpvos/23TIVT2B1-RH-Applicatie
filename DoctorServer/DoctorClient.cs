@@ -7,6 +7,7 @@ using System.Text;
 using Shared;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace DoctorServer
 {
@@ -31,7 +32,7 @@ namespace DoctorServer
 
         public void Start()
         {
-            startClient();
+            //startClient();
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
@@ -44,7 +45,7 @@ namespace DoctorServer
 
   
 
-        public void startClient()
+        public void startClient(string username, string password)
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
@@ -55,7 +56,7 @@ namespace DoctorServer
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
-            WriteTextMessage(getUserDetailsMessageString("dokter", "123"));
+            WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
         #region stream dynamics
@@ -110,6 +111,8 @@ namespace DoctorServer
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
+                            Thread startThread = new Thread(Start);
+                            startThread.Start();
                         }
                         else
                         {
@@ -135,7 +138,7 @@ namespace DoctorServer
         {
             UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
             double value = (double)data["Value"];
-
+            Console.WriteLine("AAAAAAAAAAAAAAAAA");
             switch (type)
             {
                 case UpdateType.AccumulatedDistance:

@@ -42,8 +42,7 @@ namespace FietsDemo
         private TcpClientVR tcpClientVR;
 
         private Random random;
-        private string username;
-        private string password;
+
 
         //private SimpleBooleanProperty
 
@@ -55,17 +54,17 @@ namespace FietsDemo
         }
 
 
-        public void start(string username, string password)
+        public void start()
         {
             this.random = new Random();
-            this.username = username;
-            this.password = password;
+
 
             Thread guiThread = new Thread(startGUI);
             guiThread.Start();
 
-            Thread clientThread = new Thread(startClient);
-            clientThread.Start();
+
+            //Thread clientThread = new Thread(startClient);
+            //clientThread.Start();
 
             Thread VRThread = new Thread(startVR);
             VRThread.Start();
@@ -73,10 +72,16 @@ namespace FietsDemo
             initialize();
         }
 
-        public void startClient()
+        public void startClient(string username, string password)
         {
-            this.client = new UserClient(this.username, this.password);
+            Thread clientThread = new Thread(() =>
+            {
+                this.client = new UserClient(username, password,this);
+            });
+            clientThread.Start();
         }
+
+        
 
 
         public void startVR()

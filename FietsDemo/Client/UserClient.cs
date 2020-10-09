@@ -16,12 +16,14 @@ namespace FietsDemo
     {
         private TcpClient server;
         private NetworkStream stream;
+        private BluetoothBike bluetoothBike;
 
         private byte[] buffer;
         private string totalBuffer;
 
-        public UserClient(string username, string password)
+        public UserClient(string username, string password, BluetoothBike bluetoothBike)
         {
+            this.bluetoothBike = bluetoothBike;
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.stream = this.server.GetStream();
@@ -84,6 +86,8 @@ namespace FietsDemo
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
+                            this.bluetoothBike.start();
+                            
                         }
                         else
                         {

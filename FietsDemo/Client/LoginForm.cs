@@ -22,7 +22,7 @@ namespace FietsDemo
         private void ButtonLogin_Click(object sender, EventArgs e)
         {
             
-            this.bluetoothBike.start(UsernameTextbox.Text, PasswordTextbox.Text);
+            this.bluetoothBike.startClient(UsernameTextbox.Text, PasswordTextbox.Text);
             this.Hide();
         }
 

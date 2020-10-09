@@ -14,15 +14,17 @@ namespace SharedItems
         /// </summary>
         private Rijndael rijndael;
 
-        public CryptoStream sendingStream { get; }
-        public CryptoStream receivingStream { get; }
+        public CryptoStream encryptionCryptoStream { get; }
+        public CryptoStream decryptionCryptoStream { get; }
 
         private byte[] buffer;
         private NetworkStream networkStream;
         private string totalBuffer;
 
         private Action<string> handleMethod;
-        private MemoryStream stream;
+
+        private MemoryStream encryptionMemoryStream;
+        private MemoryStream decryptionMemoryStream;
 
         /// <summary>
         /// Constructor wwith an method passed in to handle the incoming data
@@ -36,14 +38,15 @@ namespace SharedItems
             this.networkStream = networkStream;
             this.handleMethod = handleMethod;
 
-            this.stream = new MemoryStream();
+            this.encryptionMemoryStream = new MemoryStream();
+            this.decryptionMemoryStream = new MemoryStream();
             this.rijndael = Rijndael.Create();
 
             rijndael.Key = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
             rijndael.IV = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
 
-            this.sendingStream = new CryptoStream(stream, rijndael.CreateEncryptor(), CryptoStreamMode.Write);
-            this.receivingStream= new CryptoStream(stream, rijndael.CreateDecryptor(), CryptoStreamMode.Read);
+            this.encryptionCryptoStream = new CryptoStream(encryptionMemoryStream, rijndael.CreateEncryptor(), CryptoStreamMode.Write);
+            this.decryptionCryptoStream= new CryptoStream(decryptionMemoryStream, rijndael.CreateDecryptor(), CryptoStreamMode.Read);
 
             networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -53,7 +56,13 @@ namespace SharedItems
         public void WriteTextMessage(string message)
         {
             byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
-            networkStream.Write(dataAsBytes, 0, dataAsBytes.Length);
+
+            encryptionCryptoStream.Write(dataAsBytes,0,dataAsBytes.Length);
+            encryptionCryptoStream.Clear();
+
+            var array = encryptionMemoryStream.ToArray();
+            
+            networkStream.Write(array, 0, array.Length);
             networkStream.Flush();
         }
 
@@ -61,8 +70,16 @@ namespace SharedItems
         {
             try
             {
+                // todo encrypted data has been gotten but we cant decode it
                 int receivedBytes = networkStream.EndRead(ar);
-                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+                decryptionCryptoStream.Read(buffer, 0, receivedBytes);
+
+                Console.WriteLine(receivedBytes);//todo remove
+
+                string receivedText = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+
+                Console.WriteLine(receivedText);//todo remove
+
                 totalBuffer += receivedText;
             }
             catch (IOException)

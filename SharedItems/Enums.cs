@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Shared
 {
-    public enum ValueType
+    public enum UpdateType
     {
         Heartrate,
         Speed,

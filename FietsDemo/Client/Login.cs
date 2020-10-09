@@ -15,7 +15,22 @@ namespace FietsDemo
         {
             this.loginForm = new LoginForm(bluetoothBike);
             this.loginForm.FormBorderStyle = FormBorderStyle.FixedDialog;
+        }
+
+        public void run()
+        {
             Application.Run(this.loginForm);
+
+        }
+
+        public void loginFailed()
+        {
+            this.loginForm.loginFailed();
+        }
+
+        public void loginSucceeded()
+        {
+            this.loginForm.loginSucceeded();
         }
     }
 }

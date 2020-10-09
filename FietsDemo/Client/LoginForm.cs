@@ -23,12 +23,29 @@ namespace FietsDemo
         {
             
             this.bluetoothBike.startClient(UsernameTextbox.Text, PasswordTextbox.Text);
-            this.Hide();
+            
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        public void loginFailed()
+        {
+
+            UsernameTextbox.Invoke((MethodInvoker)(() =>
+            {
+                this.UsernameTextbox.Text = "Login failed";
+                this.PasswordTextbox.Text = "";
+            }));
+           
+
+        }
+
+        public void loginSucceeded()
+        {
+            this.Hide();
         }
     }
 }

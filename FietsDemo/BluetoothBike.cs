@@ -43,14 +43,22 @@ namespace FietsDemo
 
         private Random random;
 
+        private Login login;
 
-        //private SimpleBooleanProperty
+        
 
         static void Main(string[] args)
         {
             BluetoothBike bluetoothBike = new BluetoothBike();
-            Login login = new Login(bluetoothBike);
-            //bluetoothBike.start();
+            bluetoothBike.startLogin() ;
+        }
+
+        public void startLogin()
+        {
+
+            this.login = new Login(this);
+            this.login.run();
+
         }
 
 
@@ -81,6 +89,17 @@ namespace FietsDemo
             clientThread.Start();
         }
 
+        public void loginFailed()
+        {
+            this.login.loginFailed();
+        }
+
+        public void loginSucceeded()
+        {
+            this.login.loginSucceeded();
+        }
+
+     
         
 
 

@@ -15,7 +15,22 @@ namespace DoctorServer
             this.loginForm = new LoginForm(doctorServer);
             this.loginForm.FormBorderStyle = FormBorderStyle.FixedDialog;
             //this.loginForm.ShowDialog();
+        }
+
+        public void run()
+        {
             Application.Run(this.loginForm);
+
+        }
+
+        public void loginFailed()
+        {
+            this.loginForm.loginFailed();
+        }
+
+        public void loginSucceeded()
+        {
+            this.loginForm.loginSucceeded();
         }
     }
 }

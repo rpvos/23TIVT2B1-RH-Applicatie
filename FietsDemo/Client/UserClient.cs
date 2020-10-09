@@ -7,6 +7,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UpdateType = Shared.UpdateType;
 
@@ -86,13 +87,15 @@ namespace FietsDemo
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
-                            this.bluetoothBike.start();
+                            Thread startThread = new Thread(start);
+                            startThread.Start();
+                            this.bluetoothBike.loginSucceeded();
                             
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
-                            //System.Environment.Exit();
+                            this.bluetoothBike.loginFailed();
                         }
                         break;
 
@@ -105,6 +108,11 @@ namespace FietsDemo
             {
                 Console.WriteLine("Invalid message");
             }
+        }
+
+        public void start()
+        {
+            this.bluetoothBike.start();
         }
 
         private bool handleUserCredentialsResponse(JObject data)

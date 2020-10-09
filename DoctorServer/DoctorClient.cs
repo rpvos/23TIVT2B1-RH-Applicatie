@@ -23,10 +23,20 @@ namespace DoctorServer
         private byte[] buffer;
         private string totalBuffer;
 
+        private Login login;
+
         static void Main()
         {
             DoctorClient doctorServer = new DoctorClient();
-            Login login = new Login(doctorServer);
+            doctorServer.startLogin();
+        }
+
+        public void startLogin()
+        {
+
+            this.login = new Login(this);
+            this.login.run();
+
         }
 
 
@@ -113,10 +123,12 @@ namespace DoctorServer
                             Console.WriteLine("Login succesful");
                             Thread startThread = new Thread(Start);
                             startThread.Start();
+                            this.login.loginSucceeded();
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
+                            this.login.loginFailed();
                         }
                         break;
                     case "update":
@@ -138,7 +150,6 @@ namespace DoctorServer
         {
             UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
             double value = (double)data["Value"];
-            Console.WriteLine("AAAAAAAAAAAAAAAAA");
             switch (type)
             {
                 case UpdateType.AccumulatedDistance:

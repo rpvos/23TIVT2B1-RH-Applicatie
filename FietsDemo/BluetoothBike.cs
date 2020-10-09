@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Avans.TI.BLE;
-using Client;
 using Shared;
 using TCP_naar_VR;
 using ValueType = Shared.ValueType;

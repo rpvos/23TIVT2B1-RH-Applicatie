@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using Shared;
+using SharedItems;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

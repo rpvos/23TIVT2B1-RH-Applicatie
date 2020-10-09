@@ -1,4 +1,4 @@
-﻿using Shared;
+﻿using SharedItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,7 +38,7 @@ namespace Server
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
 
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
         private void fillUsers()

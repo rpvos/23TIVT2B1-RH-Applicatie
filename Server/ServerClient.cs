@@ -1,12 +1,14 @@
 ﻿
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Shared;
+using SharedItems;
 using System;
 using System.IO;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using UpdateType = Shared.UpdateType;
 
 namespace Server
 {
@@ -17,7 +19,7 @@ namespace Server
         private Server server;
 
         private NetworkStream stream;
-
+        private Crypto crypto;
         private byte[] buffer;
         private string totalBuffer;
 
@@ -31,13 +33,15 @@ namespace Server
 
             this.buffer = new byte[1024];
             this.stream = client.GetStream();
+            this.crypto = new Crypto(stream);
 
 
             this.logger = new StringBuilder();
 
 
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            this.crypto.receivingStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
+
 
         #region stream dynamics
 
@@ -46,7 +50,8 @@ namespace Server
             logger.Append("\nServer:\n" + message);
 
             byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
+            crypto.sendingStream.Write(dataAsBytes, 0, dataAsBytes.Length);
+            crypto.sendingStream.Flush();
             stream.Flush();
         }
 
@@ -69,12 +74,14 @@ namespace Server
             {
                 string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
 
+                Console.WriteLine(packet);
+
                 logger.Append("\nClient:\n" + packet);
 
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 handleData(packet);
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            crypto.receivingStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         private void log()
@@ -132,19 +139,19 @@ namespace Server
             }
         }
 
-        
+
         private void handleUpdateInformation(JObject data)
         {
             UpdateType updateType = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
             double value = (double)data["Value"];
-            
-            dynamic parsedData = new 
+
+            dynamic parsedData = new
             {
                 UpdateType = updateType.ToString(),
                 Value = value
             };
 
-            this.server.SendToDoctors(getJsonObject("update",parsedData,this.user));
+            this.server.SendToDoctors(getJsonObject("update", parsedData, this.user));
         }
 
         private Role handleUserCredentials(JObject data)

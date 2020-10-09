@@ -1,14 +1,16 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Shared;
+using SharedItems;
+using SharedItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using UpdateType = Shared.UpdateType;
+using UpdateType = SharedItems.UpdateType;
 
 namespace FietsDemo
 {
@@ -18,7 +20,9 @@ namespace FietsDemo
         private NetworkStream stream;
 
         private byte[] buffer;
+        private Crypto crypto;
         private string totalBuffer;
+
 
         public UserClient()
         {
@@ -26,8 +30,9 @@ namespace FietsDemo
 
             this.stream = this.server.GetStream();
             this.buffer = new byte[1024];
+            this.crypto = new Crypto(stream);
 
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            crypto.receivingStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
         }
 
@@ -35,7 +40,8 @@ namespace FietsDemo
         public void WriteTextMessage(string message)
         {
             byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
+            crypto.sendingStream.Write(dataAsBytes, 0, dataAsBytes.Length);
+            crypto.sendingStream.FlushFinalBlock();
             stream.Flush();
         }
 
@@ -59,7 +65,7 @@ namespace FietsDemo
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 handleData(packet);
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            crypto.receivingStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
         #endregion
 
@@ -127,7 +133,7 @@ namespace FietsDemo
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
-        internal Task sendUpdatedValues(Shared.UpdateType valueType, double value)
+        internal Task sendUpdatedValues(SharedItems.UpdateType valueType, double value)
         {
             WriteTextMessage(getUpdateMessageString(valueType, value));
             return Task.CompletedTask;

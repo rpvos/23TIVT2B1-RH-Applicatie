@@ -36,7 +36,7 @@ public class TunnelMessage
 				dest = Id,				
 				data = DataContent               
 			}
-		};
+		}; // le trol face :^)
 
 		string header = JsonConvert.SerializeObject(headerData);		
 		return header;

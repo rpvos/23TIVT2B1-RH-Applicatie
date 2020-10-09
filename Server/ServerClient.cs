@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using ValueType = Shared.ValueType;
+using UpdateType = Shared.UpdateType;
 
 namespace Server
 {
@@ -135,12 +135,12 @@ namespace Server
         
         private void handleUpdateInformation(JObject data)
         {
-            ValueType valueType = (ValueType)Enum.Parse(typeof(ValueType), (string)data["ValueType"], true);
+            UpdateType updateType = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
             double value = (double)data["Value"];
             
             dynamic parsedData = new 
             {
-                ValueType = valueType.ToString(),
+                UpdateType = updateType.ToString(),
                 Value = value
             };
 

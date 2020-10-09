@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using ValueType = Shared.ValueType;
+using UpdateType = Shared.UpdateType;
 
 namespace FietsDemo
 {
@@ -22,7 +22,6 @@ namespace FietsDemo
 
         public UserClient()
         {
-
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.stream = this.server.GetStream();
@@ -30,46 +29,6 @@ namespace FietsDemo
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
-        }
-
-        private byte[] EncryptStringToBytes(string plainText, byte[] Key, byte[] IV)
-        {
-            // Check arguments.
-            if (plainText == null || plainText.Length <= 0)
-                throw new ArgumentNullException("plainText");
-            if (Key == null || Key.Length <= 0)
-                throw new ArgumentNullException("Key");
-            if (IV == null || IV.Length <= 0)
-                throw new ArgumentNullException("IV");
-            byte[] encrypted;
-            // Create an Rijndael object
-            // with the specified key and IV.
-            using (Rijndael rijAlg = Rijndael.Create())
-            {
-                rijAlg.Key = Key;
-                rijAlg.IV = IV;
-
-                // Create an encryptor to perform the stream transform.
-                ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
-
-                // Create the streams used for encryption.
-                using (MemoryStream msEncrypt = new MemoryStream())
-                {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
-                        {
-
-                            //Write all data to the stream.
-                            swEncrypt.Write(plainText);
-                        }
-                        encrypted = msEncrypt.ToArray();
-                    }
-                }
-            }
-
-            // Return the encrypted bytes from the memory stream.
-            return encrypted;
         }
 
         #region stream dynamics
@@ -168,7 +127,7 @@ namespace FietsDemo
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
-        internal Task sendUpdatedValues(Shared.ValueType valueType, double value)
+        internal Task sendUpdatedValues(Shared.UpdateType valueType, double value)
         {
             WriteTextMessage(getUpdateMessageString(valueType, value));
             return Task.CompletedTask;
@@ -200,11 +159,11 @@ namespace FietsDemo
 
             return getJsonObject("userCredentials", data);
         }
-        private string getUpdateMessageString(ValueType valueType, double value)
+        private string getUpdateMessageString(UpdateType updateType, double value)
         {
             dynamic data = new
             {
-                ValueType = valueType.ToString(),
+                UpdateType = updateType.ToString(),
                 Value = value
             };
 

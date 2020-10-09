@@ -43,15 +43,20 @@ namespace Server
 
         private void fillUsers()
         {
-            dataBase.Add("stoeptegel", new User("Stijn","stoeptegel","123",Role.Patient));
-            dataBase.Add("dokter", new User("dokter","dokter","123",Role.Doctor));
+            dataBase.Add("stoeptegel", new User("Stijn", "stoeptegel", "123", Role.Patient));
+            dataBase.Add("dokter", new User("dokter", "dokter", "123", Role.Doctor));
         }
 
         private void OnConnect(IAsyncResult ar)
         {
             var tcpClient = listener.EndAcceptTcpClient(ar);
             Console.WriteLine($"Client connected from {tcpClient.Client.RemoteEndPoint}");
-            clients.Add(new ServerClient(tcpClient, this));
+
+            lock (clients)
+            {
+                clients.Add(new ServerClient(tcpClient, this));
+            }
+
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
         }
 
@@ -82,10 +87,11 @@ namespace Server
 
         internal void SendToDoctors(string jsonMessage)
         {
-            foreach(ServerClient client in clients)
+            foreach (ServerClient client in clients)
             {
-                if (client.user.getRole() == Role.Doctor)
-                    client.WriteTextMessage(jsonMessage);
+                if (client.user != null)
+                    if (client.user.getRole() == Role.Doctor)
+                        client.WriteTextMessage(jsonMessage);
             }
 
         }

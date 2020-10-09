@@ -56,8 +56,6 @@ namespace DoctorApplication
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
             WriteTextMessage(getUserDetailsMessageString("dokter", "123"));
-
-            Console.ReadKey();
         }
 
         #region stream dynamics
@@ -118,6 +116,9 @@ namespace DoctorApplication
                             Console.WriteLine("Login failed");
                         }
                         break;
+                    case "update":
+                        handleUpdate(data);
+                        break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -127,6 +128,43 @@ namespace DoctorApplication
             catch (JsonReaderException)
             {
                 Console.WriteLine("Invalid message");
+            }
+        }
+
+        private void handleUpdate(JObject data)
+        {
+            UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
+            double value = (double)data["Value"];
+
+            switch (type)
+            {
+                case UpdateType.AccumulatedDistance:
+                    mainForm.setDT(value.ToString());
+                    break;
+
+                case UpdateType.AccumulatedPower:
+                    mainForm.setAP(value.ToString());
+                    break;
+
+                case UpdateType.ElapsedTime:
+                    mainForm.setElapsedTime(value.ToString());
+                    break;
+
+                case UpdateType.Heartrate:
+                    mainForm.setHeartrate(value.ToString());
+                    break;
+
+                case UpdateType.InstantaniousPower:
+                    //TODO mainForm.set(value.ToString());
+                    break;
+
+                case UpdateType.Resistance:
+                    //TODO doctor sends resistance and client doesn't set resitance except vr
+                    break;
+
+                case UpdateType.Speed:
+                    mainForm.setSpeed(value.ToString());
+                    break;
             }
         }
 

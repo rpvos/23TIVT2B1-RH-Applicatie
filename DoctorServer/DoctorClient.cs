@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using DoctorApplication;
+using Shared;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DoctorServer
 {
@@ -17,21 +15,22 @@ namespace DoctorServer
 
         private DoctorForm mainForm;
         private TcpClient server;
-        private StreamWriter streamWriter;
-        private StreamReader streamReader;
-        private List<Bike> bikes;
-        private Random random;
+        private NetworkStream stream;
 
-        
+        private List<string> usernames;
+
+        private byte[] buffer;
+        private string totalBuffer;
+
         static void Main()
         {
             DoctorClient doctorServer = new DoctorClient();
             Login login = new Login(doctorServer);
         }
 
+
         public void Start()
         {
-            this.random = new Random();
             startClient();
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
@@ -43,51 +42,206 @@ namespace DoctorServer
             //Application.Run(mainForm);
         }
 
+  
+
         public void startClient()
         {
-            this.bikes = new List<Bike>();
             this.server = new TcpClient("127.0.0.1", 8080);
 
-            this.streamWriter = new StreamWriter(server.GetStream(), Encoding.ASCII, 1, true);
-            this.streamReader = new StreamReader(server.GetStream(), Encoding.ASCII);
-            WriteTextMessageToServer("DOCTOR");
+            this.stream = this.server.GetStream();
+            this.buffer = new byte[1024];
 
-            Thread receiveMessages = new Thread(ReadTextMessageFromServer);
-            receiveMessages.Start();
+            this.usernames = new List<string>();
+
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+
+            WriteTextMessage(getUserDetailsMessageString("dokter", "123"));
         }
 
+        #region stream dynamics
+        public void WriteTextMessage(string message)
+        {
+            byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
+            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
+            stream.Flush();
+        }
 
-
-        public void WriteTextMessageToServer(string message)
+        private void OnRead(IAsyncResult ar)
         {
             try
             {
-                this.streamWriter.WriteLine(message);
-                this.streamWriter.Flush();
+                int receivedBytes = stream.EndRead(ar);
+                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
+                totalBuffer += receivedText;
             }
-            catch { }
-
-        }
-
-        public void ReadTextMessageFromServer()
-        {
-            while (true)
+            catch (IOException)
             {
-                try
-                {
-                    String a = this.streamReader.ReadLine();
+                Console.WriteLine("Server disconnected"); ;
+                return;
+            }
 
-                    
-                }
-                catch
+            while (totalBuffer.Contains("\r\n\r\n"))
+            {
+                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
+                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
+                handleData(packet);
+            }
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+        }
+        #endregion
+
+        #region handle recieved data
+        private void handleData(string packet)
+        {
+            try
+            {
+                JObject json = JObject.Parse(packet);
+                if (!checkChecksum(json))
+                    return;
+
+                JObject data = (JObject)json["Data"];
+                string type = json["Type"].ToString();
+
+
+
+                switch (type)
                 {
-                    break;
+                    case "userCredentialsResponse":
+                        if (handleUserCredentialsResponse(data))
+                        {
+                            Console.WriteLine("Login succesful");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Login failed");
+                        }
+                        break;
+                    case "update":
+                        handleUpdate(data);
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid type");
+                        break;
                 }
+            }
+            catch (JsonReaderException)
+            {
+                Console.WriteLine("Invalid message");
             }
         }
 
+        private void handleUpdate(JObject data)
+        {
+            UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
+            double value = (double)data["Value"];
 
+            switch (type)
+            {
+                case UpdateType.AccumulatedDistance:
+                    mainForm.setDT(value.ToString());
+                    break;
+
+                case UpdateType.AccumulatedPower:
+                    mainForm.setAP(value.ToString());
+                    break;
+
+                case UpdateType.ElapsedTime:
+                    mainForm.setElapsedTime(value.ToString());
+                    break;
+
+                case UpdateType.Heartrate:
+                    mainForm.setHeartrate(value.ToString());
+                    break;
+
+                case UpdateType.InstantaniousPower:
+                    //TODO mainForm.set(value.ToString());
+                    break;
+
+                case UpdateType.Resistance:
+                    //TODO doctor sends resistance and client doesn't set resitance except vr
+                    break;
+
+                case UpdateType.Speed:
+                    mainForm.setSpeed(value.ToString());
+                    break;
+            }
+        }
+
+        private bool handleUserCredentialsResponse(JObject data)
+        {
+            // Check if the status is ok and the user is a doctor that is signing in
+            return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Doctor;
+        }
+
+
+        private bool checkChecksum(JObject json)
+        {
+            byte checksum = (byte)json["Checksum"];
+            JObject jObject = (JObject)json["Data"];
+            byte[] data = Encoding.ASCII.GetBytes(jObject.ToString());
+            foreach (byte b in data)
+                checksum ^= b;
+            return checksum == 0;
+        }
+        #endregion
+
+        #region message construction
+
+        private string getJsonObject(string type, dynamic data)
+        {
+            dynamic json = new
+            {
+                Type = type,
+                Data = data,
+                Checksum = 0
+            };
+            return addChecksum(json);
+        }
+        private string getMessageString(string message)
+        {
+            dynamic data = new
+            {
+                Message = message
+            };
+
+            return getJsonObject("message", data);
+        }
+
+        private string getUserDetailsMessageString(string username, string password)
+        {
+            dynamic data = new
+            {
+                Username = username,
+                Password = password
+            };
+
+            return getJsonObject("userCredentials", data);
+        }
+
+
+        private string addChecksum(dynamic dynamicJson)
+        {
+            JObject json = JObject.Parse(JsonConvert.SerializeObject(dynamicJson));
+            byte checksum = 0;
+            byte[] data = Encoding.ASCII.GetBytes(((JObject)json["Data"]).ToString());
+            foreach (byte b in data)
+            {
+                checksum ^= b;
+            }
+            json["Checksum"] = checksum;
+
+            return json.ToString();
+        }
+        #endregion
+
+        #region send handlers
+        private void sendCredentialMessage(string username, string password)
+        {
+            WriteTextMessage(getUserDetailsMessageString(username, password));
+        }
+        #endregion
     }
 
-    
+
 }

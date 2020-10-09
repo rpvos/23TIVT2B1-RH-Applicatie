@@ -1,12 +1,12 @@
 ﻿
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Shared;
 using System;
 using System.IO;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
+using UpdateType = Shared.UpdateType;
 
 namespace Server
 {
@@ -21,9 +21,7 @@ namespace Server
         private byte[] buffer;
         private string totalBuffer;
 
-        private RSAClient rsaClient;
-
-        private string username;
+        public User user { get; set; }
         private StringBuilder logger;
 
         public ServerClient(TcpClient client, Server server)
@@ -34,7 +32,6 @@ namespace Server
             this.buffer = new byte[1024];
             this.stream = client.GetStream();
 
-            this.rsaClient = new RSAClient();
 
             this.logger = new StringBuilder();
 
@@ -83,9 +80,9 @@ namespace Server
         private void log()
         {
             string location = Environment.CurrentDirectory;
-            if (username != null)
+            if (user != null)
             {
-                using (StreamWriter streamWriter = new StreamWriter(location + $"/log{username}.txt", false))
+                using (StreamWriter streamWriter = new StreamWriter(location + $"/log{user.getUsername()}.txt", false))
                 {
                     streamWriter.Write(this.logger.ToString());
                     streamWriter.Flush();
@@ -116,16 +113,11 @@ namespace Server
 
                 switch (json["Type"].ToString())
                 {
-                    case "request":
-                        if (handleConnectionRequest(data))
-                            sendConnectionRequest();
-                        break;
-
                     case "userCredentials":
                         sendUserCredentialsResponse(handleUserCredentials(data));
                         break;
 
-                    case "updateType":
+                    case "update":
                         handleUpdateInformation(data);
                         break;
 
@@ -140,35 +132,33 @@ namespace Server
             }
         }
 
+        
         private void handleUpdateInformation(JObject data)
         {
-            //todo handle update information
-            throw new NotImplementedException();
+            UpdateType updateType = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
+            double value = (double)data["Value"];
+            
+            dynamic parsedData = new 
+            {
+                UpdateType = updateType.ToString(),
+                Value = value
+            };
+
+            this.server.SendToDoctors(getJsonObject("update",parsedData,this.user));
         }
 
-        private bool handleUserCredentials(JObject data)
+        private Role handleUserCredentials(JObject data)
         {
-            this.username = (string)data["Username"];
+            string username = (string)data["Username"];
             string password = (string)data["Password"];
 
-            return server.checkUser(username, password);
+            this.user = server.checkUser(username, password);
+            if (user != null)
+                return user.getRole();
+            else
+                return Role.Invallid;
         }
 
-        private bool handleConnectionRequest(JObject json)
-        {
-            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
-            byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
-            try
-            {
-                rsaClient.setKey(modulus, exponent);
-                return true;
-            }
-            catch (CryptographicException)
-            {
-                Console.WriteLine("Wrong key value");
-            }
-            return false;
-        }
 
         private bool checkChecksum(JObject json)
         {
@@ -194,25 +184,29 @@ namespace Server
             return addChecksum(json);
         }
 
-        private string getUserCredentialsResponse(bool hasSucceeded)
+        private string getJsonObject(string type, dynamic data, User user)
         {
+            dynamic json = new
+            {
+                Type = type,
+                Data = data,
+                Username = user.getUsername(),
+                Checksum = 0
+            };
+            return addChecksum(json);
+        }
+
+        private string getUserCredentialsResponse(Role role)
+        {
+            bool hasSucceeded = (role != Role.Invallid);
+
             dynamic data = new
             {
-                Status = hasSucceeded
+                Status = hasSucceeded,
+                Role = role.ToString()
             };
 
             return getJsonObject("userCredentialsResponse", data);
-        }
-
-        private string getConnectionResponseMessage(byte[] modulus, byte[] exponent)
-        {
-            dynamic data = new
-            {
-                Modulus = modulus,
-                Exponent = exponent
-            };
-
-            return getJsonObject("response", data);
         }
 
         private string getMessageString(string message)
@@ -225,6 +219,11 @@ namespace Server
             return getJsonObject("message", data);
         }
 
+        /// <summary>
+        /// Adds an value to the checksum of the message
+        /// </summary>
+        /// <param name="dynamicJson">the message in dynamic format</param>
+        /// <returns>the message in string format with checksum calculated</returns>
         private string addChecksum(dynamic dynamicJson)
         {
             JObject json = JObject.Parse(System.Text.Json.JsonSerializer.Serialize(dynamicJson));
@@ -242,21 +241,16 @@ namespace Server
 
         #region send handlers
 
-        private void sendUserCredentialsResponse(bool hasSucceeded)
+        private void sendUserCredentialsResponse(Role role)
         {
-            if (hasSucceeded)
-                Console.WriteLine("Login attempt succesful");
+            if (role != Role.Invallid)
+                Console.WriteLine($"Login as {role}");
             else
                 Console.WriteLine("Login attempt failed");
 
-            WriteTextMessage(getUserCredentialsResponse(hasSucceeded));
+            WriteTextMessage(getUserCredentialsResponse(role));
         }
 
-
-        private void sendConnectionRequest()
-        {
-            WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));
-        }
 
         internal void sendMessage(string message)
         {
@@ -264,6 +258,5 @@ namespace Server
         }
 
         #endregion
-
     }
 }

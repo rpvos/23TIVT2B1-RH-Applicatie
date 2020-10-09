@@ -12,18 +12,17 @@ namespace FietsDemo
 {
     public partial class LoginForm : Form
     {
-        private Program program;
-        public LoginForm(Program program)
+        private BluetoothBike bluetoothBike;
+        public LoginForm(BluetoothBike bluetoothBike)
         {
-            this.program = program;
+            this.bluetoothBike = bluetoothBike;
             InitializeComponent();
         }
 
         private void ButtonLogin_Click(object sender, EventArgs e)
         {
             this.Hide();
-            MessageBox.Show("Epstein didn't kill himself");            
-            this.program.start();
+            this.bluetoothBike.start();
         }
 
         private void ExitButton_Click(object sender, EventArgs e)

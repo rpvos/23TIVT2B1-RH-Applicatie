@@ -11,9 +11,9 @@ namespace FietsDemo
     class Login
     {
         private LoginForm loginForm;
-        public Login(Program program)
+        public Login(BluetoothBike bluetoothBike)
         {
-            this.loginForm = new LoginForm(program);
+            this.loginForm = new LoginForm(bluetoothBike);
             this.loginForm.FormBorderStyle = FormBorderStyle.FixedDialog;
             Application.Run(this.loginForm);
         }

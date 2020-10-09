@@ -13,9 +13,9 @@ namespace FietsDemo
     {
 
        private MainForm form;
-       private Program program;
+       private BluetoothBike program;
 
-        public GUI(Program program)
+        public GUI(BluetoothBike program)
         {
             this.program = program;
         }

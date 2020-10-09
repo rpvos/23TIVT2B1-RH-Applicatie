@@ -38,7 +38,7 @@ public class TunnelMessage
 			}
 		};
 
-		string header = Newtonsoft.Json.JsonConvert.SerializeObject(headerData);		
+		string header = JsonConvert.SerializeObject(headerData);		
 		return header;
 	}
 }

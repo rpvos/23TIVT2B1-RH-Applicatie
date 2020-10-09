@@ -21,7 +21,7 @@ namespace TCP_naar_VR
         private string id;
         private CallMethod callMethod;
         internal double speed { get; set; }
-        internal double heartrate{ get; set; }
+        internal double heartRate{ get; set; }
         internal double AP { get; set; }
         internal double DT { get; set; }
         internal double elapsedTime { get; set; }
@@ -127,6 +127,9 @@ namespace TCP_naar_VR
             JObject tempdata = (JObject)json["data"];
             JObject data = (JObject)tempdata["data"];
 
+            Console.WriteLine(data);
+           
+
             if ((string)data["id"] == "scene/node/add")
             {
                 if ((string)data["status"] == "ok")
@@ -157,15 +160,32 @@ namespace TCP_naar_VR
                     {
                         callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_07.png", "", uuid);
                     }
-
-
-
-
+                    //If name equals to "panel", clear the panel for first use
+                    if (name == "panel")
+                    {
+                        callMethod.ClearPanel(uuid);
+                    }
                 }
                 else
                 {
                     Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
                 }
+            }
+            //After finding a specific node, delete this one
+            //else if ((string)data["id"] == "scene/node/find")
+            //{
+            //    Console.WriteLine("FOUND NODE: " + (string) data["name"]);
+            //}
+
+            //Get scene, if scene found then delete groundplane
+            else if ((string)data["id"] == "scene/get")
+            {
+                if((string)data["status"] == "ok")
+                {
+                    Console.WriteLine("GOT A SCENE");
+                    //callMethod.DeleteGroundPlane();
+                }
+                
             }
             else if ((string)data["id"] == "route/add")
             {
@@ -177,21 +197,21 @@ namespace TCP_naar_VR
                     try
                     {
                         objects.Add(name, uuid);
-                        callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
-                        callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 });
-                        callMethod.NewRoutePoints(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 });
-                        callMethod.NewRoutePoints(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 });
-                        callMethod.NewRoutePoints(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 });
-                        callMethod.NewRoutePoints(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 });
+                        //callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
+                        //callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, -10 });
+                        //callMethod.NewRoutePoints(new int[] { 30, 0, 0 }, new int[] { 20, 0, 5 });
+                        //callMethod.NewRoutePoints(new int[] { 0, 0, 15 }, new int[] { -15, 0, -10 });
+                        //callMethod.NewRoutePoints(new int[] { 7, 0, 0 }, new int[] { 8, 0, -5 });
+                        //callMethod.NewRoutePoints(new int[] { 0, 0, 20 }, new int[] { 13, 0, 25 });
 
-                        callMethod.AddRoute();
+                        //callMethod.AddRoute();
                     }
                     catch (ArgumentException e)
                     {
 
                     }
 
-                    Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
+                    //Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
                     callMethod.AddRoad("data/NetworkEngine/textures/tarmac_normal.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", uuid);
                 }
                 else
@@ -203,13 +223,16 @@ namespace TCP_naar_VR
             {
                 if ((string)data["status"] == "ok")
                 {
-                    SendMessage(GetTunnelMessage("RouteSetMessage.json").ToString());
+                    //SendMessage(GetTunnelMessage("RouteSetMessage.json").ToString());
+                    setRoute();
+
                 }
             }
             else if ((string)data["id"] == "scene/road/add")
             {
                 if ((string)data["status"] == "ok")
                 {
+                    //Add 10 trees on random positions
                     Random random = new Random();
                     for (int i = 0; i < 10; i++)
                     {
@@ -221,6 +244,27 @@ namespace TCP_naar_VR
                     }
                 }
             }
+            //After clearing the panel, call the setMethod to initialize it
+            else if ((string)data["id"] == "scene/panel/clear")
+            {
+                Console.WriteLine("GOT THROUGH THE CLEARING PANEL RETURN STATUS");
+                callMethod.SetText("Welcome", objects["panel"], new double[] { 20, 50 });
+
+                string speedValue = this.speed.ToString();
+                string heartRateValue = this.heartRate.ToString();
+                string distanceTravelled = this.DT.ToString();
+                string elapsedTime = this.elapsedTime.ToString();
+                string resistance = this.resistance.ToString();
+
+                callMethod.SetText("Speed in km/h: "+ speedValue, objects["panel"], new double[] { 20, 100 });
+                callMethod.SetText("Heart rate in bpm: " + heartRateValue, objects["panel"], new double[] { 20, 150 });
+                callMethod.SetText("Distance travelled in meters: "+ distanceTravelled, objects["panel"], new double[] { 20, 200 });
+                callMethod.SetText("Elapsed time in seconds: " + elapsedTime, objects["panel"], new double[] { 20, 250 });
+                callMethod.SetText("Resistance in %: " + resistance, objects["panel"], new double[] { 20, 300 });
+
+
+                callMethod.SwapPanel(objects["panel"]);
+            }
         }
 
         private void CheckTunnelStatus(JObject json)
@@ -231,16 +275,19 @@ namespace TCP_naar_VR
             string id = (string)data["id"];
 
             if (status == "ok")
-            {
+            { 
+                Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
                 this.id = id;
+                callMethod.GetScene();
+                //callMethod.FindNode("GroundPlane");
                 //callMethod.SetTime(12);
                 callMethod.AddTerrain();
                 callMethod.AddNode();
-
+                callMethod.AddUniversalNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
                 //followRoute("");
             }
 
-            Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
+           
         }
 
         private void PrintUsers(JObject json)
@@ -258,6 +305,18 @@ namespace TCP_naar_VR
                     SendTunnelRequest((string)data[i]["id"]);
                 }
             }
+        }
+
+        private void setRoute()
+        {
+            callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 10, 0, 0 }, new int[] { 0, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 10, 0, -10 }, new int[] { 0, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 0, 0, -10 }, new int[] { 0, 0, 0 });
+
+
+            callMethod.AddRoute();
+            
         }
     }
 }

@@ -61,7 +61,7 @@
             this.UsernameTextbox.Location = new System.Drawing.Point(94, 62);
             this.UsernameTextbox.Name = "UsernameTextbox";
             this.UsernameTextbox.Size = new System.Drawing.Size(133, 20);
-            this.UsernameTextbox.TabIndex = 2;
+            this.UsernameTextbox.TabIndex = 1;
             // 
             // PasswordTextbox
             // 

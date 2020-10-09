@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SharedItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Security;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,53 +14,22 @@ namespace FietsDemo
     {
         private TcpClient server;
 
-        private byte[] buffer;
         private Crypto crypto;
-        private string totalBuffer;
 
 
         public UserClient()
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
-            this.buffer = new byte[1024];
-            this.crypto = new Crypto.receivingStream(server.GetStream());
+            this.crypto = new Crypto(server.GetStream(),handleData);
 
-            crypto.receivingStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
         }
 
-        #region stream dynamics
-        public void WriteTextMessage(string message)
+        private void WriteTextMessage(string message)
         {
-            byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
-            crypto.sendingStream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            crypto.sendingStream.FlushFinalBlock();
+            crypto.WriteTextMessage(message);
         }
-
-        private void OnRead(IAsyncResult ar)
-        {
-            try
-            {
-                int receivedBytes = crypto.receivingStream.EndRead(ar);
-                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                totalBuffer += receivedText;
-            }
-            catch (IOException)
-            {
-                Console.WriteLine("Server disconnected"); ;
-                return;
-            }
-
-            while (totalBuffer.Contains("\r\n\r\n"))
-            {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
-                handleData(packet);
-            }
-            crypto.receivingStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-        }
-        #endregion
 
         #region handle recieved data
         private void handleData(string packet)

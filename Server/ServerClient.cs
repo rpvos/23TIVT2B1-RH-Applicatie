@@ -31,16 +31,11 @@ namespace Server
             this.server = server;
 
             this.buffer = new byte[1024];
-            var stream = client.GetStream();
-            this.crypto = new Crypto(stream);
+            this.crypto = new Crypto(client.GetStream(),handleData);
 
 
             this.logger = new StringBuilder();
-
-
-            this.crypto.receivingStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
-
 
         #region stream dynamics
 
@@ -48,38 +43,7 @@ namespace Server
         {
             logger.Append("\nServer:\n" + message);
 
-            byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
-            crypto.sendingStream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            crypto.sendingStream.Flush();
-        }
-
-        private void OnRead(IAsyncResult ar)
-        {
-            try
-            {
-                int receivedBytes = crypto.receivingStream.EndRead(ar);
-                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                totalBuffer += receivedText;
-            }
-            catch (IOException)
-            {
-                server.Disconnect(this);
-                log();
-                return;
-            }
-
-            while (totalBuffer.Contains("\r\n\r\n"))
-            {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-
-                Console.WriteLine(packet);
-
-                logger.Append("\nClient:\n" + packet);
-
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
-                handleData(packet);
-            }
-            crypto.receivingStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            crypto.WriteTextMessage(message);
         }
 
         private void log()

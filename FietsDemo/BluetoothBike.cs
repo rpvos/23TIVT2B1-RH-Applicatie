@@ -6,8 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Avans.TI.BLE;
-using Client;
+using Shared;
 using TCP_naar_VR;
+using UpdateType = Shared.UpdateType;
 
 namespace FietsDemo
 {
@@ -36,7 +37,7 @@ namespace FietsDemo
 
         private double resistance = 0;
 
-        private Client.Client client;
+        private UserClient client;
 
         private TcpClientVR tcpClientVR;
 
@@ -67,7 +68,7 @@ namespace FietsDemo
 
         public void startClient()
         {
-            this.client = new Client.Client();
+            this.client = new UserClient();
 
         }
 
@@ -175,7 +176,7 @@ namespace FietsDemo
             if (name == "00002a37-0000-1000-8000-00805f9b34fb" || name == "SimulatorHeartRate")
             {
                 
-                setValuesInGui(ValueType.Heartrate, e.Data[1]);
+                setValuesInGui(UpdateType.Heartrate, e.Data[1]);
 
 
             }
@@ -261,7 +262,7 @@ namespace FietsDemo
                         this.timeElapsedInSeconds = ((64 * timeElapsedCounter) + elapsedTime * 0.25);
                         this.previousTimeElapsed = elapsedTime;
                                               
-                        setValuesInGui(ValueType.ElapsedTime, timeElapsedInSeconds);
+                        setValuesInGui(UpdateType.ElapsedTime, timeElapsedInSeconds);
 
                         // Calculation distance traveled
                         if (previousDistanceTraveled > distanceTraveled)
@@ -270,8 +271,8 @@ namespace FietsDemo
                         this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000.0;
                         this.previousDistanceTraveled = distanceTraveled;
 
-                        setValuesInGui(ValueType.AccumulatedDistance, this.distanceTraveledInKM);
-                        setValuesInGui(ValueType.Speed, speed);
+                        setValuesInGui(UpdateType.AccumulatedDistance, this.distanceTraveledInKM);
+                        setValuesInGui(UpdateType.Speed, speed);
 
                         //resistance = 30f;
                         //setValuesInGui("resistance", setResistance(resistance));
@@ -405,7 +406,7 @@ namespace FietsDemo
                         // Instantaneous power calculation
                         double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8));
 
-                        setValuesInGui(ValueType.AccumulatedPower, this.accumulatedPower);
+                        setValuesInGui(UpdateType.AccumulatedPower, this.accumulatedPower);
 
 
                     
@@ -417,33 +418,34 @@ namespace FietsDemo
             }
         }
 
-        public void setValuesInGui(ValueType valueType, double value)
+        public void setValuesInGui(UpdateType valueType, double value)
         {
             this.client.sendUpdatedValues(valueType,value);
 
             switch (valueType)
             {
-                case ValueType.Speed:
+                case UpdateType.Speed:
                     this.gui.getForm().setSpeed(value);
                     this.tcpClientVR.speed = value;
                     break;
-                case ValueType.Heartrate:
+                case UpdateType.Heartrate:
                     this.gui.getForm().setHeartrate(value);
-                    this.tcpClientVR.heartrate = value;
+                    //TODO heartrate is one word
+                    this.tcpClientVR.heartRate = value;
                     break;
-                case ValueType.AccumulatedPower:
+                case UpdateType.AccumulatedPower:
                     this.gui.getForm().setAP(value);
                     this.tcpClientVR.AP = value;
                     break;
-                case ValueType.AccumulatedDistance:
+                case UpdateType.AccumulatedDistance:
                     this.gui.getForm().setDT(value);
                     this.tcpClientVR.DT = value;
                     break;
-                case ValueType.ElapsedTime:
+                case UpdateType.ElapsedTime:
                     this.gui.getForm().setElapsedTime(value);
                     this.tcpClientVR.elapsedTime = value;
                     break;
-                case ValueType.Resistance:
+                case UpdateType.Resistance:
                     this.gui.getForm().setResistance(value);
                     this.tcpClientVR.resistance = value;
                     break;
@@ -512,17 +514,5 @@ namespace FietsDemo
         //    //bikeSimulator.WriteCharacteristic("Simulator", byteArray);
         //}
     }
-
-    public enum ValueType
-    {
-        Heartrate,
-        Speed,
-        AccumulatedPower,
-        InstantaniousPower,
-        AccumulatedDistance,
-        ElapsedTime,
-        Resistance
-    }
-
 }
 

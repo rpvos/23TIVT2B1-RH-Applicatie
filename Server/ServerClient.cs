@@ -1,11 +1,12 @@
 ﻿
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Shared;
 using System;
 using System.IO;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
+using UpdateType = Shared.UpdateType;
 
 namespace Server
 {
@@ -20,8 +21,6 @@ namespace Server
         private byte[] buffer;
         private string totalBuffer;
 
-        private RSAClient rsaClient;
-
         public User user { get; set; }
         private StringBuilder logger;
 
@@ -33,7 +32,6 @@ namespace Server
             this.buffer = new byte[1024];
             this.stream = client.GetStream();
 
-            this.rsaClient = new RSAClient();
 
             this.logger = new StringBuilder();
 
@@ -115,11 +113,6 @@ namespace Server
 
                 switch (json["Type"].ToString())
                 {
-                    case "request":
-                        if (handleConnectionRequest(data))
-                            sendConnectionRequest();
-                        break;
-
                     case "userCredentials":
                         sendUserCredentialsResponse(handleUserCredentials(data));
                         break;
@@ -142,7 +135,16 @@ namespace Server
         
         private void handleUpdateInformation(JObject data)
         {
-            this.server.SendToDoctors(getJsonObject("update",data,this.user));
+            UpdateType updateType = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
+            double value = (double)data["Value"];
+            
+            dynamic parsedData = new 
+            {
+                UpdateType = updateType.ToString(),
+                Value = value
+            };
+
+            this.server.SendToDoctors(getJsonObject("update",parsedData,this.user));
         }
 
         private Role handleUserCredentials(JObject data)
@@ -157,26 +159,6 @@ namespace Server
                 return Role.Invallid;
         }
 
-        /// <summary>
-        /// this method handles the connection request
-        /// </summary>
-        /// <param name="json">data recieved</param>
-        /// <returns>return true if the data send is correct</returns>
-        private bool handleConnectionRequest(JObject json)
-        {
-            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
-            byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
-            try
-            {
-                rsaClient.setKey(modulus, exponent);
-                return true;
-            }
-            catch (CryptographicException)
-            {
-                Console.WriteLine("Wrong key value");
-            }
-            return false;
-        }
 
         private bool checkChecksum(JObject json)
         {
@@ -227,17 +209,6 @@ namespace Server
             return getJsonObject("userCredentialsResponse", data);
         }
 
-        private string getConnectionResponseMessage(byte[] modulus, byte[] exponent)
-        {
-            dynamic data = new
-            {
-                Modulus = modulus,
-                Exponent = exponent
-            };
-
-            return getJsonObject("response", data);
-        }
-
         private string getMessageString(string message)
         {
             dynamic data = new
@@ -280,11 +251,6 @@ namespace Server
             WriteTextMessage(getUserCredentialsResponse(role));
         }
 
-
-        private void sendConnectionRequest()
-        {
-            WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));
-        }
 
         internal void sendMessage(string message)
         {

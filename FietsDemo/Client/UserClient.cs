@@ -1,44 +1,34 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Shared;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using UpdateType = Shared.UpdateType;
 
-namespace Client
+namespace FietsDemo
 {
-    class Client
+    public class UserClient
     {
         private TcpClient server;
         private NetworkStream stream;
 
-        private RSAClient rsaClient;
-
         private byte[] buffer;
         private string totalBuffer;
 
-        private bool connectedSuccesfully;
-        private bool loginSuccesful;
-
-        public Client()
+        public UserClient()
         {
-            this.rsaClient = new RSAClient();
-
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.stream = this.server.GetStream();
             this.buffer = new byte[1024];
 
-            this.loginSuccesful = false;
-
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-
-            WriteTextMessage(getRequestMessage(this.rsaClient.getModulus(), this.rsaClient.getExponent()));
-
-            Console.ReadKey();
+            WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
         }
 
         #region stream dynamics
@@ -89,21 +79,9 @@ namespace Client
 
                 switch (type)
                 {
-                    case "response":
-                        if (handleConnectionResponse(data))
-                        {
-                            connectedSuccesfully = true;
-
-                            //todo get username and pasword from client
-                            sendCredentialMessage("", "");
-                        }
-                        break;
-
                     case "userCredentialsResponse":
                         if (handleUserCredentialsResponse(data))
                         {
-                            loginSuccesful = true;
-
                             Console.WriteLine("Login succesful");
                         }
                         else
@@ -126,29 +104,7 @@ namespace Client
         private bool handleUserCredentialsResponse(JObject data)
         {
             //check if connected succesfully
-            if (connectedSuccesfully)
-            {
-                return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Patient;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        private bool handleConnectionResponse(JObject json)
-        {
-            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
-            byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
-            try
-            {
-                rsaClient.setKey(modulus, exponent);
-                return true;
-            }
-            catch (CryptographicException)
-            {
-                Console.WriteLine("Wrong key value");
-            }
-            return false;
+            return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Patient;
         }
 
         private bool checkChecksum(JObject json)
@@ -171,24 +127,11 @@ namespace Client
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
-        internal Task sendUpdatedValues(ValueType valueType, double value)
+        internal Task sendUpdatedValues(Shared.UpdateType valueType, double value)
         {
             WriteTextMessage(getUpdateMessageString(valueType, value));
             return Task.CompletedTask;
         }
-
-        internal Task sendUpdatedValues(int heartrate, double accDistance, double speed, double instPower, double accPower)
-        {
-            WriteTextMessage(getUpdateMessageString(heartrate, accDistance, speed, instPower, accPower));
-            return Task.CompletedTask;
-        }
-
-        internal Task sendUpdatedValues(string type, double value)
-        {
-            WriteTextMessage(getUpdateMessageString(type, value));
-            return Task.CompletedTask;
-        }
-
 
 
         #endregion
@@ -216,40 +159,24 @@ namespace Client
 
             return getJsonObject("userCredentials", data);
         }
-        private string getUpdateMessageString(ValueType valueType,double value)
+        private string getUpdateMessageString(UpdateType updateType, double value)
         {
             dynamic data = new
             {
-                ValueType = valueType.ToString(),
+                UpdateType = updateType.ToString(),
                 Value = value
             };
 
             return getJsonObject("update", data);
         }
 
-        private string getUpdateMessageString(int heartrate, double accDistance, double speed, double instPower, double accPower)
-        {
-            dynamic data = new
-            {
-                HeartRate = heartrate,
-                AccumulatedDistance = accDistance,
-                Speed = speed,
-                InstantaniousPower = instPower,
-                AccumulatedPower = accPower
-            };
-
-            return getJsonObject("update", data);
-        }
 
         private string getUpdateMessageString(string type, double value)
         {
             dynamic data = new
             {
                 Type = type,
-                Data = new
-                {
-                    Value = value
-                }
+                Value = value
             };
 
             return getJsonObject("updateType", data);
@@ -267,11 +194,12 @@ namespace Client
 
         private string getRequestMessage(byte[] modulus, byte[] exponent)
         {
-
+            List<byte> modulusList = new List<byte>(modulus);
+            List<byte> exponentList = new List<byte>(exponent);
             dynamic data = new
             {
-                Modulus = modulus,
-                Exponent = exponent
+                Modulus = modulusList,
+                Exponent = exponentList
             };
 
             return getJsonObject("request", data);

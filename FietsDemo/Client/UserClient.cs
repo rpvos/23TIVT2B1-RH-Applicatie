@@ -20,7 +20,7 @@ namespace FietsDemo
         private byte[] buffer;
         private string totalBuffer;
 
-        public UserClient()
+        public UserClient(string username, string password)
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
@@ -28,7 +28,8 @@ namespace FietsDemo
             this.buffer = new byte[1024];
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-            WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
+            //WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
+            WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
         #region stream dynamics
@@ -87,6 +88,7 @@ namespace FietsDemo
                         else
                         {
                             Console.WriteLine("Login failed");
+                            //System.Environment.Exit();
                         }
                         break;
 

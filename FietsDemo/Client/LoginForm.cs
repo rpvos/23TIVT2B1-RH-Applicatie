@@ -21,8 +21,9 @@ namespace FietsDemo
 
         private void ButtonLogin_Click(object sender, EventArgs e)
         {
+            
+            this.bluetoothBike.start(UsernameTextbox.Text, PasswordTextbox.Text);
             this.Hide();
-            this.bluetoothBike.start();
         }
 
         private void ExitButton_Click(object sender, EventArgs e)

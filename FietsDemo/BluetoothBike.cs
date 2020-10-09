@@ -42,17 +42,24 @@ namespace FietsDemo
         private TcpClientVR tcpClientVR;
 
         private Random random;
+        private string username;
+        private string password;
+
+        //private SimpleBooleanProperty
 
         static void Main(string[] args)
         {
             BluetoothBike bluetoothBike = new BluetoothBike();
             Login login = new Login(bluetoothBike);
+            //bluetoothBike.start();
         }
 
 
-        public void start()
+        public void start(string username, string password)
         {
             this.random = new Random();
+            this.username = username;
+            this.password = password;
 
             Thread guiThread = new Thread(startGUI);
             guiThread.Start();
@@ -68,8 +75,7 @@ namespace FietsDemo
 
         public void startClient()
         {
-            this.client = new UserClient();
-
+            this.client = new UserClient(this.username, this.password);
         }
 
 

@@ -11,8 +11,7 @@ using System.Text;
 using System.Threading;
 
 namespace TCP_naar_VR
-{
-    class TcpClientVR
+{    class TcpClientVR
     {
         private NetworkStream stream;
         private TcpClient tcpClient;
@@ -21,7 +20,7 @@ namespace TCP_naar_VR
         private string id, uuid;
         private CallMethod callMethod;
         internal double speed { get; set; }
-        internal double heartRate{ get; set; }
+        internal double heartRate { get; set; }
         internal double AP { get; set; }
         internal double DT { get; set; }
         internal double elapsedTime { get; set; }
@@ -37,6 +36,8 @@ namespace TCP_naar_VR
             Thread receivingTCPDataThread = new Thread(new ThreadStart(Receive));
             receivingTCPDataThread.Start();
         }
+
+        //Send a starting message to the server for connection
         public void SendKickOff()
         {
             dynamic data = new
@@ -46,6 +47,8 @@ namespace TCP_naar_VR
             string jsonString = JsonConvert.SerializeObject(data);
             SendMessage(jsonString);
         }
+
+        //Send a new tunnel request
         public void SendTunnelRequest(string id)
         {
             dynamic data = new
@@ -61,6 +64,7 @@ namespace TCP_naar_VR
             SendMessage(jsonString);
         }
 
+        //Get the text from the specified JSON file
         internal TunnelMessage GetTunnelMessage(string jsonName)
         {
             string currentPath = Directory.GetCurrentDirectory();
@@ -70,15 +74,17 @@ namespace TCP_naar_VR
             return tunnelMessage;
         }
 
+        //Send a message to the server
         internal void SendMessage(string message)
         {
 
             byte[] length = BitConverter.GetBytes(message.Length);
-            stream.Write(length,0,length.Length);
+            stream.Write(length, 0, length.Length);
             byte[] buffer = Encoding.ASCII.GetBytes(message);
-            stream.Write(buffer,0,buffer.Length);
+            stream.Write(buffer, 0, buffer.Length);
         }
 
+        //Receive bytes from a message
         public byte[] ReceiveBytes(int count)
         {
             byte[] buffer = new byte[count];
@@ -88,12 +94,13 @@ namespace TCP_naar_VR
             return buffer;
         }
 
+        //Check the receiving message
         public void Receive()
         {
             while (receiving)
             {
                 byte[] lenghtBuffer = ReceiveBytes(4);
-                int length = BitConverter.ToInt32(lenghtBuffer,0);
+                int length = BitConverter.ToInt32(lenghtBuffer, 0);
                 var buffer = ReceiveBytes(length);
                 string jsonS = Encoding.ASCII.GetString(buffer);
                 JObject json = JObject.Parse(jsonS);
@@ -102,6 +109,7 @@ namespace TCP_naar_VR
             }
         }
 
+        //Listen to the response from the server
         private void ReceiveMessage(JObject json)
         {
             string id = (string)json["id"];
@@ -116,17 +124,19 @@ namespace TCP_naar_VR
             }
             else if (id == "tunnel/send")
             {
-                ReceiveNodeNameAndUuid(json);
+                GetJsonData(json);
             }
         }
 
-        private void ReceiveNodeNameAndUuid(JObject json)
+        //Receive the response from the server, then do a specific thing with it
+        private void GetJsonData(JObject json)
         {
             JObject tempdata = (JObject)json["data"];
             JObject data = (JObject)tempdata["data"];
 
             Console.WriteLine(data);
 
+            //TODO make a switch case!
             if ((string)data["id"] == "scene/node/add")
             {
                 if ((string)data["status"] == "ok")
@@ -148,14 +158,14 @@ namespace TCP_naar_VR
 
                     Console.WriteLine("Added node to dictionary\nName: {0}\nuuid: {1}", name, uuid);
 
-                    //TEMP
+                    //TODO make this a switch case
                     if (name == "ground")
                     {
-                        callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid);
+                        callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid,0, 10, 1);
                     }
                     if (name == "tree")
                     {
-                        callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_07.png", "", uuid);
+                        callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_07.png", "", uuid, 0, 10, 1);
                     }
                     //If name equals to "panel", clear the panel for first use
                     if (name == "panel")
@@ -168,17 +178,20 @@ namespace TCP_naar_VR
                     Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
                 }
             }
-            //Get scene, if scene found then delete groundplane
+            //Get scene, if scene found then reset the scene
             else if ((string)data["id"] == "scene/get")
             {
-                if((string)data["status"] == "ok")
-                {
-                    Console.WriteLine("GOT A SCENE");
-                    Console.WriteLine("Get scene status: " + data["status"] );
-                    callMethod.FindNode("GroundPlane");
-                }
-                
+                 Console.WriteLine("GOT A SCENE");
+                 Console.WriteLine("Get scene status: " + data["status"]);
+                 callMethod.ResetScene();
+
             }
+            //If the scene is reset, find the groundplane node
+            else if((string)data["id"] == "scene/reset")
+            {
+                callMethod.FindNode("GroundPlane");
+            }
+            //If a route is correctly added, add objects to the VR scene
             else if ((string)data["id"] == "route/add")
             {
                 if ((string)data["status"] == "ok")
@@ -188,7 +201,7 @@ namespace TCP_naar_VR
                     string uuid = (string)data2["uuid"];
                     try
                     {
-                        objects.Add(name, uuid);                        
+                        objects.Add(name, uuid);
                     }
                     catch (ArgumentException e)
                     {
@@ -203,6 +216,7 @@ namespace TCP_naar_VR
                     Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
                 }
             }
+            //If the textures are loaded correctly, set a new route
             else if ((string)data["id"] == "scene/node/addlayer")
             {
                 if ((string)data["status"] == "ok")
@@ -210,6 +224,7 @@ namespace TCP_naar_VR
                     SetRoute();
                 }
             }
+            //If a road was added correctly, add random tree objects
             else if ((string)data["id"] == "scene/road/add")
             {
                 if ((string)data["status"] == "ok")
@@ -222,15 +237,15 @@ namespace TCP_naar_VR
                         int y = -100 + random.Next(200);
                         int treeNumber = random.Next(11);
                         float scale = (float)(0.1 * random.Next(20));
-                        callMethod.AddObject("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, x, y, 0, scale);
+                        callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { 0, 0, 0 }, "no");
                     }
                 }
             }
-            //After clearing the panel, call the setMethod to initialize it
+            //If the panel was cleared correctly, then add text on the panel
             else if ((string)data["id"] == "scene/panel/clear")
             {
                 Console.WriteLine("GOT THROUGH THE CLEARING PANEL RETURN STATUS");
-                callMethod.SetText("Welcome", objects["panel"], new double[] { 20, 50 });
+                callMethod.SetText("Welcome", objects["panel"], new double[] { 20, 50 }, 30.0);
 
                 string speedValue = this.speed.ToString();
                 string heartRateValue = this.heartRate.ToString();
@@ -238,19 +253,20 @@ namespace TCP_naar_VR
                 string elapsedTime = this.elapsedTime.ToString();
                 string resistance = this.resistance.ToString();
 
-                callMethod.SetText("Speed in km/h: "+ speedValue, objects["panel"], new double[] { 20, 100 });
-                callMethod.SetText("Heart rate in bpm: " + heartRateValue, objects["panel"], new double[] { 20, 150 });
-                callMethod.SetText("Distance travelled in meters: "+ distanceTravelled, objects["panel"], new double[] { 20, 200 });
-                callMethod.SetText("Elapsed time in seconds: " + elapsedTime, objects["panel"], new double[] { 20, 250 });
-                callMethod.SetText("Resistance in %: " + resistance, objects["panel"], new double[] { 20, 300 });
+                callMethod.SetText("Speed in km/h: " + speedValue, objects["panel"], new double[] { 20, 100 }, 30.0);
+                callMethod.SetText("Heart rate in bpm: " + heartRateValue, objects["panel"], new double[] { 20, 150 }, 30.0);
+                callMethod.SetText("Distance travelled in meters: " + distanceTravelled, objects["panel"], new double[] { 20, 200 }, 30.0);
+                callMethod.SetText("Elapsed time in seconds: " + elapsedTime, objects["panel"], new double[] { 20, 250 }, 30.0);
+                callMethod.SetText("Resistance in %: " + resistance, objects["panel"], new double[] { 20, 300 }, 30.0);
 
                 callMethod.SwapPanel(objects["panel"]);
             }
-            else if((string)data["id"] == "scene/node/find")
+            //If the node was found correctly,and if it was the groundplane node, then delete it
+            else if ((string)data["id"] == "scene/node/find")
             {
                 if ((string)data["status"] == "ok")
                 {
-                    JArray nodeData = (JArray) data["data"];
+                    JArray nodeData = (JArray)data["data"];
 
                     uuid = nodeData[0]["uuid"].ToString();
                     string name = nodeData[0]["name"].ToString();
@@ -264,6 +280,7 @@ namespace TCP_naar_VR
             }
         }
 
+        //Check for the tunnelstatus
         private void CheckTunnelStatus(JObject json)
         {
             JObject data = (JObject)json["data"];
@@ -272,20 +289,22 @@ namespace TCP_naar_VR
             string id = (string)data["id"];
 
             if (status == "ok")
-            { 
+            {
                 Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
                 this.id = id;
                 callMethod.GetScene();
-                //callMethod.FindNode("GroundPlane");
+
                 //callMethod.SetTime(12);
-                callMethod.AddTerrain();
-                callMethod.AddNode();                
-                callMethod.AddUniversalNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
                 
+                callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });    
+                callMethod.AddTerrain();
+                callMethod.AddPanelNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new int[] { 1, 1, 1, 1 });
+
                 //followRoute("");
-            }           
+            }         
         }
 
+        //Print the users who are currently on the server
         private void PrintUsers(JObject json)
         {
             JArray data = (JArray)json["data"];
@@ -303,6 +322,7 @@ namespace TCP_naar_VR
             }
         }
 
+        //Set new routepoints for a new, non-existing route
         private void SetRoute()
         {
             callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });

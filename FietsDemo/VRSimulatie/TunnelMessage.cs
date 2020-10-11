@@ -26,6 +26,22 @@ public class TunnelMessage
 		return (JObject) DataContent["data"];
     }
 
+	public string SendDataPacket(dynamic packet)
+	{
+		dynamic headerData = new
+		{
+			id = "tunnel/send",
+			data = new
+			{
+				dest = Id,
+				data = packet
+			}
+		};
+
+		string header = JsonConvert.SerializeObject(headerData);
+		return header;
+	}
+
 	public override string ToString()
 	{
 		dynamic headerData = new

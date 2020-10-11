@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.Pipes;
 using System.Linq.Expressions;
 using System.Net.Cache;
 using System.Text;
@@ -20,88 +21,177 @@ namespace simulatie
             this.tcpClient = tcpClient;
             this.objects = objects;
             this.routePoints = new ArrayList();
-        }
+        }       
 
-        internal void DeleteGroundPlane(string uuid)
-        {
-            DeleteNode(uuid);
-        }
-
+        //Get the VR scene that is in use
         internal void GetScene()
         {
             TunnelMessage getSceneMessage = tcpClient.GetTunnelMessage("SceneGet.json");
             tcpClient.SendMessage(getSceneMessage.ToString());
         }
+
+        //Reset the whole VR scene
+        internal void ResetScene()
+        {
+            Console.WriteLine("RESET SCENE CALLED");
+            TunnelMessage resetMessage = tcpClient.GetTunnelMessage("SceneReset.json");
+            dynamic payloadData = new
+            {
+                id = "scene/reset"               
+            };
+
+            tcpClient.SendMessage(resetMessage.SendDataPacket(payloadData));
+        }
         
-        internal void SetTime(int time)
+        //Set the time in the VR scene
+        internal void SetTime(int setTime)
         {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TimeSetMessage.json");
-            timeMessage.GetDataContent()["time"] = time;
-            tcpClient.SendMessage(timeMessage.ToString());
 
+
+            dynamic payloadData = new
+            {
+                time = setTime
+            };
+
+            tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
         }
 
-        internal void AddNode()
+        //Add a ground node to the VR scene on which you can add texture
+        internal void AddGroundNode(string nodeName, int[] pos, int[] rot)
         {
-            TunnelMessage timeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
-            tcpClient.SendMessage(timeMessage.ToString());
+            TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
+            
+            dynamic payloadData = new
+            {
+                id = "scene/node/add",
+                data = new
+                {
+                    name = nodeName,
+                    components = new
+                    {
+                        transforms = new
+                        {
+                            position = pos,
+                            scale = 1,
+                            rotation = rot
+                        },
+                        terrain = new
+                        {
+                            smoothnormals = true
+                        }
+                    }
+                }               
+            };
+
+            Console.WriteLine(payloadData);
+            tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
+            Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
         }
 
-        internal void AddUniversalNode(string name, int[] pos, int[] rotation)
+        //Add a panel to the VR scene
+        internal void AddPanelNode(string nodeName, int[] pos, int[] rot, int[] panelSize, int[] res, int[] backgrColor)
         {
-            TunnelMessage universalNodeAdd = tcpClient.GetTunnelMessage("UniversalNodeAdd.json");
-            JObject data = universalNodeAdd.GetDataContent();
-            data["name"] = name;
+            TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
+            
+            dynamic payloadData = new
+            {
+                id = "scene/node/add",
+                data = new
+                {
+                    name = nodeName,
+                    components = new
+                    {
+                        transforms = new
+                        {
+                            position = pos,
+                            scale = 1,
+                            rotation = rot
+                        },
+                        panel = new
+                        {
+                            size = panelSize,
+                            resolution = res,
+                            background = backgrColor,
+                            castShadows = true
+                        }
+                    }
+                }
+            };
 
-            JObject components = (JObject)data["components"];
-            JObject transform = (JObject)components["transform"];
-            transform["position"] = new JArray(pos);
-            transform["rotate"] = new JArray(rotation);
-
-            //Console.WriteLine(universalNodeAdd.ToString());
-
-            tcpClient.SendMessage(universalNodeAdd.ToString());
+            Console.WriteLine(payloadData);
+            tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
+            Console.WriteLine(nodeMessage.SendDataPacket(payloadData));            
         }
 
-        internal void FindNode(string name)
+        //Find a specific node from the VR scene
+        internal void FindNode(string nodeName)
         {
             TunnelMessage findNodeMessage = tcpClient.GetTunnelMessage("NodeFind.json");
-            JObject data = findNodeMessage.GetDataContent();
-            data["name"] = name;
 
-            tcpClient.SendMessage(findNodeMessage.ToString());
-            Console.WriteLine(findNodeMessage.GetDataContent());
-
-
+            dynamic payloadData = new
+            {
+                id = "scene/node/find",
+                data = new
+                {
+                    name = nodeName
+                }
+            };         
+            Console.WriteLine(findNodeMessage.SendDataPacket(payloadData));
+            tcpClient.SendMessage(findNodeMessage.SendDataPacket(payloadData));
         }
 
-        internal void DeleteNode(string id)
+        //Delete a specific node from the VR scene
+        internal void DeleteNode(string nodeId)
         {
             TunnelMessage deleteNodeMessage = tcpClient.GetTunnelMessage("NodeDelete.json");
-            JObject data = deleteNodeMessage.GetDataContent();
-            data["id"] = id;
 
-            tcpClient.SendMessage(deleteNodeMessage.ToString());
+            dynamic payloadData = new
+            {
+                id = "scene/node/delete",
+                data = new
+                {
+                    id = nodeId
+                }
+            };
+
+            tcpClient.SendMessage(deleteNodeMessage.SendDataPacket(payloadData));
         }
 
-        internal void AddObject(string fileNameModel, string objectName, int x, int y, int z, float scale)
+        //Add a new object with node to the VR scene
+        internal void AddObjectNode(string fileNameModel, string objectNodeName, int[] pos, int[] rot, float scale, string hasAnimation)
         {
             TunnelMessage addObjectMessage = tcpClient.GetTunnelMessage("AddObjectMessage.json");
-            JObject data = addObjectMessage.GetDataContent();
-            data["name"] = objectName;
+            
+            dynamic payloadData = new
+            {
+                id = "scene/node/add",
+                data = new
+                {
+                    name = objectNodeName,
+                    components = new
+                    {
+                        transforms = new
+                        {
+                            position = pos,
+                            scale = 1,
+                            rotation = rot
+                        },
+                        model = new
+                        {
+                            file = fileNameModel,
+                            cullbackfaces = true,
+                            animated = false,
+                            animation = hasAnimation
+                        }
+                    }
+                }
+            };
 
-            JObject components = (JObject)data["components"];
-
-            JObject transform = (JObject)components["transform"];
-            transform["position"] = new JArray(new int[] { y, z, x });
-            transform["scale"] = scale;
-
-            JObject model = (JObject)components["model"];
-            model["file"] = fileNameModel;
-
-            tcpClient.SendMessage(addObjectMessage.ToString());
+            tcpClient.SendMessage(addObjectMessage.SendDataPacket(payloadData));
         }
 
+        //Add a height map to the terrain
         internal void AddTerrain()
         {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TerrainAdd.json");
@@ -110,6 +200,7 @@ namespace simulatie
             Random random = new Random();
             double lastInt = 0.0;
             double reduction = 1;
+
             for (int i = 0; i < heights.Length; i++)
             {
                 if (i > 200)
@@ -122,7 +213,6 @@ namespace simulatie
                 }
                 heights[i] = (lastInt + ((random.NextDouble() * 2 - reduction) / 10));
                 lastInt = heights[i];
-
             }
 
             JArray jArray = new JArray(heights);
@@ -130,31 +220,74 @@ namespace simulatie
             tcpClient.SendMessage(timeMessage.ToString());
         }
 
-        internal void AddTexture(string fileNormal, string fileDiffuse, string uuid)
+        //Add texture to the VR scene
+        internal void AddTexture(string fileNormal, string fileDiffuse, string uuid, int minimumHeight, int maximumHeight, int fadeDistance)
         {
             TunnelMessage textureMessage = tcpClient.GetTunnelMessage("AddTexture.json");
-            JObject data = textureMessage.GetDataContent();
-            data["id"] = uuid;
-            data["normal"] = fileNormal;
-            data["diffuse"] = fileDiffuse;
-            tcpClient.SendMessage(textureMessage.ToString());
+
+            dynamic payloadData = new
+            {
+                id = "scene/node/addlayer",
+                data = new
+                {
+                    id = uuid,
+                    normal = fileNormal,
+                    diffuse = fileDiffuse,
+                    minHeight = minimumHeight,
+                    maxHeight = maximumHeight,
+                    fadeDist = fadeDistance
+                }
+            };
+            tcpClient.SendMessage(textureMessage.SendDataPacket(payloadData));
         }
 
+        //Add a new road to the VR scene
         internal void AddRoad(string normalTexture, string diffuseTexture, string specularTexture, string uuid)
         {
             TunnelMessage roadMessage = tcpClient.GetTunnelMessage("RoadSetMessage.json");
-            JObject data = roadMessage.GetDataContent();
-            data["route"] = uuid;
-            data["diffuse"] = diffuseTexture;
-            data["normal"] = normalTexture;
-            data["specular"] = specularTexture;
-            tcpClient.SendMessage(roadMessage.ToString());
+
+            dynamic payloadData = new
+            {
+                id = "scene/road/add",
+                data = new
+                {
+                    route = uuid,
+                    diffuse = diffuseTexture,
+                    normal = normalTexture,
+                    specular = specularTexture,
+                    heightoffset = 0.01
+                }
+            };
+
+            tcpClient.SendMessage(roadMessage.SendDataPacket(payloadData));
         }
 
+        //Add a new route to the VR scene
         internal void AddRoute()
         {
             ArrayList points = routePoints;
             TunnelMessage routeMessage = tcpClient.GetTunnelMessage("RouteSetMessage.json");
+                        
+            //foreach (RoutePoint p in points)
+            //{
+            //    JObject point = JObject.Parse("{\"pos\": [], \"dir\": []}");
+
+            //    point["pos"] = new JArray(p.Pos);
+            //    point["dir"] = new JArray(p.Dir);
+
+            //    nodesArray.Add(point);
+            //}
+
+            //dynamic payloadData = new
+            //{
+            //    id = "route/add",
+            //    data = new
+            //    {
+            //       nodes = nodesArray
+            //    }
+            //};
+
+            //For now still using old code
             JObject data = routeMessage.GetDataContent();
             JArray nodesArray = (JArray)data["nodes"];
             foreach (RoutePoint p in points)
@@ -169,13 +302,13 @@ namespace simulatie
             tcpClient.SendMessage(routeMessage.ToString());
         }
 
+        //Add new routepoints to the routePoints array
         internal void NewRoutePoints(int[] coord, int[] coord2)
         {
             routePoints.Add(new RoutePoint(coord, coord2));
         }
 
-
-
+        //Set new routepoints. Give them a direction and a position
         internal struct RoutePoint
         {
             public int[] Dir { get; }
@@ -187,14 +320,29 @@ namespace simulatie
             }
         }
 
-        internal void FollowRoute(String node)
+        //Let an object follow a set route with a specific nodeID
+        internal void FollowRoute(string nodeId, double followSpeed, int[] possOff)
         {
             TunnelMessage followRouteMessage = tcpClient.GetTunnelMessage("FollowRoute.json");
-            JObject data = followRouteMessage.GetDataContent();
-            data["routeid"] = objects["route"];
-            data["nodeid"] = objects["tree1"];
 
-            tcpClient.SendMessage(followRouteMessage.ToString());
+            dynamic payloadData = new
+            {
+                id = "route/follow",
+                data = new
+                {
+                    route = objects["route"],
+                    node = nodeId,
+                    speed = followSpeed,
+                    offset = 0.0,
+                    rotate = "XZ",
+                    smoothing = 1.0,
+                    followHeight = false,
+                    rotateOffset = new int[] { 0,0,0,},
+                    positionOffset = possOff
+                }
+            };
+
+            tcpClient.SendMessage(followRouteMessage.SendDataPacket(payloadData));          
         }
 
         //Clear a panel in the vr simulator for first use
@@ -202,27 +350,42 @@ namespace simulatie
         {
             Console.WriteLine("CLEARING PANEL");
             TunnelMessage clearPannelMessage = tcpClient.GetTunnelMessage("ClearPanel.json");
-            JObject data = clearPannelMessage.GetDataContent();
-            
-            data["id"] = uuid;
 
-            Console.WriteLine("ID of the clear data: " + (string)data["id"]);
+            dynamic payloadData = new
+            {
+                id = "scene/panel/clear",
+                data = new
+                {
+                    id = uuid
+                }
+            };
 
-            tcpClient.SendMessage(clearPannelMessage.ToString());
+            Console.WriteLine("ID of the clear data: " + uuid);
+            tcpClient.SendMessage(clearPannelMessage.SendDataPacket(payloadData));
         }
 
         //Draw text on a panel in the vr simulator
-        internal void SetText(string text, string uuid, double[] coord)
+        internal void SetText(string textToShow, string uuid, double[] coord, int textSize)
         {
             Console.WriteLine("REACHED SETTEXT METHOD!!!");
-            Console.WriteLine("TEXT: {0}", text);
+            Console.WriteLine("TEXT: {0}", textToShow);
             TunnelMessage setTextMessage = tcpClient.GetTunnelMessage("SetText.json");
-            JObject data = setTextMessage.GetDataContent();
 
-            data["id"] = uuid;
-            data["text"] = text;
-            data["position"] = new JArray(coord);
-            tcpClient.SendMessage(setTextMessage.ToString());
+            dynamic payloadData = new
+            {
+                id = "scene/panel/drawtext",
+                data = new
+                {
+                    id = uuid,
+                    text = textToShow,
+                    position = coord,
+                    size = textSize,
+                    color = new int[] { 0, 0, 0, 1 },
+                    font = "segoeui"
+                }
+            };
+
+            tcpClient.SendMessage(setTextMessage.SendDataPacket(payloadData));
         } 
         
         //Swap the buffered panel to show the text
@@ -230,12 +393,17 @@ namespace simulatie
         {
             Console.WriteLine("REACHED SWAPPING PANEL METHOD");
             TunnelMessage swapPanelMessage = tcpClient.GetTunnelMessage("SwapPanel.json");
-            JObject data = swapPanelMessage.GetDataContent();
 
-            data["id"] = uuid;
+            dynamic payloadData = new
+            {
+                id = "scene/panel/swap",
+                data = new
+                {
+                    id = uuid
+                }
+            };
 
-            Console.WriteLine(swapPanelMessage.ToString());
-            tcpClient.SendMessage(swapPanelMessage.ToString());
+            tcpClient.SendMessage(swapPanelMessage.SendDataPacket(payloadData));
         }        
     }
 }

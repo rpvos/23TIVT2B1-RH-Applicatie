@@ -6,7 +6,7 @@ namespace FietsDemo
 {
     public class BikeSimulator
     {
-        public bool running;
+        public bool running = false;
 
         private float Resistance;
 

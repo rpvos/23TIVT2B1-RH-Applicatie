@@ -13,13 +13,20 @@ namespace FietsDemo
     public partial class SimulationForm : Form
     {
         private BikeSimulator BikeSimulator;
-        public SimulationForm(BikeSimulator bikeSimulator)
+        private GUI gui;
+        public SimulationForm(BikeSimulator bikeSimulator, GUI gui)
         {
+            this.gui = gui;
             this.BikeSimulator = bikeSimulator;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             InitializeComponent();
             this.HeartrateTextBox.MouseWheel += new MouseEventHandler(changeHeartrate);
-            this.SpeedTextBox.MouseWheel += new MouseEventHandler(changeSpeed);
+            this.SpeedTextBox.MouseWheel += new MouseEventHandler(changeSpeed);            
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            this.gui.stopSimulator();
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

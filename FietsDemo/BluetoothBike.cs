@@ -34,6 +34,9 @@ namespace FietsDemo
         private double timeElapsedInSeconds;
         private int previousTimeElapsed;
         private int timeElapsedCounter = 0;
+        private bool isSimulatorRunning;
+
+        //public bool SimulatorIsRunning = false;
 
         private double resistance = 0;
 
@@ -84,20 +87,24 @@ namespace FietsDemo
             // When starting the simulator, the first thing to do is to unsubscribe from the real BLE device, otherwise they would interfere.
             this.BleBike.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
             this.HeartRateSensor.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
-            
-            // The second step is to start the simulator and the GUI that comes with it.
-            Console.WriteLine("starting simulator...");
-            bikeSimulator = new BikeSimulator(this);
 
-            Thread thread = new Thread(startSimulatorGUI);
-            thread.Start();
-            
-        }
+            // The second step is to start the simulator and the GUI that comes with it.
+
+            if (!isSimulatorRunning)
+            {
+                Console.WriteLine("starting simulator...");
+                bikeSimulator = new BikeSimulator(this);
+                isSimulatorRunning = true;
+                Thread thread = new Thread(startSimulatorGUI);
+                thread.Start();
+            }
+    }
 
         private void startSimulatorGUI()
         {
             this.simulator = new Simulator(this.bikeSimulator);
-            this.simulator.run();
+            this.bikeSimulator.running = true;
+            this.simulator.run(this.gui);
         }
 
         public void stopSimulator() 
@@ -105,6 +112,7 @@ namespace FietsDemo
             // To stop the simulator we first stop the simulator thread and the GUI.
             Console.WriteLine("Stopping Simulator...");
             this.bikeSimulator.running = false;
+            this.isSimulatorRunning = false;
             // After that we subscribe to the BLE service again to continue measuring.
             this.BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
             this.HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;

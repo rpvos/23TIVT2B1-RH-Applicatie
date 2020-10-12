@@ -79,10 +79,6 @@ namespace FietsDemo
             }));
         }
 
-
-       
-
-
         private void ESPSimulatorButton_Click(object sender, EventArgs e)
         {
             SoftwareSimulatorButton.BackColor = Color.White;

@@ -44,7 +44,6 @@ namespace FietsDemo
                 string type = json["Type"].ToString();
 
 
-
                 switch (type)
                 {
                     case "userCredentialsResponse":

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FietsDemo
@@ -13,13 +14,12 @@ namespace FietsDemo
     public class UserClient
     {
         private TcpClient server;
+        private NetworkStream stream;
+        private BluetoothBike bluetoothBike;
 
         private Crypto crypto;
 
-        private BluetoothBike bluetoothBike;
-
-
-        public UserClient(BluetoothBike bluetoothBike)
+        public UserClient(string username, string password, BluetoothBike bluetoothBike)
         {
             this.bluetoothBike = bluetoothBike;
             this.server = new TcpClient("127.0.0.1", 8080);
@@ -56,10 +56,15 @@ namespace FietsDemo
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
+                            Thread startThread = new Thread(start);
+                            startThread.Start();
+                            this.bluetoothBike.loginSucceeded();
+                            
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
+                            this.bluetoothBike.loginFailed();
                         }
                         break;
 
@@ -82,6 +87,11 @@ namespace FietsDemo
             {
                 Console.WriteLine("Invalid message");
             }
+        }
+
+        public void start()
+        {
+            this.bluetoothBike.start();
         }
 
         private void AddChatMessage(JObject data)

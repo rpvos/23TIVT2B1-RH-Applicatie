@@ -7,8 +7,9 @@ using System.Text;
 using SharedItems;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
-namespace DoctorApplication
+namespace DoctorServer
 {
     public class DoctorClient
     {
@@ -22,29 +23,39 @@ namespace DoctorApplication
         private byte[] buffer;
         private string totalBuffer;
 
+        private Login login;
+
         static void Main()
         {
             DoctorClient doctorServer = new DoctorClient();
-            doctorServer.Start();
+            doctorServer.startLogin();
+        }
+
+        public void startLogin()
+        {
+
+            this.login = new Login(this);
+            this.login.run();
 
         }
 
 
         public void Start()
         {
-            startClient();
+            //startClient();
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
 
             this.mainForm = new DoctorForm(this);
-
-            Application.Run(mainForm);
+            //ShowDialog() instead of Application.Run() could affect the working a bit
+            this.mainForm.ShowDialog();
+            //Application.Run(mainForm);
         }
 
+  
 
-
-        public void startClient()
+        public void startClient(string username, string password)
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
@@ -55,7 +66,7 @@ namespace DoctorApplication
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
-            WriteTextMessage(getUserDetailsMessageString("dokter", "123"));
+            WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
         #region stream dynamics
@@ -121,10 +132,14 @@ namespace DoctorApplication
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
+                            Thread startThread = new Thread(Start);
+                            startThread.Start();
+                            this.login.loginSucceeded();
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
+                            this.login.loginFailed();
                         }
                         break;
                     case "update":
@@ -158,7 +173,6 @@ namespace DoctorApplication
         {
             UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
             double value = (double)data["Value"];
-
             switch (type)
             {
                 case UpdateType.AccumulatedDistance:

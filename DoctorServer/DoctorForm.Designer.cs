@@ -1,4 +1,4 @@
-﻿namespace DoctorApplication
+﻿namespace DoctorServer
 {
     partial class DoctorForm
     {

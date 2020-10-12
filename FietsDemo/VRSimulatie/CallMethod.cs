@@ -21,8 +21,9 @@ namespace simulatie
             this.tcpClient = tcpClient;
             this.objects = objects;
             this.routePoints = new ArrayList();
-        }       
+        }
 
+        #region Scene
         //Get the VR scene that is in use
         internal void GetScene()
         {
@@ -42,7 +43,9 @@ namespace simulatie
 
             tcpClient.SendMessage(resetMessage.SendDataPacket(payloadData));
         }
-        
+        #endregion
+
+        #region Time
         //Set the time in the VR scene
         internal void SetTime(int setTime)
         {
@@ -56,7 +59,9 @@ namespace simulatie
 
             tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
         }
+        #endregion
 
+        #region Nodes
         //Add a ground node to the VR scene on which you can add texture
         internal void AddGroundNode(string nodeName, int[] pos, int[] rot)
         {
@@ -119,9 +124,7 @@ namespace simulatie
                 }
             };
 
-            Console.WriteLine(payloadData);
-            tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
-            Console.WriteLine(nodeMessage.SendDataPacket(payloadData));            
+            tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));           
         }
 
         //Find a specific node from the VR scene
@@ -136,7 +139,8 @@ namespace simulatie
                 {
                     name = nodeName
                 }
-            };         
+            };
+            
             Console.WriteLine(findNodeMessage.SendDataPacket(payloadData));
             tcpClient.SendMessage(findNodeMessage.SendDataPacket(payloadData));
         }
@@ -159,9 +163,9 @@ namespace simulatie
         }
 
         //Add a new object with node to the VR scene
-        internal void AddObjectNode(string fileNameModel, string objectNodeName, int[] pos, int[] rot, float scale, string hasAnimation)
+        internal void AddObjectNode(string fileNameModel, string objectNodeName, int[] pos, int[] rot, bool anim, string hasAnimation)
         {
-            TunnelMessage addObjectMessage = tcpClient.GetTunnelMessage("AddObjectMessage.json");
+            TunnelMessage addObjectMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
             
             dynamic payloadData = new
             {
@@ -190,7 +194,9 @@ namespace simulatie
 
             tcpClient.SendMessage(addObjectMessage.SendDataPacket(payloadData));
         }
+        #endregion
 
+        #region Terrain
         //Add a height map to the terrain
         internal void AddTerrain()
         {
@@ -238,6 +244,7 @@ namespace simulatie
                     fadeDist = fadeDistance
                 }
             };
+
             tcpClient.SendMessage(textureMessage.SendDataPacket(payloadData));
         }
 
@@ -261,7 +268,9 @@ namespace simulatie
 
             tcpClient.SendMessage(roadMessage.SendDataPacket(payloadData));
         }
+        #endregion
 
+        #region Route
         //Add a new route to the VR scene
         internal void AddRoute()
         {
@@ -321,7 +330,7 @@ namespace simulatie
         }
 
         //Let an object follow a set route with a specific nodeID
-        internal void FollowRoute(string nodeId, double followSpeed, int[] possOff)
+        internal void FollowRoute(string routeId, string nodeId, double followSpeed, int[] possOff)
         {
             TunnelMessage followRouteMessage = tcpClient.GetTunnelMessage("FollowRoute.json");
 
@@ -344,7 +353,9 @@ namespace simulatie
 
             tcpClient.SendMessage(followRouteMessage.SendDataPacket(payloadData));          
         }
+        #endregion
 
+        #region Panel
         //Clear a panel in the vr simulator for first use
         internal void ClearPanel(string uuid)
         {
@@ -365,7 +376,7 @@ namespace simulatie
         }
 
         //Draw text on a panel in the vr simulator
-        internal void SetText(string textToShow, string uuid, double[] coord, int textSize)
+        internal void SetText(string textToShow, string uuid, double[] coord, double textSize)
         {
             Console.WriteLine("REACHED SETTEXT METHOD!!!");
             Console.WriteLine("TEXT: {0}", textToShow);
@@ -404,6 +415,8 @@ namespace simulatie
             };
 
             tcpClient.SendMessage(swapPanelMessage.SendDataPacket(payloadData));
-        }        
+        }
+
+        #endregion
     }
 }

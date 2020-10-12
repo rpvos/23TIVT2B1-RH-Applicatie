@@ -161,7 +161,7 @@ namespace TCP_naar_VR
                     //TODO make this a switch case
                     if (name == "ground")
                     {
-                        callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid,0, 10, 1);
+                        callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid, 0, 10, 1);
                     }
                     if (name == "tree")
                     {
@@ -171,6 +171,11 @@ namespace TCP_naar_VR
                     if (name == "panel")
                     {
                         callMethod.ClearPanel(uuid);
+                    }
+                    if(name == "bike")
+                    {
+                        Console.WriteLine("ROUTE UUID TO FOLLOW: " + objects["route"]);
+                        callMethod.FollowRoute(objects["route"], 10, new int[] { 0, 0, 0 });
                     }
                 }
                 else
@@ -183,7 +188,7 @@ namespace TCP_naar_VR
             {
                  Console.WriteLine("GOT A SCENE");
                  Console.WriteLine("Get scene status: " + data["status"]);
-                 callMethod.ResetScene();
+                 //callMethod.ResetScene();
 
             }
             //If the scene is reset, find the groundplane node
@@ -237,8 +242,10 @@ namespace TCP_naar_VR
                         int y = -100 + random.Next(200);
                         int treeNumber = random.Next(11);
                         float scale = (float)(0.1 * random.Next(20));
-                        callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { 0, 0, 0 }, "no");
+                        //callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { 0, 0, 0 }, false, "no");
                     }
+
+                    callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "data/NetworkEngine/models/bike/bike_anim.fbx");
                 }
             }
             //If the panel was cleared correctly, then add text on the panel
@@ -292,8 +299,7 @@ namespace TCP_naar_VR
             {
                 Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
                 this.id = id;
-                callMethod.GetScene();
-
+                //callMethod.GetScene();
                 //callMethod.SetTime(12);
                 
                 callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });    

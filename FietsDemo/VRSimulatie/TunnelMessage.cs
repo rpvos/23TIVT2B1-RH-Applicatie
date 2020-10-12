@@ -15,17 +15,19 @@ public class TunnelMessage
 		
 	}
 
-	public string GetMessageId()
-    {
-		return (string) DataContent["id"];
-    }
+	//public string GetMessageId()
+ //   {
+	//	return (string) DataContent["id"];
+ //   }
 
+	//Get a specific data content from a JSON file
 	public JObject GetDataContent()
     {
 		
 		return (JObject) DataContent["data"];
     }
 
+	//Send data in the correct form to the server
 	public string SendDataPacket(dynamic packet)
 	{
 		dynamic headerData = new
@@ -42,6 +44,7 @@ public class TunnelMessage
 		return header;
 	}
 
+	//Old way of sending messages to the server
 	public override string ToString()
 	{
 		dynamic headerData = new

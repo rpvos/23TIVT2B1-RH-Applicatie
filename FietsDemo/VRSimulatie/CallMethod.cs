@@ -122,37 +122,37 @@ namespace simulatie
         //Add a ground node to the VR scene on which you can add texture
         internal void AddGroundNode(string nodeName, int[] pos, int[] rot)
         {
-            //TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
-            TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("HardCodedTerrainAdd.json");
+            TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
+            //TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("HardCodedTerrainAdd.json");
 
 
-            //dynamic payloadData = new
-            //{
-            //    id = "scene/node/add",
-            //    data = new
-            //    {
-            //        name = nodeName,
-            //        components = new
-            //        {
-            //            transforms = new
-            //            {
-            //                position = pos,
-            //                scale = 1,
-            //                rotation = rot
-            //            },
-            //            terrain = new
-            //            {
-            //                smoothnormals = true
-            //            }
-            //        }
-            //    }
-            //};
+            dynamic payloadData = new
+            {
+                id = "scene/node/add",
+                data = new
+                {
+                    name = nodeName,
+                    components = new
+                    {
+                        transform = new
+                        {
+                            position = pos,
+                            scale = 1,
+                            rotation = rot
+                        },
+                        terrain = new
+                        {
+                            smoothnormals = true
+                        }
+                    }
+                }
+            };
 
-            //Console.WriteLine(payloadData);
-            //tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
-            //Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
+            Console.WriteLine(payloadData);
+            tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
+            Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
 
-            tcpClient.SendMessage(nodeMessage.ToString());
+            //tcpClient.SendMessage(nodeMessage.ToString());
         }
 
         //Add a panel to the VR scene

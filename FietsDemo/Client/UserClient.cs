@@ -138,17 +138,6 @@ namespace FietsDemo
         }
 
 
-        private string getUpdateMessageString(string type, double value)
-        {
-            dynamic data = new
-            {
-                Type = type,
-                Value = value
-            };
-
-            return getJsonObject("updateType", data);
-        }
-
         private string getMessageString(string message)
         {
             dynamic data = new

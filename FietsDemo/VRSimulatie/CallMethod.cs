@@ -43,6 +43,63 @@ namespace simulatie
 
             tcpClient.SendMessage(resetMessage.SendDataPacket(payloadData));
         }
+
+        #region Camera
+        public void updateCamera(string cameraId, string nodeId)
+        {
+            Console.WriteLine("UPDATE CAMERA REACHED");
+            TunnelMessage updateCamera = tcpClient.GetTunnelMessage("CameraUpdate.json");
+            dynamic payloadData = new
+            {
+                id = "scene/node/update",
+                data = new
+                {
+                    id = cameraId,
+                    parent = nodeId,
+                    transform = new
+                    {
+                        position = (0, 0, 0),
+                        scale = 1.0,
+                        rotation = (0, 0, 0),
+                    },
+                    animation = new
+                    {
+                        name = "walk",
+                        speed = 0.5
+                    }
+                }
+            };
+            Console.WriteLine("UPDATE CAMERA MADE, BUT NOT SEND");
+            tcpClient.SendMessage(updateCamera.SendDataPacket(payloadData));
+            Console.WriteLine("UPDATE CAMERA ENDED");
+
+        }
+
+        public void MoveCamera(string cameraId)
+        {
+            Console.WriteLine("UPDATE CAMERA REACHED");
+            TunnelMessage updateCamera = tcpClient.GetTunnelMessage("CameraMoveTo.json");
+            dynamic payloadData = new
+            {
+                id = "scene/node/moveto",
+                data = new
+                {
+                    id = cameraId,
+                    stop = "stop",
+                    position = (-10, 10, 100),
+                    rotate = "XY",
+                    interpolate = "linear",
+                    followheight = "false",
+                    speed = 10,
+                    time = 1
+                }
+            };
+            Console.WriteLine("UPDATE CAMERA MADE, BUT NOT SEND");
+            tcpClient.SendMessage(updateCamera.SendDataPacket(payloadData));
+            Console.WriteLine("UPDATE CAMERA ENDED");
+
+        }
+        #endregion
         #endregion
 
         #region Time
@@ -65,33 +122,37 @@ namespace simulatie
         //Add a ground node to the VR scene on which you can add texture
         internal void AddGroundNode(string nodeName, int[] pos, int[] rot)
         {
-            TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
-            
-            dynamic payloadData = new
-            {
-                id = "scene/node/add",
-                data = new
-                {
-                    name = nodeName,
-                    components = new
-                    {
-                        transforms = new
-                        {
-                            position = pos,
-                            scale = 1,
-                            rotation = rot
-                        },
-                        terrain = new
-                        {
-                            smoothnormals = true
-                        }
-                    }
-                }               
-            };
+            //TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
+            TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("HardCodedTerrainAdd.json");
 
-            Console.WriteLine(payloadData);
-            tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
-            Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
+
+            //dynamic payloadData = new
+            //{
+            //    id = "scene/node/add",
+            //    data = new
+            //    {
+            //        name = nodeName,
+            //        components = new
+            //        {
+            //            transforms = new
+            //            {
+            //                position = pos,
+            //                scale = 1,
+            //                rotation = rot
+            //            },
+            //            terrain = new
+            //            {
+            //                smoothnormals = true
+            //            }
+            //        }
+            //    }
+            //};
+
+            //Console.WriteLine(payloadData);
+            //tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
+            //Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
+
+            tcpClient.SendMessage(nodeMessage.ToString());
         }
 
         //Add a panel to the VR scene
@@ -218,6 +279,17 @@ namespace simulatie
                     reduction += ((random.NextDouble() * 2) - 1) / 50;
                 }
                 heights[i] = (lastInt + ((random.NextDouble() * 2 - reduction) / 10));
+                if(heights[i] < 0)
+                {
+                    heights[i] = 0;
+                    reduction -= 0.2;
+                }
+                if(heights[i] > 6)
+                {
+                    heights[i] = 6;
+                    reduction += 0.2;
+                }
+                
                 lastInt = heights[i];
             }
 
@@ -330,7 +402,7 @@ namespace simulatie
         }
 
         //Let an object follow a set route with a specific nodeID
-        internal void FollowRoute(string routeId, string nodeId, double followSpeed, int[] possOff)
+        internal void FollowRoute(string routeId, string nodeId, double followSpeed, bool heightFollow, int[] possOff)
         {
             TunnelMessage followRouteMessage = tcpClient.GetTunnelMessage("FollowRoute.json");
 
@@ -339,13 +411,13 @@ namespace simulatie
                 id = "route/follow",
                 data = new
                 {
-                    route = objects["route"],
+                    route = routeId,
                     node = nodeId,
                     speed = followSpeed,
                     offset = 0.0,
                     rotate = "XZ",
                     smoothing = 1.0,
-                    followHeight = false,
+                    followHeight = heightFollow,
                     rotateOffset = new int[] { 0,0,0,},
                     positionOffset = possOff
                 }

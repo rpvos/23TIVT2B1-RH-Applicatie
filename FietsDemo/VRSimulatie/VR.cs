@@ -17,7 +17,7 @@ namespace TCP_naar_VR
         private TcpClient tcpClient;
         private Dictionary<string, string> objects;
         private bool receiving;
-        private string id, uuid;
+        private string id, uuid, camera;
         private CallMethod callMethod;
         internal double speed { get; set; }
         internal double heartRate { get; set; }
@@ -175,7 +175,11 @@ namespace TCP_naar_VR
                     if(name == "bike")
                     {
                         Console.WriteLine("ROUTE UUID TO FOLLOW: " + objects["route"]);
-                        callMethod.FollowRoute(objects["route"], 10, new int[] { 0, 0, 0 });
+                        callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new int[] { 0, 0, 0 });
+                        if(this.camera != null)
+                        {
+                            callMethod.MoveCamera(this.camera);
+                        }
                     }
                 }
                 else
@@ -221,6 +225,11 @@ namespace TCP_naar_VR
                     Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
                 }
             }
+            else if ((string)data["id"] == "scene/node/update")
+            {
+                Console.WriteLine();
+            }
+
             //If the textures are loaded correctly, set a new route
             else if ((string)data["id"] == "scene/node/addlayer")
             {
@@ -283,8 +292,13 @@ namespace TCP_naar_VR
                     {
                         callMethod.DeleteNode(uuid);
                     }
+                    if (name == "Camera")
+                    {
+                        this.camera = uuid;
+                        
+                    }
                 }
-            }
+            }        
         }
 
         //Check for the tunnelstatus
@@ -305,8 +319,8 @@ namespace TCP_naar_VR
                 callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });    
                 callMethod.AddTerrain();
                 callMethod.AddPanelNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new int[] { 1, 1, 1, 1 });
-
-                //followRoute("");
+                callMethod.FindNode("Camera");
+               
             }         
         }
 

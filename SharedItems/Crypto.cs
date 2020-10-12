@@ -46,7 +46,7 @@ namespace SharedItems
             {
                 int receivedBytes = networkStream.EndRead(ar);
                 
-                string receivedText = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
 
                 totalBuffer += receivedText;
             }

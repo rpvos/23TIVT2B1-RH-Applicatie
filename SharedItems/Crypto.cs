@@ -174,7 +174,9 @@ namespace SharedItems
                 int receivedBytes = networkStream.EndRead(ar);
 
                 // Add the content of the buffer to the total buffer
-                totalBuffer.AddRange(buffer);
+                byte[] temp = new byte[receivedBytes];
+                Array.Copy(buffer, 0, temp, 0, receivedBytes);
+                totalBuffer.AddRange(temp);
 
                 // Get the length that the message should be
                 byte[] lengthArray = totalBuffer.GetRange(0, 4).ToArray();

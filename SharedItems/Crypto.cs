@@ -151,11 +151,11 @@ namespace SharedItems
 
             //get the length of the message
             byte[] length = BitConverter.GetBytes(dataAsBytes.Length);
-
-            Console.WriteLine("length of written message:" + dataAsBytes.Length);
+            byte[] lengthMessage = BitConverter.GetBytes(message.Length);
 
             //send the message length
             networkStream.Write(length, 0, length.Length);
+            networkStream.Write(lengthMessage, 0, lengthMessage.Length);
             networkStream.Flush();
 
             //send the message
@@ -183,20 +183,26 @@ namespace SharedItems
                 int length = BitConverter.ToInt32(lengthArray, 0);
 
 
-                // Check if the message has been received fully by comparing the total buffer to the length that the message should be
-                if (totalBuffer.Count >= length + 4 && length > 0)
+                // Check if the message has been received fully by comparing the total buffer to the length that the full message should be
+                if (totalBuffer.Count >= length + 8 && length > 0)
                 {
-                    // Get the message from the total buffer minus the length
-                    byte[] messageInBytes = totalBuffer.GetRange(4, length).ToArray();
+                    byte[] lengthMessageArray = totalBuffer.GetRange(4, 8).ToArray();
+                    int lengthMessage = BitConverter.ToInt32(lengthMessageArray, 0);
+
+                    // Get the message from the total buffer minus the length and length (4 bytes) of message bytes (4 bytes)
+                    byte[] messageInBytes = totalBuffer.GetRange(8, length).ToArray();
 
                     // Decypher the message
                     string message = DecryptStringFromBytes(messageInBytes);
+
+                    // cut out the encoded extra characters
+                    message = message.Substring(0, lengthMessage);
 
                     // Handle the message
                     handleMethod(message);
 
                     // Remove the message from the total buffer
-                    totalBuffer.RemoveRange(0, length + 4);
+                    totalBuffer.RemoveRange(0, length + 8);
                 }
             }
             catch (IOException)

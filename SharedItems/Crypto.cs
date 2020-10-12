@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -10,14 +11,9 @@ namespace SharedItems
 {
     public class Crypto
     {
-
-
-        public CryptoStream encryptionCryptoStream { get; }
-        public CryptoStream decryptionCryptoStream { get; }
-
         private byte[] buffer;
         private NetworkStream networkStream;
-        private string totalBuffer;
+        private List<byte> totalBuffer;
 
         private Action<string> handleMethod;
         private byte[] key;
@@ -35,6 +31,7 @@ namespace SharedItems
 
             this.networkStream = networkStream;
             this.handleMethod = handleMethod;
+            this.totalBuffer = new List<byte>();
 
 
             this.key = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
@@ -43,6 +40,11 @@ namespace SharedItems
             networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
+        /// <summary>
+        /// Microsoft method for using the crypto stream to decrypt the message
+        /// </summary>
+        /// <param name="cipherText">the message encrypted in a byte array</param>
+        /// <returns>the message decrypted in string format</returns>
         private string DecryptStringFromBytes(byte[] cipherText)
         {
             // Check arguments.
@@ -64,8 +66,12 @@ namespace SharedItems
                 rijAlg.Key = key;
                 rijAlg.IV = iV;
 
+
+                rijAlg.Padding = PaddingMode.None;
+
                 // Create a decryptor to perform the stream transform.
                 ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
+
 
                 // Create the streams used for decryption.
                 using (MemoryStream msDecrypt = new MemoryStream(cipherText))
@@ -85,6 +91,12 @@ namespace SharedItems
 
             return plaintext;
         }
+
+        /// <summary>
+        /// Microsoft method for using the crypto stream to encrypt the message
+        /// </summary>
+        /// <param name="plainText">string of the message you want to send</param>
+        /// <returns>encrypted message in the form of a byte array</returns>
         private byte[] EncryptStringToBytes(string plainText)
         {
             // Check arguments.
@@ -128,26 +140,62 @@ namespace SharedItems
 
         #region stream dynamics
 
+        /// <summary>
+        /// Method to send a message to the client
+        /// </summary>
+        /// <param name="message">the message in string format</param>
         public void WriteTextMessage(string message)
         {
-            message += "\r\n\r\n";
+            //encrypt the message
             byte[] dataAsBytes = EncryptStringToBytes(message);
 
+            //get the length of the message
+            byte[] length = BitConverter.GetBytes(dataAsBytes.Length);
+
+            Console.WriteLine("length of written message:" + dataAsBytes.Length);
+
+            //send the message length
+            networkStream.Write(length, 0, length.Length);
+            networkStream.Flush();
+
+            //send the message
             networkStream.Write(dataAsBytes, 0, dataAsBytes.Length);
             networkStream.Flush();
         }
 
+        /// <summary>
+        /// Method to read the messages sent from the server
+        /// </summary>
+        /// <param name="ar">the async result</param>
         private void OnRead(IAsyncResult ar)
         {
             try
             {
                 int receivedBytes = networkStream.EndRead(ar);
 
-                string receivedText = DecryptStringFromBytes(buffer);
+                // Add the content of the buffer to the total buffer
+                totalBuffer.AddRange(buffer);
 
-                Console.WriteLine(receivedText);
+                // Get the length that the message should be
+                byte[] lengthArray = totalBuffer.GetRange(0, 4).ToArray();
+                int length = BitConverter.ToInt32(lengthArray, 0);
 
-                totalBuffer += receivedText;
+
+                // Check if the message has been received fully by comparing the total buffer to the length that the message should be
+                if (totalBuffer.Count >= length + 4 && length > 0)
+                {
+                    // Get the message from the total buffer minus the length
+                    byte[] messageInBytes = totalBuffer.GetRange(4, length).ToArray();
+
+                    // Decypher the message
+                    string message = DecryptStringFromBytes(messageInBytes);
+
+                    // Handle the message
+                    handleMethod(message);
+
+                    // Remove the message from the total buffer
+                    totalBuffer.RemoveRange(0, length + 4);
+                }
             }
             catch (IOException)
             {
@@ -155,14 +203,7 @@ namespace SharedItems
                 return;
             }
 
-            while (totalBuffer.Contains("\r\n\r\n"))
-            {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-
-
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
-                handleMethod(packet);
-            }
+            // Listen for more messages
             networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 

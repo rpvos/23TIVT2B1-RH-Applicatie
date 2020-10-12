@@ -97,6 +97,7 @@ namespace Server
             }
             catch (JsonReaderException)
             {
+                Console.WriteLine(packet);
                 Console.WriteLine("Invalid message");
             }
         }

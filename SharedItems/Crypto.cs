@@ -150,11 +150,10 @@ namespace SharedItems
             byte[] dataAsBytes = EncryptStringToBytes(message);
 
             //get the length of the message
-            byte[] length = BitConverter.GetBytes(dataAsBytes.Length);
             byte[] lengthMessage = BitConverter.GetBytes(message.Length);
 
+
             //send the message length
-            networkStream.Write(length, 0, length.Length);
             networkStream.Write(lengthMessage, 0, lengthMessage.Length);
             networkStream.Flush();
 
@@ -181,28 +180,27 @@ namespace SharedItems
                 // Get the length that the message should be
                 byte[] lengthArray = totalBuffer.GetRange(0, 4).ToArray();
                 int length = BitConverter.ToInt32(lengthArray, 0);
+                // Make it a multiple of 8
+                int totalLength = length + (8 - length % 8);
 
 
                 // Check if the message has been received fully by comparing the total buffer to the length that the full message should be
-                if (totalBuffer.Count >= length + 8 && length > 0)
+                if (totalBuffer.Count >= totalLength + 4 && totalLength > 0)
                 {
-                    byte[] lengthMessageArray = totalBuffer.GetRange(4, 8).ToArray();
-                    int lengthMessage = BitConverter.ToInt32(lengthMessageArray, 0);
-
-                    // Get the message from the total buffer minus the length and length (4 bytes) of message bytes (4 bytes)
-                    byte[] messageInBytes = totalBuffer.GetRange(8, length).ToArray();
+                    // Get the message from the total buffer minus the length (4 bytes)
+                    byte[] messageInBytes = totalBuffer.GetRange(4, totalLength).ToArray();
 
                     // Decypher the message
                     string message = DecryptStringFromBytes(messageInBytes);
 
                     // cut out the encoded extra characters
-                    message = message.Substring(0, lengthMessage);
+                    message = message.Substring(0, length);
 
                     // Handle the message
                     handleMethod(message);
 
                     // Remove the message from the total buffer
-                    totalBuffer.RemoveRange(0, length + 8);
+                    totalBuffer.RemoveRange(0, length + 4);
                 }
             }
             catch (IOException)

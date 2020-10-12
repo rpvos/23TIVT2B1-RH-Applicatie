@@ -16,9 +16,12 @@ namespace FietsDemo
 
         private Crypto crypto;
 
+        private BluetoothBike bluetoothBike;
 
-        public UserClient()
+
+        public UserClient(BluetoothBike bluetoothBike)
         {
+            this.bluetoothBike = bluetoothBike;
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.crypto = new Crypto(server.GetStream(),handleData);
@@ -43,6 +46,8 @@ namespace FietsDemo
                 JObject data = (JObject)json["Data"];
                 string type = json["Type"].ToString();
 
+                Console.WriteLine(type);
+
 
 
                 switch (type)
@@ -58,6 +63,16 @@ namespace FietsDemo
                         }
                         break;
 
+                    case "globalmessage":
+                        AddChatMessage(data);
+                            break;
+
+                    case "Resistance":
+                        setResistance(data);
+                        break;
+                    case "message":
+                            AddChatMessage(data);
+                        break;
                     default:
                         Console.WriteLine("Invalid type");
                         break;
@@ -67,6 +82,20 @@ namespace FietsDemo
             {
                 Console.WriteLine("Invalid message");
             }
+        }
+
+        private void AddChatMessage(JObject data)
+        {
+            string message = (string)data["Message"];
+            this.bluetoothBike.gui.addTextMessage("Doctor: "+message);
+
+        }
+
+        private void setResistance(JObject data)
+        {
+            string resistance = (string)data["Resistance"];
+            int res = Int32.Parse(resistance);
+            this.bluetoothBike.setResistance(res);
         }
 
         private bool handleUserCredentialsResponse(JObject data)
@@ -127,6 +156,8 @@ namespace FietsDemo
 
             return getJsonObject("userCredentials", data);
         }
+
+
         private string getUpdateMessageString(UpdateType updateType, double value)
         {
             dynamic data = new

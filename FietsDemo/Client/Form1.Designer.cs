@@ -245,6 +245,7 @@
             this.sendDocButton.TabIndex = 21;
             this.sendDocButton.Text = ">";
             this.sendDocButton.UseVisualStyleBackColor = true;
+            this.sendDocButton.Click += new System.EventHandler(this.sendDocButton_Click);
             // 
             // MainForm
             // 

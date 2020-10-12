@@ -31,9 +31,11 @@ namespace Server
             return this.role;
         }
 
-        internal object getUsername()
+        internal string getUsername()
         {
             return this.username;
         }
+
+
     }
 }

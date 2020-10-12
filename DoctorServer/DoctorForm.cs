@@ -111,7 +111,7 @@ namespace DoctorApplication
 
                 if (this.selectedIndex != -1)
                 {
-                    //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                    this.doctorClient.sendResistance(i + "", this.selectedBike);
                 }
             }
             else if (e.Delta < 0)
@@ -126,7 +126,8 @@ namespace DoctorApplication
 
                 if (this.selectedIndex != -1)
                 {
-                    //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                    this.doctorClient.sendResistance(i+"", this.selectedBike);
+
 
                 }
 
@@ -147,7 +148,8 @@ namespace DoctorApplication
 
             if (this.selectedIndex != -1)
             {
-                //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                this.doctorClient.sendResistance(i + "", this.selectedBike);
+
 
             }
 
@@ -165,7 +167,8 @@ namespace DoctorApplication
 
             if (this.selectedIndex != -1)
             {
-                //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+
+                this.doctorClient.sendResistance(i + "", this.selectedBike);
 
             }
         }
@@ -181,14 +184,23 @@ namespace DoctorApplication
         {
             if (this.selectedIndex != -1 && PrivateChatBox.Text != "") 
             {
-         
+                PrivateChat.Items.Add(PrivateChatBox.Text);
+                this.doctorClient.sendPrivMessage(PrivateChatBox.Text,selectedBike);
+                PrivateChatBox.Text = "";
+
 
             }
         }
 
         private void globalSendButton_Click(object sender, EventArgs e)
         {
-            
+            if (GlobalChatBox.Text != "")
+            {
+                GlobalChat.Items.Add(GlobalChatBox.Text);
+                this.doctorClient.sendGlobalChatMessage(GlobalChatBox.Text);
+                GlobalChatBox.Text = "";
+
+            }
         }
 
         private void BikeListBox_SelectedIndexChanged(object sender, EventArgs e)

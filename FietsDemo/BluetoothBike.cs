@@ -68,7 +68,7 @@ namespace FietsDemo
 
         public void startClient()
         {
-            this.client = new UserClient();
+            this.client = new UserClient(this);
 
         }
 
@@ -460,6 +460,7 @@ namespace FietsDemo
             if(this.simulator != null)
             {
                 this.simulator.setResistance((int)percentage);
+                this.gui.setResistance((int)percentage);
             }
             
             if (percentage <= 100.0 && percentage >= 0.0)

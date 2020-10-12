@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Net.Security;
 using System.Net.Sockets;
+using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -89,6 +90,15 @@ namespace Server
                     case "update":
                         handleUpdateInformation(data);
                         break;
+                    case "globalmessage":
+                        this.server.SendToPatients(getJsonObject("globalmessage",data));
+                        break;
+                    case "resistance":
+                        this.server.sendResistanceToOneClient(data);
+                        break;
+                    case "privMessage":
+                        this.server.sendPrivMessage(data);
+                        break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -123,10 +133,42 @@ namespace Server
 
             this.user = server.checkUser(username, password);
             if (user != null)
+            {
+                if(user.getRole() == Role.Patient)
+                    sendAddUserMessage(username);
+
                 return user.getRole();
+
+            }
             else
                 return Role.Invallid;
         }
+
+        public void sendAddUserMessage(string username)
+        {
+            this.server.SendToDoctors(getAddUserString(username));
+        }
+
+        public void sendResistance(string resistance)
+        {
+            WriteTextMessage(getResistanceString(resistance));
+        }
+
+        public void sendPrivMessage(string message)
+        {
+            WriteTextMessage(getMessageString(message));
+        }
+
+        private string getAddUserString(string username)
+        {
+            dynamic data = new
+            {
+                Username = username
+            };
+
+            return getJsonObject("AddUser", data);
+        }
+
 
 
         private bool checkChecksum(JObject json)
@@ -188,6 +230,17 @@ namespace Server
             return getJsonObject("message", data);
         }
 
+
+        private  string getResistanceString(string resistance)
+        {
+            dynamic data = new
+            {
+                Resistance = resistance
+            };
+
+            return getJsonObject("Resistance", data);
+        }
+
         /// <summary>
         /// Adds an value to the checksum of the message
         /// </summary>
@@ -195,7 +248,7 @@ namespace Server
         /// <returns>the message in string format with checksum calculated</returns>
         private string addChecksum(dynamic dynamicJson)
         {
-            JObject json = JObject.Parse(System.Text.Json.JsonSerializer.Serialize(dynamicJson));
+            JObject json = JObject.Parse(JsonConvert.SerializeObject(dynamicJson));
             byte checksum = 0;
             byte[] data = Encoding.ASCII.GetBytes(((JObject)json["Data"]).ToString());
             foreach (byte b in data)
@@ -206,6 +259,8 @@ namespace Server
 
             return json.ToString();
         }
+
+       
         #endregion
 
         #region send handlers

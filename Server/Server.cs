@@ -1,4 +1,5 @@
-﻿using SharedItems;
+﻿using Newtonsoft.Json.Linq;
+using SharedItems;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -94,6 +95,46 @@ namespace Server
                         client.WriteTextMessage(jsonMessage);
             }
 
+        }
+
+        internal void SendToPatients(string jsonMessage)
+        {
+            foreach (ServerClient client in clients)
+            {
+                if (client.user != null)
+                    if (client.user.getRole() == Role.Patient)
+                        client.WriteTextMessage(jsonMessage);
+            }
+
+        }
+
+        public void sendResistanceToOneClient(JObject data)
+        {
+            string resistance = (string)data["Resistance"];
+            string username = (string)data["Username"];
+            foreach(ServerClient client in clients)
+            {
+
+                if(client.user.getRole() == Role.Patient && client.user.getUsername() == username)
+                {
+                    client.sendResistance(resistance);
+                }
+            }
+        }
+
+        public void sendPrivMessage(JObject data)
+        {
+            string message = (string)data["Message"];
+            string username = (string)data["Username"];
+            foreach (ServerClient client in clients)
+            {
+
+                if (client.user.getRole() == Role.Patient && client.user.getUsername() == username)
+                {
+                    Console.WriteLine("LETS GOOO");
+                    client.sendPrivMessage(message);
+                }
+            }
         }
     }
 }

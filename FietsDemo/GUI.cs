@@ -45,9 +45,9 @@ namespace FietsDemo
             this.program.startSimulator();
         }
 
-        public void setResistance(float resistance)
+        public void setResistance(int resistance)
         {
-            program.setResistance(resistance);
+            this.form.setResistance(resistance);
         }
 
         public void addTextMessage(string message)

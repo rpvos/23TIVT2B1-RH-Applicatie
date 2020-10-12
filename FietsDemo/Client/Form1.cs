@@ -104,7 +104,16 @@ namespace FietsDemo
 
         public void addMessage(string message)
         {
-            doctorChat.Items.Add(message);
+            doctorChat.Invoke((MethodInvoker)(() =>
+            {
+                doctorChat.Items.Add(message);
+
+            }));
+        }
+
+        private void sendDocButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

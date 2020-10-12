@@ -66,6 +66,17 @@ namespace DoctorApplication
             stream.Flush();
         }
 
+        public void sendResistance(string resistance, string username)
+        {
+            WriteTextMessage(getResistanceString(resistance, username));
+        }
+
+        public void sendPrivMessage(string message, string username)
+        {
+            WriteTextMessage(getPrivMessageString(message, username));
+
+        }
+
         private void OnRead(IAsyncResult ar)
         {
             try
@@ -119,6 +130,9 @@ namespace DoctorApplication
                     case "update":
                         handleUpdate(data);
                         break;
+                    case "AddUser":
+                        AddUser(data);
+                        break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -129,6 +143,15 @@ namespace DoctorApplication
             {
                 Console.WriteLine("Invalid message");
             }
+        }
+
+        private void AddUser(JObject data)
+        {
+           
+                string username = (string)data["Username"];
+            this.mainForm.addBike(username);
+
+            
         }
 
         private void handleUpdate(JObject data)
@@ -208,6 +231,38 @@ namespace DoctorApplication
             return getJsonObject("message", data);
         }
 
+        private string getResistanceString(string resistance, String username)
+        {
+            dynamic data = new
+            {
+                Resistance = resistance,
+                Username = username
+            };
+
+            return getJsonObject("resistance", data);
+        }
+
+        private string getPrivMessageString(string message, String username)
+        {
+            dynamic data = new
+            {
+                Message = message,
+                Username = username
+            };
+
+            return getJsonObject("privMessage", data);
+        }
+
+        private string getGlobalMessageString(string message)
+        {
+            dynamic data = new
+            {
+                Message = message
+            };
+
+            return getJsonObject("globalmessage", data);
+        }
+
         private string getUserDetailsMessageString(string username, string password)
         {
             dynamic data = new
@@ -217,6 +272,11 @@ namespace DoctorApplication
             };
 
             return getJsonObject("userCredentials", data);
+        }
+
+        public void sendGlobalChatMessage(string message)
+        {
+            WriteTextMessage(getGlobalMessageString(message));
         }
 
 

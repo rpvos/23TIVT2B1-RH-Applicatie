@@ -58,9 +58,9 @@ namespace simulatie
                     parent = nodeId,
                     transform = new
                     {
-                        position = (0, 0, 0),
+                        position = new int[] { 0, 0, 0 },
                         scale = 1.0,
-                        rotation = (0, 0, 0),
+                        rotation = new int[] { 0, 0, 0 },
                     },
                     animation = new
                     {
@@ -86,7 +86,7 @@ namespace simulatie
                 {
                     id = cameraId,
                     stop = "stop",
-                    position = (-10, 10, 100),
+                    position = new int[] {-10, 10, 100},
                     rotate = "XY",
                     interpolate = "linear",
                     followheight = "false",
@@ -415,7 +415,7 @@ namespace simulatie
                     node = nodeId,
                     speed = followSpeed,
                     offset = 0.0,
-                    rotate = "XZ",
+                    rotate = "XY",
                     smoothing = 1.0,
                     followHeight = heightFollow,
                     rotateOffset = new int[] { 0,0,0,},

@@ -415,7 +415,7 @@ namespace simulatie
                     node = nodeId,
                     speed = followSpeed,
                     offset = 0.0,
-                    rotate = "XY",
+                    rotate = "XZ",
                     smoothing = 1.0,
                     followHeight = heightFollow,
                     rotateOffset = new int[] { 0,0,0,},

@@ -45,6 +45,7 @@ namespace FietsDemo
         private TcpClientVR tcpClientVR;
 
         private Random random;
+        private double speed;
 
         static void Main(string[] args)
         {
@@ -119,6 +120,7 @@ namespace FietsDemo
             // After that we subscribe to the BLE service again to continue measuring.
             this.BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
             this.HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            Reset();
         }
 
         public void startGUI()
@@ -263,7 +265,7 @@ namespace FietsDemo
                         bool capabilities = (capabilitiesAndFeType & (1 << 2)) != 0;
 
                         // Total speed value
-                        double speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0) * 3.6;
+                        speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0) * 3.6;
 
 
                         // Calculation time elapsed
@@ -505,6 +507,26 @@ namespace FietsDemo
                 throw new System.InvalidOperationException("Parameter outside of acceptable bounds (0-200)");
             }
 
+        }
+
+        public void Reset()
+        {
+            this.accumulatedPower = 0;
+            this.accumulatedPowerCounter = 0;
+            this.distanceTraveledInKM = 0;
+            this.distanceTraveledCounter = 0;
+            this.previousAccumulatedPower = 0;
+            this.previousDistanceTraveled = 0;
+            this.previousTimeElapsed = 0;
+            this.resistance = 0;
+            this.timeElapsedCounter = 0;
+            this.timeElapsedInSeconds = 0;
+            this.speed = 0;
+            setValuesInGui(UpdateType.AccumulatedDistance, distanceTraveledInKM);
+            setValuesInGui(UpdateType.AccumulatedPower, accumulatedPower);
+            setValuesInGui(UpdateType.ElapsedTime, timeElapsedInSeconds);
+            setValuesInGui(UpdateType.Heartrate, 0);
+            setValuesInGui(UpdateType.Speed, speed);
         }
 
         //public void setResistance(float percentage)

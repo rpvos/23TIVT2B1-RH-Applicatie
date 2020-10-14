@@ -19,12 +19,12 @@ namespace FietsDemo
             this.bikeSimulator = bikeSimulator;
         }
 
-        public void run()
+        public void run(GUI gui)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            this.form = new SimulationForm(this.bikeSimulator);
+            this.form = new SimulationForm(this.bikeSimulator, gui);
 
             Application.Run(form);
         }

@@ -34,6 +34,9 @@ namespace FietsDemo
         private double timeElapsedInSeconds;
         private int previousTimeElapsed;
         private int timeElapsedCounter = 0;
+        private bool isSimulatorRunning;
+
+        //public bool SimulatorIsRunning = false;
 
         private double resistance = 0;
 
@@ -42,6 +45,7 @@ namespace FietsDemo
         private TcpClientVR tcpClientVR;
 
         private Random random;
+        private double speed;
 
         static void Main(string[] args)
         {
@@ -84,20 +88,27 @@ namespace FietsDemo
             // When starting the simulator, the first thing to do is to unsubscribe from the real BLE device, otherwise they would interfere.
             this.BleBike.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
             this.HeartRateSensor.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
-            
-            // The second step is to start the simulator and the GUI that comes with it.
-            Console.WriteLine("starting simulator...");
-            bikeSimulator = new BikeSimulator(this);
 
-            Thread thread = new Thread(startSimulatorGUI);
-            thread.Start();
-            
+            // The second step is to start the simulator and the GUI that comes with it.
+            if (!isSimulatorRunning)
+            {
+                Console.WriteLine("starting simulator...");
+                bikeSimulator = new BikeSimulator(this);
+                isSimulatorRunning = true;
+                Thread thread = new Thread(startSimulatorGUI);
+                thread.Start();
+            }
+            else
+            {
+                MessageBox.Show("The simulator is already running.", "Close Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void startSimulatorGUI()
         {
             this.simulator = new Simulator(this.bikeSimulator);
-            this.simulator.run();
+            this.bikeSimulator.running = true;
+            this.simulator.run(this.gui);
         }
 
         public void stopSimulator() 
@@ -105,9 +116,11 @@ namespace FietsDemo
             // To stop the simulator we first stop the simulator thread and the GUI.
             Console.WriteLine("Stopping Simulator...");
             this.bikeSimulator.running = false;
+            this.isSimulatorRunning = false;
             // After that we subscribe to the BLE service again to continue measuring.
             this.BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
             this.HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            Reset();
         }
 
         public void startGUI()
@@ -252,7 +265,7 @@ namespace FietsDemo
                         bool capabilities = (capabilitiesAndFeType & (1 << 2)) != 0;
 
                         // Total speed value
-                        double speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0) * 3.6;
+                        speed = ((leastSignificantBit + (mostSignificantBit << 8)) / 1000.0) * 3.6;
 
 
                         // Calculation time elapsed
@@ -494,6 +507,26 @@ namespace FietsDemo
                 throw new System.InvalidOperationException("Parameter outside of acceptable bounds (0-200)");
             }
 
+        }
+
+        public void Reset()
+        {
+            this.accumulatedPower = 0;
+            this.accumulatedPowerCounter = 0;
+            this.distanceTraveledInKM = 0;
+            this.distanceTraveledCounter = 0;
+            this.previousAccumulatedPower = 0;
+            this.previousDistanceTraveled = 0;
+            this.previousTimeElapsed = 0;
+            this.resistance = 0;
+            this.timeElapsedCounter = 0;
+            this.timeElapsedInSeconds = 0;
+            this.speed = 0;
+            setValuesInGui(UpdateType.AccumulatedDistance, distanceTraveledInKM);
+            setValuesInGui(UpdateType.AccumulatedPower, accumulatedPower);
+            setValuesInGui(UpdateType.ElapsedTime, timeElapsedInSeconds);
+            setValuesInGui(UpdateType.Heartrate, 0);
+            setValuesInGui(UpdateType.Speed, speed);
         }
 
         //public void setResistance(float percentage)

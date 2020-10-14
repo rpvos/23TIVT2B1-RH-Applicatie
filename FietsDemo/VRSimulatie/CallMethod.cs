@@ -462,8 +462,8 @@ namespace simulatie
             
             SetText("Speed in km/h: " + tcpClient.speed.ToString(), panelId, new double[] { x, 100 }, textSize);
             SetText("Heart rate in bpm: " + tcpClient.heartRate.ToString(), panelId, new double[] { x, 150 }, textSize);
-            SetText("Distance travelled in meters: ", panelId, new double[] { x, 200 }, textSize);
-            SetText(tcpClient.DT.ToString() + "m", panelId, new double[] { x, 250 }, textSize);
+            SetText("Distance travelled in km: ", panelId, new double[] { x, 200 }, textSize);
+            SetText(tcpClient.DT.ToString() + "km", panelId, new double[] { x, 250 }, textSize);
             SetText("Elapsed time in seconds: ", panelId, new double[] { x, 300 }, textSize);
             SetText(tcpClient.elapsedTime.ToString() + "s", panelId, new double[] { x, 350 }, textSize);
             SetText("Resistance in %: " + tcpClient.resistance.ToString(), panelId, new double[] { x, 400 }, textSize);

@@ -349,9 +349,6 @@ namespace TCP_naar_VR
             {
                 callMethod.ClearPanel(objects["panel"]);
             }
-            
-            this.DT += 2.5;
-            this.elapsedTime += 0.5;
         }
         #endregion
     }

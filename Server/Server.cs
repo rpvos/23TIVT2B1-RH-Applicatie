@@ -10,13 +10,14 @@ using System.Threading;
 
 namespace Server
 {
-    class Server
+    public class Server
     {
         #region private atributes
 
         private List<ServerClient> clients;
         private TcpListener listener;
         private Dictionary<string, User> dataBase;
+        private CryptoFileSaver cryptoFileSaver;
 
         #endregion
 
@@ -32,6 +33,7 @@ namespace Server
             this.clients = new List<ServerClient>();
 
             this.dataBase = new Dictionary<string, User>();
+            this.cryptoFileSaver = new CryptoFileSaver("data_saves");
             fillUsers();
 
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
@@ -52,6 +54,11 @@ namespace Server
             dataBase.Add("aardappel", new User("Piet", "aardappel", "321", Role.Patient));
 
             dataBase.Add("dokter", new User("dokter", "dokter", "123", Role.Doctor));
+        }
+
+        public void saveUser(User user)
+        {
+            this.cryptoFileSaver.WriteUserData(user.GetSaveFormat(), user.name);
         }
 
         #endregion

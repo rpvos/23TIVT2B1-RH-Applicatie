@@ -9,6 +9,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="data_hierarchy\" />
+  </ItemGroup>
+
   <Import Project="..\SharedItems\SharedItems.projitems" Label="Shared" />
 
 </Project>

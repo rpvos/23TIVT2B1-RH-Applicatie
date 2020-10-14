@@ -94,6 +94,7 @@ namespace Server
                         break;
                     case "resistance":
                         this.server.sendResistanceToOneClient(data);
+                        this.server.sendResistanceToAllDoctors(data,this);
                         break;
                     case "privMessage":
                         this.server.sendPrivMessage(data);
@@ -156,7 +157,12 @@ namespace Server
 
         public void sendResistance(string resistance)
         {
-            WriteTextMessage(getResistanceString(resistance));
+            WriteTextMessage(getResistanceString(resistance,this.user.getUsername()));
+        }
+
+        public void sendResistanceToDoctor(string resistance, string username)
+        {
+            WriteTextMessage(getResistanceString(resistance,username));
         }
 
         public void sendPrivMessage(string message)
@@ -235,15 +241,18 @@ namespace Server
         }
 
 
-        private  string getResistanceString(string resistance)
+        private  string getResistanceString(string resistance, string username)
         {
             dynamic data = new
             {
-                Resistance = resistance
+                Resistance = resistance,
+                Username = username
             };
 
             return getJsonObject("Resistance", data);
         }
+
+
 
         /// <summary>
         /// Adds an value to the checksum of the message
@@ -274,7 +283,10 @@ namespace Server
             if (role != Role.Invallid)
                 Console.WriteLine($"Login as {role}");
             else
+            {
+                server.RemoveThisClient(this);
                 Console.WriteLine("Login attempt failed");
+            }
 
             WriteTextMessage(getUserCredentialsResponse(role));
         }

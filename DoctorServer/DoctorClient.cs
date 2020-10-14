@@ -129,6 +129,9 @@ namespace DoctorServer
                     case "AddUser":
                         AddUser(data);
                         break;
+                    case "Resistance":
+                        setResistancePerClient(data);
+                        break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -139,6 +142,13 @@ namespace DoctorServer
             {
                 Console.WriteLine(e.StackTrace);
             }
+        }
+
+        public void setResistancePerClient(JObject data)
+        {
+            string resistance = (string)data["Resistance"];
+            string username = (string)data["Username"];
+            this.mainForm.setResistance(resistance, username);
         }
 
         private void AddUser(JObject data)

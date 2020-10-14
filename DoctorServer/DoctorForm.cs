@@ -20,12 +20,12 @@ namespace DoctorServer
         public string selectedBike { get; set; }
         public int selectedIndex { get; set; }
         private DoctorClient doctorClient;
-        private Dictionary<string, int> usernameAndResistance;
+        private Dictionary<string, string> usernameAndResistance;
        
 
         public DoctorForm(DoctorClient doctorClient)
         {
-            this.usernameAndResistance = new Dictionary<string, int>();
+            this.usernameAndResistance = new Dictionary<string, string>();
             this.doctorClient = doctorClient;
             this.selectedIndex = -1;
             InitializeComponent();
@@ -107,7 +107,7 @@ namespace DoctorServer
                     if (!this.usernameAndResistance.ContainsKey(username))
                     {
                         BikeListBox.Items.Add(username);
-                        this.usernameAndResistance.Add(username, 0);
+                        this.usernameAndResistance.Add(username, 0+"");
                     }
 
                 }));
@@ -116,7 +116,7 @@ namespace DoctorServer
                 if (!this.usernameAndResistance.ContainsKey(username))
                 {
                     BikeListBox.Items.Add(username);
-                    this.usernameAndResistance.Add(username, 0);
+                    this.usernameAndResistance.Add(username, 0 + "");
                 }
             }
             
@@ -145,7 +145,7 @@ namespace DoctorServer
                 if (this.selectedIndex != -1)
                 {
                     this.doctorClient.sendResistance(i + "", this.selectedBike);
-                    this.usernameAndResistance[selectedBike] = i;
+                    this.usernameAndResistance[selectedBike] = i+"";
                 }
             }
             else if (e.Delta < 0)
@@ -161,7 +161,7 @@ namespace DoctorServer
                 if (this.selectedIndex != -1)
                 {
                     this.doctorClient.sendResistance(i+"", this.selectedBike);
-                    this.usernameAndResistance[selectedBike] = i;
+                    this.usernameAndResistance[selectedBike] = i+"";
 
                 }
 
@@ -183,7 +183,7 @@ namespace DoctorServer
             if (this.selectedIndex != -1)
             {
                 this.doctorClient.sendResistance(i + "", this.selectedBike);
-                this.usernameAndResistance[selectedBike] = i;
+                this.usernameAndResistance[selectedBike] = i+"";
 
             }
 
@@ -203,7 +203,19 @@ namespace DoctorServer
             {
 
                 this.doctorClient.sendResistance(i + "", this.selectedBike);
-                this.usernameAndResistance[selectedBike] = i;
+                this.usernameAndResistance[selectedBike] = i+"";
+            }
+        }
+
+        public void setResistance(string resistance, string username)
+        {
+            this.usernameAndResistance[username] = resistance;
+            if (this.selectedBike == username)
+            {
+                resistanceTextbox.Invoke((MethodInvoker)(() =>
+                {
+                    this.resistanceTextbox.Text = resistance;
+                }));
             }
         }
 
@@ -252,6 +264,8 @@ namespace DoctorServer
 
 
         }
+
+
 
         private void setAllToEmpty()
         {

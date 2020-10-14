@@ -71,6 +71,11 @@ namespace Server
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
         }
 
+        public void RemoveThisClient(ServerClient client)
+        {
+            this.clients.Remove(client);
+        }
+
         internal void Disconnect(ServerClient client)
         {
             lock (clients)
@@ -96,12 +101,13 @@ namespace Server
         #region message methods
 
         public void addUsersToThisDoctorClient(ServerClient doctorClient)
-        {
-            foreach (ServerClient client in this.clients)
-            {
-                if (client.user.getRole() == Role.Patient)
-                    doctorClient.sendAddUserMessage(client.user.getUsername());
-            }
+        {          
+                foreach (ServerClient client in this.clients)
+                {
+                    if (client.user.getRole() == Role.Patient)
+                        doctorClient.sendAddUserMessage(client.user.getUsername());
+                }
+
         }
         internal void broadcast(string message)
         {
@@ -142,6 +148,17 @@ namespace Server
                 {
                     client.sendResistance(resistance);
                 }
+            }
+        }
+
+        public void sendResistanceToAllDoctors(JObject data, ServerClient serverClient)
+        {
+            string resistance = (string)data["Resistance"];
+            string username = (string)data["Username"];
+            foreach (ServerClient client in clients)
+            {
+                if (client.user.getRole() == Role.Doctor && client != serverClient)              
+                    client.sendResistanceToDoctor(resistance,username);              
             }
         }
 

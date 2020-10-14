@@ -6,7 +6,7 @@ namespace Server
 {
     public class UserDataStorage
     {
-        public List<DataSet> dataSets { get; }
+        public List<DataSet> dataSets { get; set; }
         public UserDataStorage()
         {
             this.dataSets = new List<DataSet>();
@@ -17,7 +17,7 @@ namespace Server
         }
     }
 
-    public struct DataSet
+    public class DataSet
     {
         public ValueType ValueType { get; }
         public double Value { get; }

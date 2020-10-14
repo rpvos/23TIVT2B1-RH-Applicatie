@@ -25,7 +25,6 @@ namespace Server
         static void Main(string[] args)
         {
             Server server = new Server();
-
         }
 
         #region Start up methods
@@ -36,8 +35,11 @@ namespace Server
 
             this.dataBase = new Dictionary<string, User>();
             this.cryptoFileSaver = new CryptoFileSaver("data_saves");
-            //fillUsers();
             loadUsers();
+
+            if (dataBase.Keys.Count == 0)
+                fillUsers();
+
 
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
             this.listener = new TcpListener(localhost, 8080);
@@ -47,19 +49,36 @@ namespace Server
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
 
-            Console.WriteLine(dataBase.Count);
-            //this.saveAllUsers();
 
-            Console.ReadKey();
+            Console.Read();
+            saveAllUsers();
         }
 
         private void loadUsers()
         {
-            string[] users = this.cryptoFileSaver.GetSavedClients();
+            string[] users = this.cryptoFileSaver.GetSavedUsers();
 
-            foreach(string serializedUser in users)
+            foreach (string serializedUser in users)
             {
-                User user = (User)JsonConvert.DeserializeObject(serializedUser);
+                JObject jObject = (JObject)JsonConvert.DeserializeObject(serializedUser);
+                User user = new User()
+                {
+                    loggedIn = (bool)jObject["loggedIn"],
+                    name = (string)jObject["name"],
+                    username = (string)jObject["username"],
+                    password = (string)jObject["password"],
+                    role = (Role)Enum.Parse(typeof(Role), (string)jObject["role"]),
+                    userDataStorage = new UserDataStorage()
+                };
+
+                JObject userDataInObject = (JObject)jObject["userDataStorage"];
+                JArray jArray = (JArray)userDataInObject["dataSets"];
+
+                foreach (JObject dataSet in jArray)
+                {
+                    user.userDataStorage.dataSets.Add(new DataSet((UpdateType)Enum.Parse(typeof(UpdateType), (string)dataSet["ValueType"]), (double)dataSet["Value"],(DateTime)dataSet["DateStamp"]));
+                }
+
                 this.dataBase.Add(user.username, user);
             }
         }

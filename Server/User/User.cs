@@ -9,13 +9,18 @@ namespace Server
 {
     public class User
     {
-        public string name { get; }
+        public string name { get; set; }
         //private birthdate
-        public string username { get; }
-        public string password { get; }
-        public Role role { get; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public Role role { get; set; }
         public bool loggedIn { get; set; }
-        public UserDataStorage userDataStorage { get; }
+        public UserDataStorage userDataStorage { get; set; }
+
+        public User()
+        {
+
+        }
 
         public User(string name, string username, string password, Role role)
         {

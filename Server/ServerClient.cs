@@ -124,6 +124,7 @@ namespace Server
                 Value = value
             };
 
+            this.user.userDataStorage.addDataSet(updateType, value);
             this.server.SendToDoctors(getJsonObject("update", parsedData, this.user));
         }
 

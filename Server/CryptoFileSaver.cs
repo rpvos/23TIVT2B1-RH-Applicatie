@@ -39,9 +39,13 @@ namespace Server
                 {
                     using (StreamWriter streamWriter = new StreamWriter($"{location}/{DEFAULT_FILENAME}", false))
                     {
+                        int length = json.Length;
+                        int amountOfCharactersNeeded = 16 - length % 16;
+                        for (int i = 0; i < amountOfCharactersNeeded-1; i++)
+                            json += '^';
                         byte[] cypher = encyptionService.EncryptStringToBytes(json);
                         string base64cypher = Convert.ToBase64String(cypher);
-                        streamWriter.Write(base64cypher + "\n");
+                        streamWriter.Write(base64cypher);
                         streamWriter.Flush();
                     }
                 }
@@ -50,7 +54,7 @@ namespace Server
                 Console.WriteLine(e.StackTrace);
             }
         }
-        public string[] GetSavedClients()
+        public string[] GetSavedUsers()
         {
             try
             {
@@ -62,6 +66,9 @@ namespace Server
                     {
                         string cypher = streamReader.ReadToEnd();
                         string user = encyptionService.DecryptStringFromBytes(Convert.FromBase64String(cypher));
+                        int place = user.IndexOf('^');
+                        if(place>=0)
+                        user = user.Remove(place);
                         users[i] = user;
                     }
                 }

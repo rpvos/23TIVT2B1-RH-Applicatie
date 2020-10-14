@@ -182,14 +182,14 @@ namespace TCP_naar_VR
                     if(name == "bike")
                     {
                         Console.WriteLine("ROUTE UUID TO FOLLOW: " + objects["route"]);
-                        callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
+                        callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new double[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
                         if(this.camera != null)
                         {
-                            callMethod.FollowRoute(objects["route"], this.camera, 5, true, new int[] { 0, 85, 0 }, new int[] { 0, 0, 0 });
+                            callMethod.FollowRoute(objects["route"], this.camera, 5, true, new double[] { 0, 7.84 , 0 }, new int[] { 0, 0, 0 });
                         }
                         if (objects.ContainsKey("panel"))
                         {
-                            callMethod.FollowRoute(objects["route"], objects["panel"], 5, true, new int[] { 0, 85, 0 }, new int[] { 0, 0, 0 });
+                            callMethod.FollowRoute(objects["route"], objects["panel"], 5, true, new double[] { 0, 7.84 , 0 }, new int[] { 0, 0, 0 });
                         }
                     }
                 }

@@ -38,12 +38,13 @@ namespace simulatie
             TunnelMessage resetMessage = tcpClient.GetTunnelMessage("SceneReset.json");
             dynamic payloadData = new
             {
-                id = "scene/reset"               
+                id = "scene/reset"
             };
 
             tcpClient.SendMessage(resetMessage.SendDataPacket(payloadData));
-        }
-
+        }       
+        #endregion 
+        
         #region Camera
         public void updateCamera(string cameraId, string nodeId)
         {
@@ -100,7 +101,6 @@ namespace simulatie
 
         }
         #endregion
-        #endregion
 
         #region Time
         //Set the time in the VR scene
@@ -123,8 +123,6 @@ namespace simulatie
         internal void AddGroundNode(string nodeName, int[] pos, int[] rot)
         {
             TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
-            //TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("HardCodedTerrainAdd.json");
-
 
             dynamic payloadData = new
             {
@@ -148,11 +146,8 @@ namespace simulatie
                 }
             };
 
-            Console.WriteLine(payloadData);
             tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
             Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
-
-            //tcpClient.SendMessage(nodeMessage.ToString());
         }
 
         //Add a panel to the VR scene
@@ -402,7 +397,7 @@ namespace simulatie
         }
 
         //Let an object follow a set route with a specific nodeID
-        internal void FollowRoute(string routeId, string nodeId, double followSpeed, bool heightFollow, int[]rotOff, int[] posOff)
+        internal void FollowRoute(string routeId, string nodeId, double followSpeed, bool heightFollow, double[]rotOff, int[] posOff)
         {
             TunnelMessage followRouteMessage = tcpClient.GetTunnelMessage("FollowRoute.json");
 
@@ -432,7 +427,6 @@ namespace simulatie
         //Clear a panel in the vr simulator for first use
         internal void ClearPanel(string uuid)
         {
-            Console.WriteLine("CLEARING PANEL");
             TunnelMessage clearPannelMessage = tcpClient.GetTunnelMessage("ClearPanel.json");
 
             dynamic payloadData = new
@@ -451,8 +445,6 @@ namespace simulatie
         //Draw text on a panel in the vr simulator
         internal void SetText(string textToShow, string uuid, double[] coord, double textSize)
         {
-            Console.WriteLine("REACHED SETTEXT METHOD!!!");
-            Console.WriteLine("TEXT: {0}", textToShow);
             TunnelMessage setTextMessage = tcpClient.GetTunnelMessage("SetText.json");
 
             dynamic payloadData = new
@@ -475,7 +467,6 @@ namespace simulatie
         //Swap the buffered panel to show the text
         internal void SwapPanel(string uuid)
         {
-            Console.WriteLine("REACHED SWAPPING PANEL METHOD");
             TunnelMessage swapPanelMessage = tcpClient.GetTunnelMessage("SwapPanel.json");
 
             dynamic payloadData = new
@@ -489,7 +480,6 @@ namespace simulatie
 
             tcpClient.SendMessage(swapPanelMessage.SendDataPacket(payloadData));
         }
-
         #endregion
     }
 }

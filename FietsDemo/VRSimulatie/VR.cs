@@ -14,11 +14,13 @@ using System.Timers;
 namespace TCP_naar_VR
 {    class TcpClientVR
     {
+        #region Variables
         private NetworkStream stream;
         private TcpClient tcpClient;
         private Dictionary<string, string> objects;
         private bool receiving;
         private string id, nodeId, camera;
+        private double time;
         private System.Timers.Timer panelUpdateTimer;
         private CallMethod callMethod;
         internal double speed { get; set; }
@@ -27,6 +29,7 @@ namespace TCP_naar_VR
         internal double DT { get; set; }
         internal double elapsedTime { get; set; }
         internal double resistance { get; set; }
+        #endregion
 
         public TcpClientVR(string ip, int port)
         {
@@ -36,28 +39,9 @@ namespace TCP_naar_VR
             callMethod = new CallMethod(this, objects);
             receiving = true;
             SetTimer();
+            this.time = 12;
             Thread receivingTCPDataThread = new Thread(new ThreadStart(Receive));
             receivingTCPDataThread.Start();
-        }
-
-        private void SetTimer()
-        {
-            panelUpdateTimer = new System.Timers.Timer(500);
-            panelUpdateTimer.Elapsed += OnTimedEvent;
-            panelUpdateTimer.AutoReset = true;
-            panelUpdateTimer.Enabled = true;
-        }
-        
-        private void OnTimedEvent(Object source, ElapsedEventArgs e)
-        {
-            if (objects.ContainsKey("panel"))
-            {
-                callMethod.ClearPanel(objects["panel"]);
-                
-            }
-               
-            this.DT += 2.5;
-            this.elapsedTime += 0.5;
         }
 
         #region KickOff
@@ -307,11 +291,11 @@ namespace TCP_naar_VR
                 Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
                 this.id = id;
                 //callMethod.GetScene();
-                //callMethod.SetTime(12);
+                //
                
                 callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });    
                 callMethod.AddTerrain();
-                callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { (int)(512 * 1)}, new int[] { 1, 1, 1, 1 });
+                callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { 512 }, new int[] { 1, 1, 1, 1 });
                 callMethod.FindNode("Camera");
                
             }         
@@ -346,6 +330,29 @@ namespace TCP_naar_VR
             callMethod.NewRoutePoints(new int[] { 0, 0, -20 }, new int[] { 0, 0, 10 });
 
             callMethod.AddRoute();
+        }
+        #endregion
+
+        #region Timer
+        private void SetTimer()
+        {
+            panelUpdateTimer = new System.Timers.Timer(100);
+            panelUpdateTimer.Elapsed += OnTimedEvent;
+            panelUpdateTimer.AutoReset = true;
+            panelUpdateTimer.Enabled = true;
+        }
+
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if (objects.ContainsKey("panel"))
+            {
+                callMethod.ClearPanel(objects["panel"]);
+
+            }
+            callMethod.SetTime(this.time);
+            this.time += (elapsedTime / 10);
+            this.DT += 2.5;
+            this.elapsedTime += 0.5;
         }
         #endregion
     }

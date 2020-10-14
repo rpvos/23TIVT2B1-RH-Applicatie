@@ -47,7 +47,7 @@ namespace simulatie
 
         #region Time
         //Set the time in the VR scene
-        internal void SetTime(int setTime)
+        internal void SetTime(double setTime)
         {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TimeSetMessage.json");
 

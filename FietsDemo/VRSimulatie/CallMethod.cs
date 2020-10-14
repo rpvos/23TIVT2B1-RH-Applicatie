@@ -402,7 +402,7 @@ namespace simulatie
         }
 
         //Let an object follow a set route with a specific nodeID
-        internal void FollowRoute(string routeId, string nodeId, double followSpeed, bool heightFollow, int[] possOff)
+        internal void FollowRoute(string routeId, string nodeId, double followSpeed, bool heightFollow, int[]rotOff, int[] posOff)
         {
             TunnelMessage followRouteMessage = tcpClient.GetTunnelMessage("FollowRoute.json");
 
@@ -418,8 +418,9 @@ namespace simulatie
                     rotate = "XZ",
                     smoothing = 1.0,
                     followHeight = heightFollow,
-                    rotateOffset = new int[] { 0,0,0,},
-                    positionOffset = possOff
+                    //(Z, X, Y)
+                    rotateOffset = rotOff,
+                    positionOffset = posOff
                 }
             };
 

@@ -175,10 +175,10 @@ namespace TCP_naar_VR
                     if(name == "bike")
                     {
                         Console.WriteLine("ROUTE UUID TO FOLLOW: " + objects["route"]);
-                        callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new int[] { 0, 0, 0 });
+                        callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
                         if(this.camera != null)
                         {
-                            callMethod.FollowRoute(objects["route"], this.camera, 5, true, new int[] { 0, 0, 0 });
+                            callMethod.FollowRoute(objects["route"], this.camera, 5, true, new int[] { 0, 120, 0 }, new int[] { 0, 0, 0 });
                         }
                     }
                 }
@@ -346,9 +346,9 @@ namespace TCP_naar_VR
         private void SetRoute()
         {
             callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, 0 });
-            callMethod.NewRoutePoints(new int[] { 80, 0, 0 }, new int[] { 10, 0, 0 });
-            callMethod.NewRoutePoints(new int[] { 80, 0, -80 }, new int[] { 0, 0, -10 });
-            callMethod.NewRoutePoints(new int[] { 0, 0, -80 }, new int[] { 0, 0, 10 });
+            callMethod.NewRoutePoints(new int[] { 20, 0, 0 }, new int[] { 10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 20, 0, -20 }, new int[] { 0, 0, -10 });
+            callMethod.NewRoutePoints(new int[] { 0, 0, -20 }, new int[] { 0, 0, 10 });
 
             callMethod.AddRoute();
         }

@@ -42,6 +42,7 @@ namespace Server
             Console.ReadKey();
         }
 
+
         private void fillUsers()
         {
             dataBase.Add("stoeptegel", new User("Stijn", "stoeptegel", "123", Role.Patient));

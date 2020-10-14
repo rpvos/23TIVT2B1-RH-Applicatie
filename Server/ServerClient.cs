@@ -120,6 +120,7 @@ namespace Server
             dynamic parsedData = new
             {
                 UpdateType = updateType.ToString(),
+                Username = user.getUsername(),
                 Value = value
             };
 
@@ -201,7 +202,6 @@ namespace Server
             {
                 Type = type,
                 Data = data,
-                Username = user.getUsername(),
                 Checksum = 0
             };
             return addChecksum(json);

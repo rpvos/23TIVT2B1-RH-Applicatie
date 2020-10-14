@@ -24,11 +24,17 @@ namespace DoctorServer
         private string totalBuffer;
 
         private Login login;
+        public string selectedUsername { get; set; }
 
         static void Main()
         {
             DoctorClient doctorServer = new DoctorClient();
             doctorServer.startLogin();
+        }
+
+        public DoctorClient()
+        {
+            this.selectedUsername = "-1";
         }
 
         public void startLogin()
@@ -171,10 +177,18 @@ namespace DoctorServer
 
         private void handleUpdate(JObject data)
         {
+
             UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
-            double value = (double)data["Value"];
-            switch (type)
-            {
+
+            string username = (string)data["Username"];
+
+            Console.WriteLine(username + selectedUsername);
+
+            if (username == this.selectedUsername) 
+            { 
+                double value = (double)data["Value"];
+                switch (type)
+                {
                 case UpdateType.AccumulatedDistance:
                     mainForm.setDT(value.ToString());
                     break;
@@ -202,6 +216,7 @@ namespace DoctorServer
                 case UpdateType.Speed:
                     mainForm.setSpeed(value.ToString());
                     break;
+                }
             }
         }
 

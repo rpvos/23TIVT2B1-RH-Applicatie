@@ -206,8 +206,22 @@ namespace DoctorServer
         private void BikeListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.selectedBike = (string)BikeListBox.SelectedItem;
+            doctorClient.selectedUsername = (string)BikeListBox.SelectedItem;
+
             this.selectedIndex = BikeListBox.SelectedIndex;
-            Console.WriteLine(selectedBike);
+
+            setAllToEmpty();
+
+        }
+
+        private void setAllToEmpty()
+        {
+            setAP("");
+            setHeartrate("");
+            setDT("");
+            setElapsedTime("");
+            setSpeed("");
+           
         }
     }
 }

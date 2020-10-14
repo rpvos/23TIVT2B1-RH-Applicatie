@@ -18,9 +18,11 @@ namespace FietsDemo
         private BluetoothBike bluetoothBike;
 
         private Crypto crypto;
+        private string username;
 
         public UserClient(string username, string password, BluetoothBike bluetoothBike)
         {
+            this.username = username;
             this.bluetoothBike = bluetoothBike;
             this.server = new TcpClient("127.0.0.1", 8080);
 
@@ -180,7 +182,7 @@ namespace FietsDemo
             dynamic data = new
             {
                 UpdateType = updateType.ToString(),
-                Value = value
+                Value = value,
             };
 
             return getJsonObject("update", data);

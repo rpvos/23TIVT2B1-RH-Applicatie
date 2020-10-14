@@ -50,7 +50,7 @@ namespace Server
                 Console.WriteLine(e.StackTrace);
             }
         }
-        public string[] GetSavedMessages()
+        public string[] GetSavedClients()
         {
             try
             {
@@ -58,7 +58,7 @@ namespace Server
                 string[] users = new string[directories.Length];
                 for(int i = 0; i < directories.Length; i++)
                 {
-                    using (StreamReader streamReader = new StreamReader($"{this.path}/{directories[i]}/{this.DEFAULT_FILENAME}"))
+                    using (StreamReader streamReader = new StreamReader($"{directories[i]}/{this.DEFAULT_FILENAME}"))
                     {
                         string cypher = streamReader.ReadToEnd();
                         string user = encyptionService.DecryptStringFromBytes(Convert.FromBase64String(cypher));

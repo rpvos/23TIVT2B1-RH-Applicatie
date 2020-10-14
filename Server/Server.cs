@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SharedItems;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace Server
         static void Main(string[] args)
         {
             Server server = new Server();
+
         }
 
         #region Start up methods
@@ -34,7 +36,8 @@ namespace Server
 
             this.dataBase = new Dictionary<string, User>();
             this.cryptoFileSaver = new CryptoFileSaver("data_saves");
-            fillUsers();
+            //fillUsers();
+            loadUsers();
 
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
             this.listener = new TcpListener(localhost, 8080);
@@ -44,9 +47,22 @@ namespace Server
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
 
+            Console.WriteLine(dataBase.Count);
+            //this.saveAllUsers();
+
             Console.ReadKey();
         }
 
+        private void loadUsers()
+        {
+            string[] users = this.cryptoFileSaver.GetSavedClients();
+
+            foreach(string serializedUser in users)
+            {
+                User user = (User)JsonConvert.DeserializeObject(serializedUser);
+                this.dataBase.Add(user.username, user);
+            }
+        }
 
         private void fillUsers()
         {
@@ -58,7 +74,16 @@ namespace Server
 
         public void saveUser(User user)
         {
-            this.cryptoFileSaver.WriteUserData(user.GetSaveFormat(), user.name);
+            this.cryptoFileSaver.WriteUserData(user.GetSaveFormat(), user.username);
+        }
+
+        public void saveAllUsers()
+        {
+            foreach (string userName in dataBase.Keys)
+            {
+                this.cryptoFileSaver.WriteUserData(dataBase[userName].GetSaveFormat(), userName);
+            }
+            Console.WriteLine("SAVED USERS :)");
         }
 
         #endregion
@@ -132,10 +157,10 @@ namespace Server
         {
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
-            foreach(ServerClient client in clients)
+            foreach (ServerClient client in clients)
             {
 
-                if(client.user.getRole() == Role.Patient && client.user.getUsername() == username)
+                if (client.user.getRole() == Role.Patient && client.user.getUsername() == username)
                 {
                     client.sendResistance(resistance);
                 }

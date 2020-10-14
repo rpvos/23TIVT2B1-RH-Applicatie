@@ -11,17 +11,20 @@ namespace Server
 {
     class Server
     {
+        #region private atributes
 
         private List<ServerClient> clients;
-
         private TcpListener listener;
         private Dictionary<string, User> dataBase;
 
+        #endregion
 
         static void Main(string[] args)
         {
             Server server = new Server();
         }
+
+        #region Start up methods
 
         public Server()
         {
@@ -47,6 +50,8 @@ namespace Server
             dataBase.Add("dokter", new User("dokter", "dokter", "123", Role.Doctor));
         }
 
+        #endregion
+
         private void OnConnect(IAsyncResult ar)
         {
             var tcpClient = listener.EndAcceptTcpClient(ar);
@@ -69,7 +74,6 @@ namespace Server
             Console.WriteLine("Client disconnected");
         }
 
-
         internal User checkUser(string username, string password)
         {
             if (dataBase.ContainsKey(username))
@@ -78,6 +82,8 @@ namespace Server
 
             return null;
         }
+
+        #region message methods
 
         internal void broadcast(string message)
         {
@@ -95,5 +101,7 @@ namespace Server
             }
 
         }
+
+        #endregion
     }
 }

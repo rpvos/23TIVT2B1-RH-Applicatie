@@ -73,10 +73,21 @@ namespace DoctorServer
 
         public void setElapsedTime(string elapsedTime)
         {
-            ElapsedTimeValue.Invoke((MethodInvoker)(() =>
+            if (!elapsedTime.Equals(""))
             {
-                this.ElapsedTimeValue.Text = elapsedTime;
-            }));
+                TimeSpan time = TimeSpan.FromSeconds(double.Parse(elapsedTime));
+                ElapsedTimeValue.Invoke((MethodInvoker)(() =>
+                {
+                    this.ElapsedTimeValue.Text = time.ToString(@"hh\:mm\:ss");
+                }));
+            }
+            else
+            {
+                ElapsedTimeValue.Invoke((MethodInvoker)(() =>
+                {
+                    this.ElapsedTimeValue.Text = elapsedTime;
+                }));
+            }
         }
 
         public void addBike(string username)

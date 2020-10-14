@@ -26,7 +26,7 @@ namespace FietsDemo
 
             this.crypto = new Crypto(server.GetStream(),handleData);
 
-            WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
+            WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
         private void WriteTextMessage(string message)
@@ -65,6 +65,7 @@ namespace FietsDemo
                         {
                             Console.WriteLine("Login failed");
                             this.bluetoothBike.loginFailed();
+                            disconnect();
                         }
                         break;
 
@@ -122,6 +123,12 @@ namespace FietsDemo
             foreach (byte b in data)
                 checksum ^= b;
             return checksum == 0;
+        }
+
+        public void disconnect()
+        {
+            this.server.Close();
+            this.stream.Close();
         }
         #endregion
 

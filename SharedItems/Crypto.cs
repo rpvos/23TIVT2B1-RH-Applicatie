@@ -101,7 +101,14 @@ namespace SharedItems
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 handleMethod(packet);
             }
-            networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            try
+            {
+                networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            }
+            catch
+            {
+                Console.WriteLine("Disconnected");
+            }
         }
 
         #endregion

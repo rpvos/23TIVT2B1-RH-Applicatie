@@ -349,8 +349,8 @@ namespace TCP_naar_VR
                 callMethod.ClearPanel(objects["panel"]);
 
             }
-            callMethod.SetTime(this.time);
-            this.time += (elapsedTime / 10);
+            //callMethod.SetTime(this.time);
+            //this.time += (elapsedTime / 10);
             this.DT += 2.5;
             this.elapsedTime += 0.5;
         }

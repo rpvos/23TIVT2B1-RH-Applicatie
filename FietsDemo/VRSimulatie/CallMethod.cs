@@ -44,63 +44,6 @@ namespace simulatie
             tcpClient.SendMessage(resetMessage.SendDataPacket(payloadData));
         }       
         #endregion 
-        
-        #region Camera
-        public void updateCamera(string cameraId, string nodeId)
-        {
-            Console.WriteLine("UPDATE CAMERA REACHED");
-            TunnelMessage updateCamera = tcpClient.GetTunnelMessage("CameraUpdate.json");
-            dynamic payloadData = new
-            {
-                id = "scene/node/update",
-                data = new
-                {
-                    id = cameraId,
-                    parent = nodeId,
-                    transform = new
-                    {
-                        position = new int[] { 0, 0, 0 },
-                        scale = 1.0,
-                        rotation = new int[] { 0, 0, 0 },
-                    },
-                    animation = new
-                    {
-                        name = "walk",
-                        speed = 0.5
-                    }
-                }
-            };
-            Console.WriteLine("UPDATE CAMERA MADE, BUT NOT SEND");
-            tcpClient.SendMessage(updateCamera.SendDataPacket(payloadData));
-            Console.WriteLine("UPDATE CAMERA ENDED");
-
-        }
-
-        public void MoveCamera(string cameraId)
-        {
-            Console.WriteLine("UPDATE CAMERA REACHED");
-            TunnelMessage updateCamera = tcpClient.GetTunnelMessage("CameraMoveTo.json");
-            dynamic payloadData = new
-            {
-                id = "scene/node/moveto",
-                data = new
-                {
-                    id = cameraId,
-                    stop = "stop",
-                    position = new int[] {-10, 10, 100},
-                    rotate = "XY",
-                    interpolate = "linear",
-                    followheight = "false",
-                    speed = 10,
-                    time = 1
-                }
-            };
-            Console.WriteLine("UPDATE CAMERA MADE, BUT NOT SEND");
-            tcpClient.SendMessage(updateCamera.SendDataPacket(payloadData));
-            Console.WriteLine("UPDATE CAMERA ENDED");
-
-        }
-        #endregion
 
         #region Time
         //Set the time in the VR scene
@@ -151,7 +94,7 @@ namespace simulatie
         }
 
         //Add a panel to the VR scene
-        internal void AddPanelNode(string nodeName, double[] pos, double[] rot, int[] panelSize, int[] res, int[] backgrColor)
+        internal void AddPanelNode(string nodeName, double[] pos, double[] rot, double[] panelSize, int[] res, int[] backgrColor)
         {
             TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
             
@@ -249,6 +192,29 @@ namespace simulatie
             };
 
             tcpClient.SendMessage(addObjectMessage.SendDataPacket(payloadData));
+        }
+
+        internal void UpdateNode(string nodeId, string parentId, double[] pos,double transScale, double[] rot)
+        {
+            TunnelMessage updateMessage = tcpClient.GetTunnelMessage("NodeUpdate.json");
+
+            dynamic payload = new
+            {
+                id = "scene/node/update",
+                data = new
+                {
+                    id = nodeId,
+                    parent = parentId,
+                    transform = new
+                    {
+                        position = pos,
+                        scale = transScale,
+                        rotation = rot
+                    }
+                }
+            };
+
+            tcpClient.SendMessage(updateMessage.SendDataPacket(payload));
         }
         #endregion
 

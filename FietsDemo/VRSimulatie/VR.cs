@@ -181,12 +181,14 @@ namespace TCP_naar_VR
 
                             if (this.camera != null)
                             {
-                                callMethod.FollowRoute(objects["route"], this.camera, 5, true, new double[] { 0, 7.84, 0 }, new int[] { 0, 0, 0 });
+                                callMethod.UpdateNode(this.camera, objects["bike"], new double[] { 0, 0, 0 }, 1.0, new double[] { 0, 90, 0 });
+                                //callMethod.FollowRoute(objects["route"], this.camera, 5, true, new double[] { 0, 7.84, 0 }, new int[] { 0, 0, 0 });
 
                             }
                             if (objects.ContainsKey("panel"))
                             {
-                                callMethod.FollowRoute(objects["route"], objects["panel"], 5, true, new double[] { 0, 7.84, 0 }, new int[] { 0, 0, 0 });
+                                callMethod.UpdateNode(objects["panel"], this.camera, new double[] { 0, 1, 0 }, 0.5, new double[] { 0, 0, 0 });
+                                //callMethod.FollowRoute(objects["route"], objects["panel"], 5, true, new double[] { 0, 7.84, 0 }, new int[] { 0, 0, 0 });
                             }
                             break;
                     }
@@ -264,76 +266,7 @@ namespace TCP_naar_VR
                         this.camera = nodeId;
                     }
                     break;
-            }
-
-            ////TODO make a switch case!
-            //if ((string)data["id"] == "scene/node/add")
-            //{
-            //    if ((string)data["status"] == "ok")
-            //    {
-                    
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
-            //    }
-            //}
-            ////Get scene, if scene found then reset the scene
-            //else if ((string)data["id"] == "scene/get")
-            //{
-                
-
-            //}
-            ////If the scene is reset, find the groundplane node
-            //else if((string)data["id"] == "scene/reset")
-            //{
-                
-            //}
-            ////If a route is correctly added, add objects to the VR scene
-            //else if ((string)data["id"] == "route/add")
-            //{
-            //    if ((string)data["status"] == "ok")
-            //    {
-                    
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
-            //    }
-            //}
-            //else if ((string)data["id"] == "scene/node/update")
-            //{
-            //    Console.WriteLine();
-            //}
-
-            ////If the textures are loaded correctly, set a new route
-            //else if ((string)data["id"] == "scene/node/addlayer")
-            //{
-            //    if ((string)data["status"] == "ok")
-            //    {
-            //    }
-            //}
-            ////If a road was added correctly, add random tree objects
-            //else if ((string)data["id"] == "scene/road/add")
-            //{
-            //    if ((string)data["status"] == "ok")
-            //    {
-                    
-            //    }
-            //}
-            ////If the panel was cleared correctly, then add text on the panel
-            //else if ((string)data["id"] == "scene/panel/clear")
-            //{
-                
-            //}
-            ////If the node was found correctly,and if it was the groundplane node, then delete it
-            //else if ((string)data["id"] == "scene/node/find")
-            //{
-            //    if ((string)data["status"] == "ok")
-            //    {
-                    
-            //    }
-            //}        
+            }  
         }
         #endregion
 
@@ -355,7 +288,7 @@ namespace TCP_naar_VR
                
                 callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });    
                 callMethod.AddTerrain();
-                callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new int[] { 1, 1, 1, 1 });
+                callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { 512, 512 }, new int[] { 1, 1, 1, 1 });
                 callMethod.FindNode("Camera");
                
             }         

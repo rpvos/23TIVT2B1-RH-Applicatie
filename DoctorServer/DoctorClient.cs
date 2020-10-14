@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using Shared;
+using SharedItems;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -15,9 +15,9 @@ namespace DoctorApplication
 
         private DoctorForm mainForm;
         private TcpClient server;
-        private NetworkStream stream;
 
         private List<string> usernames;
+        private Crypto crypto;
 
         private byte[] buffer;
         private string totalBuffer;
@@ -48,12 +48,10 @@ namespace DoctorApplication
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
-            this.stream = this.server.GetStream();
             this.buffer = new byte[1024];
+            this.crypto = new Crypto(server.GetStream(),handleData);
 
             this.usernames = new List<string>();
-
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
             WriteTextMessage(getUserDetailsMessageString("dokter", "123"));
         }
@@ -61,32 +59,7 @@ namespace DoctorApplication
         #region stream dynamics
         public void WriteTextMessage(string message)
         {
-            byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            stream.Flush();
-        }
-
-        private void OnRead(IAsyncResult ar)
-        {
-            try
-            {
-                int receivedBytes = stream.EndRead(ar);
-                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                totalBuffer += receivedText;
-            }
-            catch (IOException)
-            {
-                Console.WriteLine("Server disconnected"); ;
-                return;
-            }
-
-            while (totalBuffer.Contains("\r\n\r\n"))
-            {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
-                handleData(packet);
-            }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            crypto.WriteTextMessage(message);
         }
         #endregion
 

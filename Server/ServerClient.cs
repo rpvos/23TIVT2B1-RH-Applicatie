@@ -1,12 +1,14 @@
 ﻿
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Shared;
+using SharedItems;
 using System;
 using System.IO;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using UpdateType = Shared.UpdateType;
 
 namespace Server
 {
@@ -16,8 +18,7 @@ namespace Server
         private TcpClient client;
         private Server server;
 
-        private NetworkStream stream;
-
+        private Crypto crypto;
         private byte[] buffer;
         private string totalBuffer;
 
@@ -30,13 +31,10 @@ namespace Server
             this.server = server;
 
             this.buffer = new byte[1024];
-            this.stream = client.GetStream();
+            this.crypto = new Crypto(client.GetStream(),handleData);
 
 
             this.logger = new StringBuilder();
-
-
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         #region stream dynamics
@@ -45,36 +43,7 @@ namespace Server
         {
             logger.Append("\nServer:\n" + message);
 
-            byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            stream.Flush();
-        }
-
-        private void OnRead(IAsyncResult ar)
-        {
-            try
-            {
-                int receivedBytes = stream.EndRead(ar);
-                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                totalBuffer += receivedText;
-            }
-            catch (IOException)
-            {
-                server.Disconnect(this);
-                log();
-                return;
-            }
-
-            while (totalBuffer.Contains("\r\n\r\n"))
-            {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-
-                logger.Append("\nClient:\n" + packet);
-
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
-                handleData(packet);
-            }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            crypto.WriteTextMessage(message);
         }
 
         private void log()
@@ -128,23 +97,24 @@ namespace Server
             }
             catch (JsonReaderException)
             {
+                Console.WriteLine(packet);
                 Console.WriteLine("Invalid message");
             }
         }
 
-        
+
         private void handleUpdateInformation(JObject data)
         {
             UpdateType updateType = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
             double value = (double)data["Value"];
-            
-            dynamic parsedData = new 
+
+            dynamic parsedData = new
             {
                 UpdateType = updateType.ToString(),
                 Value = value
             };
 
-            this.server.SendToDoctors(getJsonObject("update",parsedData,this.user));
+            this.server.SendToDoctors(getJsonObject("update", parsedData, this.user));
         }
 
         private Role handleUserCredentials(JObject data)

@@ -9,6 +9,7 @@
     <Import_RootNamespace>SharedItems</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Crypto.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
   </ItemGroup>
 </Project>

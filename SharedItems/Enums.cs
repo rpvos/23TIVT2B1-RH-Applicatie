@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shared
+namespace SharedItems
 {
     public enum UpdateType
     {

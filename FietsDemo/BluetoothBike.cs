@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Avans.TI.BLE;
-using Shared;
+using SharedItems;
 using TCP_naar_VR;
-using UpdateType = Shared.UpdateType;
+using UpdateType = SharedItems.UpdateType;
 
 namespace FietsDemo
 {

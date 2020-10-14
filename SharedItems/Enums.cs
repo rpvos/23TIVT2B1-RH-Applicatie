@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DoctorApplication
+namespace SharedItems
 {
-    public enum ValueType
+    public enum UpdateType
     {
         Heartrate,
         Speed,

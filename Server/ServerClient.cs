@@ -1,10 +1,13 @@
 ﻿
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SharedItems;
 using System;
 using System.IO;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace Server
@@ -15,12 +18,9 @@ namespace Server
         private TcpClient client;
         private Server server;
 
-        private NetworkStream stream;
-
+        private Crypto crypto;
         private byte[] buffer;
         private string totalBuffer;
-
-        private RSAClient rsaClient;
 
         public User user { get; set; }
         private StringBuilder logger;
@@ -31,14 +31,10 @@ namespace Server
             this.server = server;
 
             this.buffer = new byte[1024];
-            this.stream = client.GetStream();
+            this.crypto = new Crypto(client.GetStream(),handleData);
 
-            this.rsaClient = new RSAClient();
 
             this.logger = new StringBuilder();
-
-
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         #region stream dynamics
@@ -47,36 +43,7 @@ namespace Server
         {
             logger.Append("\nServer:\n" + message);
 
-            byte[] dataAsBytes = Encoding.UTF8.GetBytes(message + "\r\n\r\n");
-            stream.Write(dataAsBytes, 0, dataAsBytes.Length);
-            stream.Flush();
-        }
-
-        private void OnRead(IAsyncResult ar)
-        {
-            try
-            {
-                int receivedBytes = stream.EndRead(ar);
-                string receivedText = Encoding.UTF8.GetString(buffer, 0, receivedBytes);
-                totalBuffer += receivedText;
-            }
-            catch (IOException)
-            {
-                server.Disconnect(this);
-                log();
-                return;
-            }
-
-            while (totalBuffer.Contains("\r\n\r\n"))
-            {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n"));
-
-                logger.Append("\nClient:\n" + packet);
-
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
-                handleData(packet);
-            }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            crypto.WriteTextMessage(message);
         }
 
         private void log()
@@ -115,11 +82,6 @@ namespace Server
 
                 switch (json["Type"].ToString())
                 {
-                    case "request":
-                        if (handleConnectionRequest(data))
-                            sendConnectionRequest();
-                        break;
-
                     case "userCredentials":
                         sendUserCredentialsResponse(handleUserCredentials(data));
                         break;
@@ -135,14 +97,24 @@ namespace Server
             }
             catch (JsonReaderException)
             {
+                Console.WriteLine(packet);
                 Console.WriteLine("Invalid message");
             }
         }
 
-        
+
         private void handleUpdateInformation(JObject data)
         {
-            this.server.SendToDoctors(getJsonObject("update",data,this.user));
+            UpdateType updateType = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
+            double value = (double)data["Value"];
+
+            dynamic parsedData = new
+            {
+                UpdateType = updateType.ToString(),
+                Value = value
+            };
+
+            this.server.SendToDoctors(getJsonObject("update", parsedData, this.user));
         }
 
         private Role handleUserCredentials(JObject data)
@@ -157,26 +129,6 @@ namespace Server
                 return Role.Invallid;
         }
 
-        /// <summary>
-        /// this method handles the connection request
-        /// </summary>
-        /// <param name="json">data recieved</param>
-        /// <returns>return true if the data send is correct</returns>
-        private bool handleConnectionRequest(JObject json)
-        {
-            byte[] modulus = Encoding.ASCII.GetBytes((string)json["Modulus"]);
-            byte[] exponent = Encoding.ASCII.GetBytes((string)json["Exponent"]);
-            try
-            {
-                rsaClient.setKey(modulus, exponent);
-                return true;
-            }
-            catch (CryptographicException)
-            {
-                Console.WriteLine("Wrong key value");
-            }
-            return false;
-        }
 
         private bool checkChecksum(JObject json)
         {
@@ -227,17 +179,6 @@ namespace Server
             return getJsonObject("userCredentialsResponse", data);
         }
 
-        private string getConnectionResponseMessage(byte[] modulus, byte[] exponent)
-        {
-            dynamic data = new
-            {
-                Modulus = modulus,
-                Exponent = exponent
-            };
-
-            return getJsonObject("response", data);
-        }
-
         private string getMessageString(string message)
         {
             dynamic data = new
@@ -280,11 +221,6 @@ namespace Server
             WriteTextMessage(getUserCredentialsResponse(role));
         }
 
-
-        private void sendConnectionRequest()
-        {
-            WriteTextMessage(getConnectionResponseMessage(rsaClient.getModulus(), rsaClient.getExponent()));
-        }
 
         internal void sendMessage(string message)
         {

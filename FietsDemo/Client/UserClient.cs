@@ -1,67 +1,35 @@
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SharedItems;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using SharedItems;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
-namespace DoctorApplication
+namespace FietsDemo
 {
-    public class DoctorClient
+    public class UserClient
     {
-
-        private DoctorForm mainForm;
         private TcpClient server;
 
-        private List<string> usernames;
         private Crypto crypto;
 
-        private byte[] buffer;
-        private string totalBuffer;
 
-        static void Main()
-        {
-            DoctorClient doctorServer = new DoctorClient();
-            doctorServer.Start();
-
-        }
-
-
-        public void Start()
-        {
-            startClient();
-
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
-            Application.EnableVisualStyles();
-
-            this.mainForm = new DoctorForm(this);
-
-            Application.Run(mainForm);
-        }
-
-
-
-        public void startClient()
+        public UserClient()
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
-            this.buffer = new byte[1024];
             this.crypto = new Crypto(server.GetStream(),handleData);
 
-            this.usernames = new List<string>();
-
-            WriteTextMessage(getUserDetailsMessageString("dokter", "123"));
+            WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
         }
 
-        #region stream dynamics
-        public void WriteTextMessage(string message)
+        private void WriteTextMessage(string message)
         {
             crypto.WriteTextMessage(message);
         }
-        #endregion
 
         #region handle recieved data
         private void handleData(string packet)
@@ -89,9 +57,6 @@ namespace DoctorApplication
                             Console.WriteLine("Login failed");
                         }
                         break;
-                    case "update":
-                        handleUpdate(data);
-                        break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -100,53 +65,16 @@ namespace DoctorApplication
             }
             catch (JsonReaderException)
             {
+                Console.WriteLine(packet);
                 Console.WriteLine("Invalid message");
-            }
-        }
-
-        private void handleUpdate(JObject data)
-        {
-            UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
-            double value = (double)data["Value"];
-
-            switch (type)
-            {
-                case UpdateType.AccumulatedDistance:
-                    mainForm.setDT(value.ToString());
-                    break;
-
-                case UpdateType.AccumulatedPower:
-                    mainForm.setAP(value.ToString());
-                    break;
-
-                case UpdateType.ElapsedTime:
-                    mainForm.setElapsedTime(value.ToString());
-                    break;
-
-                case UpdateType.Heartrate:
-                    mainForm.setHeartrate(value.ToString());
-                    break;
-
-                case UpdateType.InstantaniousPower:
-                    //TODO mainForm.set(value.ToString());
-                    break;
-
-                case UpdateType.Resistance:
-                    //TODO doctor sends resistance and client doesn't set resitance except vr
-                    break;
-
-                case UpdateType.Speed:
-                    mainForm.setSpeed(value.ToString());
-                    break;
             }
         }
 
         private bool handleUserCredentialsResponse(JObject data)
         {
-            // Check if the status is ok and the user is a doctor that is signing in
-            return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Doctor;
+            //check if connected succesfully
+            return (bool)data["Status"] && (Role)Enum.Parse(typeof(Role), (string)data["Role"], true) == Role.Patient;
         }
-
 
         private bool checkChecksum(JObject json)
         {
@@ -157,6 +85,24 @@ namespace DoctorApplication
                 checksum ^= b;
             return checksum == 0;
         }
+        #endregion
+
+        #region send handlers
+        private void sendCredentialMessage(string username, string password)
+        {
+            username = "admin";
+            password = "admin";
+
+            WriteTextMessage(getUserDetailsMessageString(username, password));
+        }
+
+        internal Task sendUpdatedValues(SharedItems.UpdateType valueType, double value)
+        {
+            WriteTextMessage(getUpdateMessageString(valueType, value));
+            return Task.CompletedTask;
+        }
+
+
         #endregion
 
         #region message construction
@@ -171,15 +117,6 @@ namespace DoctorApplication
             };
             return addChecksum(json);
         }
-        private string getMessageString(string message)
-        {
-            dynamic data = new
-            {
-                Message = message
-            };
-
-            return getJsonObject("message", data);
-        }
 
         private string getUserDetailsMessageString(string username, string password)
         {
@@ -191,7 +128,51 @@ namespace DoctorApplication
 
             return getJsonObject("userCredentials", data);
         }
+        private string getUpdateMessageString(UpdateType updateType, double value)
+        {
+            dynamic data = new
+            {
+                UpdateType = updateType.ToString(),
+                Value = value
+            };
 
+            return getJsonObject("update", data);
+        }
+
+
+        private string getUpdateMessageString(string type, double value)
+        {
+            dynamic data = new
+            {
+                Type = type,
+                Value = value
+            };
+
+            return getJsonObject("updateType", data);
+        }
+
+        private string getMessageString(string message)
+        {
+            dynamic data = new
+            {
+                Message = message
+            };
+
+            return getJsonObject("message", data);
+        }
+
+        private string getRequestMessage(byte[] modulus, byte[] exponent)
+        {
+            List<byte> modulusList = new List<byte>(modulus);
+            List<byte> exponentList = new List<byte>(exponent);
+            dynamic data = new
+            {
+                Modulus = modulusList,
+                Exponent = exponentList
+            };
+
+            return getJsonObject("request", data);
+        }
 
         private string addChecksum(dynamic dynamicJson)
         {
@@ -208,13 +189,5 @@ namespace DoctorApplication
         }
         #endregion
 
-        #region send handlers
-        private void sendCredentialMessage(string username, string password)
-        {
-            WriteTextMessage(getUserDetailsMessageString(username, password));
-        }
-        #endregion
     }
-
-
 }

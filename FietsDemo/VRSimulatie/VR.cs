@@ -30,7 +30,7 @@ namespace TCP_naar_VR
         internal double elapsedTime { get; set; }
         internal double resistance { get; set; }
         #endregion
-
+        
         public TcpClientVR(string ip, int port)
         {
             objects = new Dictionary<string, string>();
@@ -38,8 +38,8 @@ namespace TCP_naar_VR
             stream = tcpClient.GetStream();
             callMethod = new CallMethod(this, objects);
             receiving = true;
-            SetTimer();
-            this.time = 12;
+            SetTimer();            
+            
             Thread receivingTCPDataThread = new Thread(new ThreadStart(Receive));
             receivingTCPDataThread.Start();
         }
@@ -291,13 +291,14 @@ namespace TCP_naar_VR
                 Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
                 this.id = id;
                 //callMethod.GetScene();
-                //
-               
+
+                //var date = DateTime.Now;
+                //callMethod.SetTime(date.Hour);
+                //Console.WriteLine(date.Hour.ToString());
                 callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });    
                 callMethod.AddTerrain();
                 callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { 512 }, new int[] { 1, 1, 1, 1 });
-                callMethod.FindNode("Camera");
-               
+                callMethod.FindNode("Camera");               
             }         
         }
         #endregion
@@ -336,7 +337,7 @@ namespace TCP_naar_VR
         #region Timer
         private void SetTimer()
         {
-            panelUpdateTimer = new System.Timers.Timer(100);
+            panelUpdateTimer = new System.Timers.Timer(500);
             panelUpdateTimer.Elapsed += OnTimedEvent;
             panelUpdateTimer.AutoReset = true;
             panelUpdateTimer.Enabled = true;
@@ -347,10 +348,8 @@ namespace TCP_naar_VR
             if (objects.ContainsKey("panel"))
             {
                 callMethod.ClearPanel(objects["panel"]);
-
             }
-            callMethod.SetTime(this.time);
-            this.time += (elapsedTime / 10);
+            
             this.DT += 2.5;
             this.elapsedTime += 0.5;
         }

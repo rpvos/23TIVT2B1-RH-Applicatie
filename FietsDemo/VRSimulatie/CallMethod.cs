@@ -28,7 +28,13 @@ namespace simulatie
         internal void GetScene()
         {
             TunnelMessage getSceneMessage = tcpClient.GetTunnelMessage("SceneGet.json");
-            tcpClient.SendMessage(getSceneMessage.ToString());
+
+            dynamic payload = new
+            {
+                id = "scene/get"
+            };
+
+            tcpClient.SendMessage(getSceneMessage.SendDataPacket(payload));
         }
 
         //Reset the whole VR scene
@@ -36,6 +42,7 @@ namespace simulatie
         {
             Console.WriteLine("RESET SCENE CALLED");
             TunnelMessage resetMessage = tcpClient.GetTunnelMessage("SceneReset.json");
+
             dynamic payloadData = new
             {
                 id = "scene/reset"
@@ -194,6 +201,7 @@ namespace simulatie
             tcpClient.SendMessage(addObjectMessage.SendDataPacket(payloadData));
         }
 
+        //Bind a specific node to a parent node, and update it
         internal void UpdateNode(string nodeId, string parentId, double[] pos,double transScale, double[] rot)
         {
             TunnelMessage updateMessage = tcpClient.GetTunnelMessage("NodeUpdate.json");
@@ -254,9 +262,20 @@ namespace simulatie
                 lastInt = heights[i];
             }
 
-            JArray jArray = new JArray(heights);
-            timeMessage.GetDataContent()["heights"] = jArray;
-            tcpClient.SendMessage(timeMessage.ToString());
+            JArray heightsArray = new JArray(heights);
+
+            dynamic payloadData = new
+            {
+                id = "scene/terrain/add",
+                data = new
+                {
+                    size = new int[] { 200, 200 },
+                    heights = heightsArray
+                }
+
+            };
+            
+            tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
         }
 
         //Add texture to the VR scene
@@ -309,39 +328,27 @@ namespace simulatie
         {
             ArrayList points = routePoints;
             TunnelMessage routeMessage = tcpClient.GetTunnelMessage("RouteSetMessage.json");
-                        
-            //foreach (RoutePoint p in points)
-            //{
-            //    JObject point = JObject.Parse("{\"pos\": [], \"dir\": []}");
+            JArray nodesArray = new JArray();
 
-            //    point["pos"] = new JArray(p.Pos);
-            //    point["dir"] = new JArray(p.Dir);
-
-            //    nodesArray.Add(point);
-            //}
-
-            //dynamic payloadData = new
-            //{
-            //    id = "route/add",
-            //    data = new
-            //    {
-            //       nodes = nodesArray
-            //    }
-            //};
-
-            //For now still using old code
-            JObject data = routeMessage.GetDataContent();
-            JArray nodesArray = (JArray)data["nodes"];
             foreach (RoutePoint p in points)
             {
                 JObject point = JObject.Parse("{\"pos\": [], \"dir\": []}");
-
                 point["pos"] = new JArray(p.Pos);
                 point["dir"] = new JArray(p.Dir);
 
                 nodesArray.Add(point);
             }
-            tcpClient.SendMessage(routeMessage.ToString());
+
+            dynamic payloadData = new
+            {
+                id = "route/add",
+                data = new
+                {
+                    nodes = nodesArray
+                }
+            };
+
+            tcpClient.SendMessage(routeMessage.SendDataPacket(payloadData));
         }
 
         //Add new routepoints to the routePoints array

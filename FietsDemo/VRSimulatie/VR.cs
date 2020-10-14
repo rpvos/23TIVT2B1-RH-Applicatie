@@ -37,6 +37,7 @@ namespace TCP_naar_VR
             receivingTCPDataThread.Start();
         }
 
+        #region KickOff
         //Send a starting message to the server for connection
         public void SendKickOff()
         {
@@ -47,7 +48,9 @@ namespace TCP_naar_VR
             string jsonString = JsonConvert.SerializeObject(data);
             SendMessage(jsonString);
         }
+        #endregion
 
+        #region Send TunnelMessage
         //Send a new tunnel request
         public void SendTunnelRequest(string id)
         {
@@ -83,7 +86,9 @@ namespace TCP_naar_VR
             byte[] buffer = Encoding.ASCII.GetBytes(message);
             stream.Write(buffer, 0, buffer.Length);
         }
+        #endregion
 
+        #region Receive TunnelMessage
         //Receive bytes from a message
         public byte[] ReceiveBytes(int count)
         {
@@ -127,7 +132,9 @@ namespace TCP_naar_VR
                 GetJsonData(json);
             }
         }
+        #endregion
 
+        #region GetJsonData
         //Receive the response from the server, then do a specific thing with it
         private void GetJsonData(JObject json)
         {
@@ -178,7 +185,11 @@ namespace TCP_naar_VR
                         callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
                         if(this.camera != null)
                         {
-                            callMethod.FollowRoute(objects["route"], this.camera, 5, true, new int[] { 0, 120, 0 }, new int[] { 0, 0, 0 });
+                            callMethod.FollowRoute(objects["route"], this.camera, 5, true, new int[] { 0, 85, 0 }, new int[] { 0, 0, 0 });
+                        }
+                        if (objects.ContainsKey("panel"))
+                        {
+                            callMethod.FollowRoute(objects["route"], objects["panel"], 5, true, new int[] { 0, 85, 0 }, new int[] { 0, 0, 0 });
                         }
                     }
                 }
@@ -300,7 +311,9 @@ namespace TCP_naar_VR
                 }
             }        
         }
+        #endregion
 
+        #region Call first methods
         //Check for the tunnelstatus
         private void CheckTunnelStatus(JObject json)
         {
@@ -323,7 +336,9 @@ namespace TCP_naar_VR
                
             }         
         }
+        #endregion
 
+        #region Print users and set first route
         //Print the users who are currently on the server
         private void PrintUsers(JObject json)
         {
@@ -352,5 +367,6 @@ namespace TCP_naar_VR
 
             callMethod.AddRoute();
         }
+        #endregion
     }
 }

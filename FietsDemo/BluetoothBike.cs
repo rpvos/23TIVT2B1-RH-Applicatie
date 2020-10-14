@@ -47,10 +47,22 @@ namespace FietsDemo
         private Random random;
         private double speed;
 
+        private Login login;
+
+        
+
         static void Main(string[] args)
         {
-            BluetoothBike program = new BluetoothBike();
-            program.start();
+            BluetoothBike bluetoothBike = new BluetoothBike();
+            bluetoothBike.startLogin() ;
+        }
+
+        public void startLogin()
+        {
+
+            this.login = new Login(this);
+            this.login.run();
+
         }
 
 
@@ -58,11 +70,13 @@ namespace FietsDemo
         {
             this.random = new Random();
 
+
             Thread guiThread = new Thread(startGUI);
             guiThread.Start();
 
-            Thread clientThread = new Thread(startClient);
-            clientThread.Start();
+
+            //Thread clientThread = new Thread(startClient);
+            //clientThread.Start();
 
             Thread VRThread = new Thread(startVR);
             VRThread.Start();
@@ -70,11 +84,27 @@ namespace FietsDemo
             initialize();
         }
 
-        public void startClient()
+        public void startClient(string username, string password)
         {
-            this.client = new UserClient();
-
+            Thread clientThread = new Thread(() =>
+            {
+                this.client = new UserClient(username, password,this);
+            });
+            clientThread.Start();
         }
+
+        public void loginFailed()
+        {
+            this.login.loginFailed();
+        }
+
+        public void loginSucceeded()
+        {
+            this.login.loginSucceeded();
+        }
+
+     
+        
 
 
         public void startVR()
@@ -473,6 +503,7 @@ namespace FietsDemo
             if(this.simulator != null)
             {
                 this.simulator.setResistance((int)percentage);
+                this.gui.setResistance((int)percentage);
             }
             
             if (percentage <= 100.0 && percentage >= 0.0)

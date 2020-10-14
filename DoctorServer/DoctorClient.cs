@@ -7,8 +7,9 @@ using System.Text;
 using SharedItems;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
-namespace DoctorApplication
+namespace DoctorServer
 {
     public class DoctorClient
     {
@@ -22,29 +23,45 @@ namespace DoctorApplication
         private byte[] buffer;
         private string totalBuffer;
 
+        private Login login;
+        public string selectedUsername { get; set; }
+
         static void Main()
         {
             DoctorClient doctorServer = new DoctorClient();
-            doctorServer.Start();
+            doctorServer.startLogin();
+        }
+
+        public DoctorClient()
+        {
+            this.selectedUsername = "-1";
+        }
+
+        public void startLogin()
+        {
+
+            this.login = new Login(this);
+            this.login.run();
 
         }
 
 
         public void Start()
         {
-            startClient();
+            //startClient();
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
 
             this.mainForm = new DoctorForm(this);
-
-            Application.Run(mainForm);
+            //ShowDialog() instead of Application.Run() could affect the working a bit
+            this.mainForm.ShowDialog();
+            //Application.Run(mainForm);
         }
 
+  
 
-
-        public void startClient()
+        public void startClient(string username, string password)
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
@@ -53,7 +70,9 @@ namespace DoctorApplication
 
             this.usernames = new List<string>();
 
-            WriteTextMessage(getUserDetailsMessageString("dokter", "123"));
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+
+            WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
         #region stream dynamics
@@ -61,6 +80,15 @@ namespace DoctorApplication
         {
             crypto.WriteTextMessage(message);
         }
+        public void sendPrivMessage(string message, string username)
+        {
+
+            WriteTextMessage(getPrivMessageString(message, username));
+        }
+        }
+            WriteTextMessage(getResistanceString(resistance, username));
+        {
+        public void sendResistance(string resistance, string username)
         #endregion
 
         #region handle recieved data
@@ -83,14 +111,21 @@ namespace DoctorApplication
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
+                            Thread startThread = new Thread(Start);
+                            startThread.Start();
+                            this.login.loginSucceeded();
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
+                            this.login.loginFailed();
                         }
                         break;
                     case "update":
                         handleUpdate(data);
+                        break;
+                    case "AddUser":
+                        AddUser(data);
                         break;
 
                     default:
@@ -104,13 +139,29 @@ namespace DoctorApplication
             }
         }
 
+        private void AddUser(JObject data)
+        {
+           
+                string username = (string)data["Username"];
+            this.mainForm.addBike(username);
+
+            
+        }
+
         private void handleUpdate(JObject data)
         {
-            UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
-            double value = (double)data["Value"];
 
-            switch (type)
-            {
+            UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
+
+            string username = (string)data["Username"];
+
+            Console.WriteLine(username + selectedUsername);
+
+            if (username == this.selectedUsername) 
+            { 
+                double value = (double)data["Value"];
+                switch (type)
+                {
                 case UpdateType.AccumulatedDistance:
                     mainForm.setDT(value.ToString());
                     break;
@@ -138,6 +189,7 @@ namespace DoctorApplication
                 case UpdateType.Speed:
                     mainForm.setSpeed(value.ToString());
                     break;
+                }
             }
         }
 
@@ -181,6 +233,38 @@ namespace DoctorApplication
             return getJsonObject("message", data);
         }
 
+        private string getResistanceString(string resistance, String username)
+        {
+            dynamic data = new
+            {
+                Resistance = resistance,
+                Username = username
+            };
+
+            return getJsonObject("resistance", data);
+        }
+
+        private string getPrivMessageString(string message, String username)
+        {
+            dynamic data = new
+            {
+                Message = message,
+                Username = username
+            };
+
+            return getJsonObject("privMessage", data);
+        }
+
+        private string getGlobalMessageString(string message)
+        {
+            dynamic data = new
+            {
+                Message = message
+            };
+
+            return getJsonObject("globalmessage", data);
+        }
+
         private string getUserDetailsMessageString(string username, string password)
         {
             dynamic data = new
@@ -190,6 +274,11 @@ namespace DoctorApplication
             };
 
             return getJsonObject("userCredentials", data);
+        }
+
+        public void sendGlobalChatMessage(string message)
+        {
+            WriteTextMessage(getGlobalMessageString(message));
         }
 
 

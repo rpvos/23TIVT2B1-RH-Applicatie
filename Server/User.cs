@@ -12,9 +12,11 @@ namespace Server
         private string username;
         private string password;
         private Role role;
+        public bool loggedIn { get; set; }
 
         public User(string name, string username, string password, Role role)
         {
+            this.loggedIn = false;
             this.name = name;
             this.username = username;
             this.password = password;
@@ -31,9 +33,11 @@ namespace Server
             return this.role;
         }
 
-        internal object getUsername()
+        internal string getUsername()
         {
             return this.username;
         }
+
+
     }
 }

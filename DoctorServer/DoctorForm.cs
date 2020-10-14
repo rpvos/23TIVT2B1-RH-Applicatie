@@ -214,16 +214,23 @@ namespace DoctorServer
 
         private void BikeListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.selectedBike = (string)BikeListBox.SelectedItem;
-            doctorClient.selectedUsername = (string)BikeListBox.SelectedItem;
+            try
+            {
+                this.selectedBike = (string)BikeListBox.SelectedItem;
+                doctorClient.selectedUsername = (string)BikeListBox.SelectedItem;
 
-            this.selectedIndex = BikeListBox.SelectedIndex;
+                this.selectedIndex = BikeListBox.SelectedIndex;
 
-            this.resistanceTextbox.Text = usernameAndResistance[selectedBike] + "";
+                this.resistanceTextbox.Text = usernameAndResistance[selectedBike] + "";
 
 
 
-            setAllToEmpty();
+                setAllToEmpty();
+            }
+            catch(Exception f) {
+                Console.WriteLine(f.Message);
+            }
+
 
         }
 

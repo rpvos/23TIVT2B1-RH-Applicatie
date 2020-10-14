@@ -59,18 +59,18 @@ namespace DoctorServer
             //Application.Run(mainForm);
         }
 
-  
+
 
         public void startClient(string username, string password)
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.buffer = new byte[1024];
-            this.crypto = new Crypto(server.GetStream(),handleData);
+            this.crypto = new Crypto(server.GetStream(), handleData);
 
             this.usernames = new List<string>();
 
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            //stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
@@ -85,17 +85,21 @@ namespace DoctorServer
 
             WriteTextMessage(getPrivMessageString(message, username));
         }
-        }
-            WriteTextMessage(getResistanceString(resistance, username));
-        {
+
+        
         public void sendResistance(string resistance, string username)
+        {
+            WriteTextMessage(getResistanceString(resistance, username));
+        }
         #endregion
 
-        #region handle recieved data
+        #region handle received data
         private void handleData(string packet)
         {
             try
             {
+                Console.WriteLine(packet);
+
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
                     return;
@@ -133,62 +137,59 @@ namespace DoctorServer
                         break;
                 }
             }
-            catch (JsonReaderException)
+            catch (Exception e)
             {
-                Console.WriteLine("Invalid message");
+                Console.WriteLine(e.StackTrace);
             }
         }
 
         private void AddUser(JObject data)
         {
-           
-                string username = (string)data["Username"];
+
+            string username = (string)data["Username"];
             this.mainForm.addBike(username);
 
-            
+
         }
 
         private void handleUpdate(JObject data)
         {
-
             UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
 
             string username = (string)data["Username"];
 
-            Console.WriteLine(username + selectedUsername);
-
-            if (username == this.selectedUsername) 
-            { 
+            if (username == this.selectedUsername)
+            {
                 double value = (double)data["Value"];
                 switch (type)
                 {
-                case UpdateType.AccumulatedDistance:
-                    mainForm.setDT(value.ToString());
-                    break;
+                    case UpdateType.AccumulatedDistance:
+                        mainForm.setDT(value.ToString());
+                        break;
 
-                case UpdateType.AccumulatedPower:
-                    mainForm.setAP(value.ToString());
-                    break;
+                    case UpdateType.AccumulatedPower:
+                        mainForm.setAP(value.ToString());
+                        break;
 
-                case UpdateType.ElapsedTime:
-                    mainForm.setElapsedTime(value.ToString());
-                    break;
+                    case UpdateType.ElapsedTime:
+                        mainForm.setElapsedTime(value.ToString());
+                        break;
 
-                case UpdateType.Heartrate:
-                    mainForm.setHeartrate(value.ToString());
-                    break;
+                    case UpdateType.Heartrate:
+                        mainForm.setHeartrate(value.ToString());
+                        break;
 
-                case UpdateType.InstantaniousPower:
-                    //TODO mainForm.set(value.ToString());
-                    break;
+                    case UpdateType.InstantaniousPower:
+                        //TODO mainForm.set(value.ToString());
+                        break;
 
-                case UpdateType.Resistance:
-                    //TODO doctor sends resistance and client doesn't set resitance except vr
-                    break;
+                    case UpdateType.Resistance:
+                        //TODO doctor sends resistance and client doesn't set resitance except vr
+                        break;
 
-                case UpdateType.Speed:
-                    mainForm.setSpeed(value.ToString());
-                    break;
+                    case UpdateType.Speed:
+                        mainForm.setSpeed(value.ToString());
+                        break;
                 }
             }
         }
@@ -304,6 +305,6 @@ namespace DoctorServer
         }
         #endregion
     }
-
-
 }
+
+

@@ -45,7 +45,11 @@ namespace FietsDemo
 
         public void loginSucceeded()
         {
-            this.Hide();
+
+            this.Invoke((MethodInvoker)(() =>
+            {
+                this.Hide();
+            }));
         }
 
      

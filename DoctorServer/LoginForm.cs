@@ -46,7 +46,11 @@ namespace DoctorServer
 
         public void loginSucceeded()
         {
-            this.Hide();
+
+            this.Invoke((MethodInvoker)(() =>
+            {
+                this.Hide();
+            }));
         }
     }
 }

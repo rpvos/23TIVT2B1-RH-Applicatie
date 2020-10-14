@@ -217,16 +217,21 @@ namespace SharedItems
             }
 
             // Listen for more messages 
-                networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
+        /// <summary>
+        /// Method to calculate the length of the message
+        /// </summary>
+        /// <param name="length"> The actual length of the message unencoded</param>
+        /// <returns></returns>
         private int calculateTotalLength(out int length)
         {
             // Get the length that the message should be
             byte[] lengthArray = totalBuffer.GetRange(0, 4).ToArray();
             length = BitConverter.ToInt32(lengthArray, 0);
-            // Make it a multiple of 8
-            return length + (8 - length % 8);
+            // Make it a multiple of 16
+            return length + (16 - length % 16);
         }
 
         #endregion

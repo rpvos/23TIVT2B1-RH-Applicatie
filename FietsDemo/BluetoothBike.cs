@@ -89,7 +89,6 @@ namespace FietsDemo
             this.HeartRateSensor.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
 
             // The second step is to start the simulator and the GUI that comes with it.
-
             if (!isSimulatorRunning)
             {
                 Console.WriteLine("starting simulator...");
@@ -98,7 +97,11 @@ namespace FietsDemo
                 Thread thread = new Thread(startSimulatorGUI);
                 thread.Start();
             }
-    }
+            else
+            {
+                MessageBox.Show("The simulator is already running.", "Close Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
 
         private void startSimulatorGUI()
         {

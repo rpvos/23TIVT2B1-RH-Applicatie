@@ -6,7 +6,6 @@ public class TunnelMessage
 {
 	private string Id;
 	private JObject DataContent;
-	private JObject data;
 
 	public TunnelMessage(JObject dataContent, string id)
 	{
@@ -15,30 +14,27 @@ public class TunnelMessage
 		
 	}
 
-	public string GetMessageId()
-    {
-		return (string) DataContent["id"];
-    }
-
+	//Get a specific data content from a JSON file
 	public JObject GetDataContent()
     {
 		
 		return (JObject) DataContent["data"];
     }
 
-	public override string ToString()
+	//Send data in the correct form to the server
+	public string SendDataPacket(dynamic packet)
 	{
 		dynamic headerData = new
 		{
 			id = "tunnel/send",
 			data = new
-			{		
-				dest = Id,				
-				data = DataContent               
+			{
+				dest = Id,
+				data = packet
 			}
 		};
 
-		string header = JsonConvert.SerializeObject(headerData);		
+		string header = JsonConvert.SerializeObject(headerData);
 		return header;
 	}
 }

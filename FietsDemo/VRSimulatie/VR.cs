@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using System.Timers;
 
 namespace TCP_naar_VR
 {    class TcpClientVR
@@ -18,6 +19,7 @@ namespace TCP_naar_VR
         private Dictionary<string, string> objects;
         private bool receiving;
         private string id, nodeId, camera;
+        private System.Timers.Timer panelUpdateTimer;
         private CallMethod callMethod;
         internal double speed { get; set; }
         internal double heartRate { get; set; }
@@ -33,8 +35,29 @@ namespace TCP_naar_VR
             stream = tcpClient.GetStream();
             callMethod = new CallMethod(this, objects);
             receiving = true;
+            SetTimer();
             Thread receivingTCPDataThread = new Thread(new ThreadStart(Receive));
             receivingTCPDataThread.Start();
+        }
+
+        private void SetTimer()
+        {
+            panelUpdateTimer = new System.Timers.Timer(500);
+            panelUpdateTimer.Elapsed += OnTimedEvent;
+            panelUpdateTimer.AutoReset = true;
+            panelUpdateTimer.Enabled = true;
+        }
+        
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if (objects.ContainsKey("panel"))
+            {
+                callMethod.ClearPanel(objects["panel"]);
+                
+            }
+               
+            this.DT += 2.5;
+            this.elapsedTime += 0.5;
         }
 
         #region KickOff
@@ -110,7 +133,7 @@ namespace TCP_naar_VR
                 string jsonS = Encoding.ASCII.GetString(buffer);
                 JObject json = JObject.Parse(jsonS);
 
-                ReceiveMessage(json);
+                ReceiveMessage(json);               
             }
         }
 
@@ -181,17 +204,17 @@ namespace TCP_naar_VR
 
                             if (this.camera != null)
                             {
-                                callMethod.UpdateNode(this.camera, objects["bike"], new double[] { 0, 0, 0 }, 1.0, new double[] { 0, 90, 0 });
+                                callMethod.UpdateNode(this.camera, objects["bike"], new double[] { -2.8, 0, 0 }, 1.0, new double[] { 0, 90, 0 });
                                 //callMethod.FollowRoute(objects["route"], this.camera, 5, true, new double[] { 0, 7.84, 0 }, new int[] { 0, 0, 0 });
 
                             }
                             if (objects.ContainsKey("panel"))
                             {
-                                callMethod.UpdateNode(objects["panel"], this.camera, new double[] { 0, 1, 0 }, 0.5, new double[] { 0, 0, 0 });
+                                callMethod.UpdateNode(objects["panel"], this.camera, new double[] { 1.5, 1.5, 1 }, 0.5, new double[] { 0, 0, 0 });
                                 //callMethod.FollowRoute(objects["route"], objects["panel"], 5, true, new double[] { 0, 7.84, 0 }, new int[] { 0, 0, 0 });
                             }
                             break;
-                    }
+                    }           
                     break;
 
                 case "scene/get":
@@ -288,7 +311,7 @@ namespace TCP_naar_VR
                
                 callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });    
                 callMethod.AddTerrain();
-                callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { 512, 512 }, new int[] { 1, 1, 1, 1 });
+                callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { (int)(512 * 1)}, new int[] { 1, 1, 1, 1 });
                 callMethod.FindNode("Camera");
                
             }         

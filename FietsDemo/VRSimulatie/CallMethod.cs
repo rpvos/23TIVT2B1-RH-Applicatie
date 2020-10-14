@@ -450,11 +450,16 @@ namespace simulatie
 
         internal void UpdatePanel(string panelId)
         {
-            SetText("Speed in km/h: " + tcpClient.speed.ToString(), panelId, new double[] { 20, 100 }, 30.0);
-            SetText("Heart rate in bpm: " + tcpClient.heartRate.ToString(), panelId, new double[] { 20, 150 }, 30.0);
-            SetText("Distance travelled in meters: " + tcpClient.DT.ToString(), panelId, new double[] { 20, 200 }, 30.0);
-            SetText("Elapsed time in seconds: " + tcpClient.elapsedTime.ToString(), panelId, new double[] { 20, 250 }, 30.0);
-            SetText("Resistance in %: " + tcpClient.resistance.ToString(), panelId, new double[] { 20, 300 }, 30.0);
+            int textSize = 45;
+            int x = 20;
+            
+            SetText("Speed in km/h: " + tcpClient.speed.ToString(), panelId, new double[] { x, 100 }, textSize);
+            SetText("Heart rate in bpm: " + tcpClient.heartRate.ToString(), panelId, new double[] { x, 150 }, textSize);
+            SetText("Distance travelled in meters: ", panelId, new double[] { x, 200 }, textSize);
+            SetText(tcpClient.DT.ToString() + "m", panelId, new double[] { x, 250 }, textSize);
+            SetText("Elapsed time in seconds: ", panelId, new double[] { x, 300 }, textSize);
+            SetText(tcpClient.elapsedTime.ToString() + "s", panelId, new double[] { x, 350 }, textSize);
+            SetText("Resistance in %: " + tcpClient.resistance.ToString(), panelId, new double[] { x, 400 }, textSize);
 
             SwapPanel(panelId);
         }

@@ -52,6 +52,8 @@ namespace Server
             dataBase.Add("aardappel", new User("Piet", "aardappel", "321", Role.Patient));
 
             dataBase.Add("dokter", new User("dokter", "dokter", "123", Role.Doctor));
+            dataBase.Add("dokter2", new User("dokter2", "dokter2", "321", Role.Doctor));
+
         }
 
         #endregion
@@ -93,6 +95,14 @@ namespace Server
 
         #region message methods
 
+        public void addUsersToThisDoctorClient(ServerClient doctorClient)
+        {
+            foreach (ServerClient client in this.clients)
+            {
+                if (client.user.getRole() == Role.Patient)
+                    doctorClient.sendAddUserMessage(client.user.getUsername());
+            }
+        }
         internal void broadcast(string message)
         {
             foreach (ServerClient client in clients)

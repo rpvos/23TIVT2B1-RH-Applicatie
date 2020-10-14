@@ -39,7 +39,7 @@ namespace DoctorServer
 
         public void startLogin()
         {
-
+            this.mainForm = new DoctorForm(this);
             this.login = new Login(this);
             this.login.run();
 
@@ -53,9 +53,9 @@ namespace DoctorServer
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
 
-            this.mainForm = new DoctorForm(this);
+
             //ShowDialog() instead of Application.Run() could affect the working a bit
-            this.mainForm.ShowDialog();
+            this.mainForm.run();
             //Application.Run(mainForm);
         }
 
@@ -98,8 +98,6 @@ namespace DoctorServer
         {
             try
             {
-                Console.WriteLine(packet);
-
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
                     return;
@@ -147,7 +145,13 @@ namespace DoctorServer
         {
 
             string username = (string)data["Username"];
-            this.mainForm.addBike(username);
+            try
+            {
+                this.mainForm.addBike(username);
+            }catch(Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
 
 
         }

@@ -21,6 +21,7 @@ namespace DoctorServer
         public int selectedIndex { get; set; }
         private DoctorClient doctorClient;
         private Dictionary<string, int> usernameAndResistance;
+       
 
         public DoctorForm(DoctorClient doctorClient)
         {
@@ -30,6 +31,11 @@ namespace DoctorServer
             InitializeComponent();
             this.resistanceTextbox.MouseWheel += new MouseEventHandler(changeResistance);
 
+        }
+
+        public void run()
+        {
+            Application.Run(this);
         }
 
 
@@ -94,12 +100,25 @@ namespace DoctorServer
 
         public void addBike(string username)
         {
-
-            BikeListBox.Invoke((MethodInvoker)(() =>
+            try
             {
-                BikeListBox.Items.Add(username);
-                this.usernameAndResistance.Add(username, 0);
-            }));
+                BikeListBox.Invoke((MethodInvoker)(() =>
+                {
+                    if (!this.usernameAndResistance.ContainsKey(username))
+                    {
+                        BikeListBox.Items.Add(username);
+                        this.usernameAndResistance.Add(username, 0);
+                    }
+
+                }));
+            }catch(Exception e)
+            {
+                if (!this.usernameAndResistance.ContainsKey(username))
+                {
+                    BikeListBox.Items.Add(username);
+                    this.usernameAndResistance.Add(username, 0);
+                }
+            }
             
             
         }
@@ -242,6 +261,17 @@ namespace DoctorServer
             setElapsedTime("");
             setSpeed("");
            
+        }
+
+
+        private void startSessionButton_Click(object sender, EventArgs e)
+        {
+
+            if (this.selectedIndex != -1)
+            {
+
+                
+            }
         }
     }
 }

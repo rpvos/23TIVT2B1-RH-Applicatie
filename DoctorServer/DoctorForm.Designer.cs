@@ -51,6 +51,9 @@
             this.GlobalChatBox = new System.Windows.Forms.TextBox();
             this.privSendButton = new System.Windows.Forms.Button();
             this.globalSendButton = new System.Windows.Forms.Button();
+            this.SessionButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // BikeListBox
@@ -287,11 +290,45 @@
             this.globalSendButton.UseVisualStyleBackColor = true;
             this.globalSendButton.Click += new System.EventHandler(this.globalSendButton_Click);
             // 
+            // SessionButton
+            // 
+            this.SessionButton.Font = new System.Drawing.Font("Showcard Gothic", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+            this.SessionButton.Location = new System.Drawing.Point(255, 438);
+            this.SessionButton.Name = "SessionButton";
+            this.SessionButton.Size = new System.Drawing.Size(215, 52);
+            this.SessionButton.TabIndex = 20;
+            this.SessionButton.Text = "Start session";
+            this.SessionButton.UseVisualStyleBackColor = true;
+            this.SessionButton.Click += new System.EventHandler(this.startSessionButton_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label1.Location = new System.Drawing.Point(943, 321);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(122, 30);
+            this.label1.TabIndex = 22;
+            this.label1.Text = "Private chat";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label2.Location = new System.Drawing.Point(1252, 322);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(118, 30);
+            this.label2.TabIndex = 23;
+            this.label2.Text = "Global chat";
+            // 
             // DoctorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1513, 618);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.SessionButton);
             this.Controls.Add(this.globalSendButton);
             this.Controls.Add(this.privSendButton);
             this.Controls.Add(this.GlobalChatBox);
@@ -348,6 +385,9 @@
         private System.Windows.Forms.TextBox GlobalChatBox;
         private System.Windows.Forms.Button privSendButton;
         private System.Windows.Forms.Button globalSendButton;
+        private System.Windows.Forms.Button SessionButton;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }
 

@@ -173,20 +173,22 @@ namespace SharedItems
                 int receivedBytes = networkStream.EndRead(ar);
 
                 // Add the content of the buffer to the total buffer
-                byte[] temp = new byte[receivedBytes];
-                Array.Copy(buffer, 0, temp, 0, receivedBytes);
-                totalBuffer.AddRange(temp);
+                byte[] newMessage = new byte[receivedBytes];
 
-                // Get the length that the message should be
-                byte[] lengthArray = totalBuffer.GetRange(0, 4).ToArray();
-                int length = BitConverter.ToInt32(lengthArray, 0);
-                // Make it a multiple of 8
-                int totalLength = length + (8 - length % 8);
+                // Get the message from the buffer to the newMessage array
+                Array.Copy(buffer, 0, newMessage, 0, receivedBytes);
 
+                // Add the newMessage to the total buffer
+                totalBuffer.AddRange(newMessage);
+
+                // Calculate length and totalLength
+                int length;
+                int totalLength = calculateTotalLength(out length);
 
                 // Check if the message has been received fully by comparing the total buffer to the length that the full message should be
-                if (totalBuffer.Count >= totalLength + 4 && totalLength > 0)
+                while (totalBuffer.Count >= totalLength + 4 && totalLength > 0)
                 {
+
                     // Get the message from the total buffer minus the length (4 bytes)
                     byte[] messageInBytes = totalBuffer.GetRange(4, totalLength).ToArray();
 
@@ -200,7 +202,12 @@ namespace SharedItems
                     handleMethod(message);
 
                     // Remove the message from the total buffer
-                    totalBuffer.RemoveRange(0, length + 4);
+                    totalBuffer.RemoveRange(0, totalLength + 4);
+
+                    // If the buffer contains more then 4 bytes there can be a next message
+                    if (totalBuffer.Count > 4)
+                        // Calculate length and totalLength with new message
+                        totalLength = calculateTotalLength(out length);
                 }
             }
             catch (IOException)
@@ -209,8 +216,17 @@ namespace SharedItems
                 return;
             }
 
-            // Listen for more messages
-            networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            // Listen for more messages 
+                networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+        }
+
+        private int calculateTotalLength(out int length)
+        {
+            // Get the length that the message should be
+            byte[] lengthArray = totalBuffer.GetRange(0, 4).ToArray();
+            length = BitConverter.ToInt32(lengthArray, 0);
+            // Make it a multiple of 8
+            return length + (8 - length % 8);
         }
 
         #endregion

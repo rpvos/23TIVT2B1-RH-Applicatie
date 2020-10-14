@@ -17,7 +17,7 @@ namespace TCP_naar_VR
         private TcpClient tcpClient;
         private Dictionary<string, string> objects;
         private bool receiving;
-        private string id, uuid, camera;
+        private string id, nodeId, camera;
         private CallMethod callMethod;
         internal double speed { get; set; }
         internal double heartRate { get; set; }
@@ -142,12 +142,9 @@ namespace TCP_naar_VR
             JObject data = (JObject)tempdata["data"];
 
             Console.WriteLine(data);
-
-            //TODO make a switch case!
-            if ((string)data["id"] == "scene/node/add")
+            switch ((string)data["id"])
             {
-                if ((string)data["status"] == "ok")
-                {
+                case "scene/node/add":
                     JObject data2 = (JObject)data["data"];
                     string name = (string)data2["name"];
                     string uuid = (string)data2["uuid"];
@@ -164,64 +161,54 @@ namespace TCP_naar_VR
                     }
 
                     Console.WriteLine("Added node to dictionary\nName: {0}\nuuid: {1}", name, uuid);
+                    switch (name)
+                    {
+                        case "ground":
+                            callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid, 0, 10, 1);
+                            break;
 
-                    //TODO make this a switch case
-                    if (name == "ground")
-                    {
-                        callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid, 0, 10, 1);
-                    }
-                    if (name == "tree")
-                    {
-                        callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_07.png", "", uuid, 0, 10, 1);
-                    }
-                    //If name equals to "panel", clear the panel for first use
-                    if (name == "panel")
-                    {
-                        callMethod.ClearPanel(uuid);
-                    }
-                    if(name == "bike")
-                    {
-                        Console.WriteLine("ROUTE UUID TO FOLLOW: " + objects["route"]);
-                        callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new double[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
-                        if(this.camera != null)
-                        {
-                            callMethod.FollowRoute(objects["route"], this.camera, 5, true, new double[] { 0, 7.84 , 0 }, new int[] { 0, 0, 0 });
-                        }
-                        if (objects.ContainsKey("panel"))
-                        {
-                            callMethod.FollowRoute(objects["route"], objects["panel"], 5, true, new double[] { 0, 7.84 , 0 }, new int[] { 0, 0, 0 });
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
-                }
-            }
-            //Get scene, if scene found then reset the scene
-            else if ((string)data["id"] == "scene/get")
-            {
-                 Console.WriteLine("GOT A SCENE");
-                 Console.WriteLine("Get scene status: " + data["status"]);
-                 //callMethod.ResetScene();
+                        case "tree":
+                            callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_07.png", "", uuid, 0, 10, 1);
+                            break;
 
-            }
-            //If the scene is reset, find the groundplane node
-            else if((string)data["id"] == "scene/reset")
-            {
-                callMethod.FindNode("GroundPlane");
-            }
-            //If a route is correctly added, add objects to the VR scene
-            else if ((string)data["id"] == "route/add")
-            {
-                if ((string)data["status"] == "ok")
-                {
-                    JObject data2 = (JObject)data["data"];
-                    string name = "route";
-                    string uuid = (string)data2["uuid"];
+                        case "panel":
+                            callMethod.ClearPanel(uuid);
+                            break;
+
+                        case "bike":
+                            Console.WriteLine("ROUTE UUID TO FOLLOW: " + objects["route"]);
+                            callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new double[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
+
+                            if (this.camera != null)
+                            {
+                                callMethod.FollowRoute(objects["route"], this.camera, 5, true, new double[] { 0, 7.84, 0 }, new int[] { 0, 0, 0 });
+
+                            }
+                            if (objects.ContainsKey("panel"))
+                            {
+                                callMethod.FollowRoute(objects["route"], objects["panel"], 5, true, new double[] { 0, 7.84, 0 }, new int[] { 0, 0, 0 });
+                            }
+                            break;
+                    }
+                    break;
+
+                case "scene/get":
+                    Console.WriteLine("GOT A SCENE");
+                    Console.WriteLine("Get scene status: " + data["status"]);
+                    //callMethod.ResetScene();
+                    break;
+
+                case "scene/reset":
+                    callMethod.FindNode("GroundPlane");
+                    break;
+
+                case "route/add":
+                    JObject routeData = (JObject)data["data"];
+                    string routeName = "route";
+                    string routeId = (string)routeData["uuid"];
                     try
                     {
-                        objects.Add(name, uuid);
+                        objects.Add(routeName, routeId);
                     }
                     catch (ArgumentException e)
                     {
@@ -229,31 +216,18 @@ namespace TCP_naar_VR
                     }
 
                     //Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
-                    callMethod.AddRoad("data/NetworkEngine/textures/tarmac_normal.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", uuid);
-                }
-                else
-                {
-                    Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
-                }
-            }
-            else if ((string)data["id"] == "scene/node/update")
-            {
-                Console.WriteLine();
-            }
+                    callMethod.AddRoad("data/NetworkEngine/textures/tarmac_normal.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", routeId);
+                    break;
 
-            //If the textures are loaded correctly, set a new route
-            else if ((string)data["id"] == "scene/node/addlayer")
-            {
-                if ((string)data["status"] == "ok")
-                {
+                case "scene/node/update":
+                    Console.WriteLine();
+                    break;
+
+                case "scene/node/addlayer":
                     SetRoute();
-                }
-            }
-            //If a road was added correctly, add random tree objects
-            else if ((string)data["id"] == "scene/road/add")
-            {
-                if ((string)data["status"] == "ok")
-                {
+                    break;
+
+                case "scene/road/add":
                     //Add 10 trees on random positions
                     Random random = new Random();
                     for (int i = 0; i < 10; i++)
@@ -266,50 +240,100 @@ namespace TCP_naar_VR
                     }
 
                     callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "data/NetworkEngine/models/bike/bike_anim.fbx");
-                }
-            }
-            //If the panel was cleared correctly, then add text on the panel
-            else if ((string)data["id"] == "scene/panel/clear")
-            {
-                Console.WriteLine("GOT THROUGH THE CLEARING PANEL RETURN STATUS");
-                callMethod.SetText("Welcome", objects["panel"], new double[] { 20, 50 }, 30.0);
+                    break;
 
-                string speedValue = this.speed.ToString();
-                string heartRateValue = this.heartRate.ToString();
-                string distanceTravelled = this.DT.ToString();
-                string elapsedTime = this.elapsedTime.ToString();
-                string resistance = this.resistance.ToString();
+                case "scene/panel/clear":
+                    Console.WriteLine("GOT THROUGH THE CLEARING PANEL RETURN STATUS");
+                    callMethod.SetText("Welcome", objects["panel"], new double[] { 20, 50 }, 30.0);
+                    callMethod.UpdatePanel(objects["panel"]);
+                    break;
 
-                callMethod.SetText("Speed in km/h: " + speedValue, objects["panel"], new double[] { 20, 100 }, 30.0);
-                callMethod.SetText("Heart rate in bpm: " + heartRateValue, objects["panel"], new double[] { 20, 150 }, 30.0);
-                callMethod.SetText("Distance travelled in meters: " + distanceTravelled, objects["panel"], new double[] { 20, 200 }, 30.0);
-                callMethod.SetText("Elapsed time in seconds: " + elapsedTime, objects["panel"], new double[] { 20, 250 }, 30.0);
-                callMethod.SetText("Resistance in %: " + resistance, objects["panel"], new double[] { 20, 300 }, 30.0);
-
-                callMethod.SwapPanel(objects["panel"]);
-            }
-            //If the node was found correctly,and if it was the groundplane node, then delete it
-            else if ((string)data["id"] == "scene/node/find")
-            {
-                if ((string)data["status"] == "ok")
-                {
+                case "scene/node/find":
                     JArray nodeData = (JArray)data["data"];
 
-                    uuid = nodeData[0]["uuid"].ToString();
-                    string name = nodeData[0]["name"].ToString();
-                    Console.WriteLine("UUID found: " + uuid);
+                    nodeId = nodeData[0]["uuid"].ToString();
+                    string nodeName = nodeData[0]["name"].ToString();
+                    Console.WriteLine("UUID found: " + nodeId);
 
-                    if (name == "GroundPlane")
+                    if (nodeName == "GroundPlane")
                     {
-                        callMethod.DeleteNode(uuid);
+                        callMethod.DeleteNode(nodeId);
                     }
-                    if (name == "Camera")
+                    if (nodeName == "Camera")
                     {
-                        this.camera = uuid;
-                        
+                        this.camera = nodeId;
                     }
-                }
-            }        
+                    break;
+            }
+
+            ////TODO make a switch case!
+            //if ((string)data["id"] == "scene/node/add")
+            //{
+            //    if ((string)data["status"] == "ok")
+            //    {
+                    
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
+            //    }
+            //}
+            ////Get scene, if scene found then reset the scene
+            //else if ((string)data["id"] == "scene/get")
+            //{
+                
+
+            //}
+            ////If the scene is reset, find the groundplane node
+            //else if((string)data["id"] == "scene/reset")
+            //{
+                
+            //}
+            ////If a route is correctly added, add objects to the VR scene
+            //else if ((string)data["id"] == "route/add")
+            //{
+            //    if ((string)data["status"] == "ok")
+            //    {
+                    
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("Error when adding node: {0}", (string)data["status"]);
+            //    }
+            //}
+            //else if ((string)data["id"] == "scene/node/update")
+            //{
+            //    Console.WriteLine();
+            //}
+
+            ////If the textures are loaded correctly, set a new route
+            //else if ((string)data["id"] == "scene/node/addlayer")
+            //{
+            //    if ((string)data["status"] == "ok")
+            //    {
+            //    }
+            //}
+            ////If a road was added correctly, add random tree objects
+            //else if ((string)data["id"] == "scene/road/add")
+            //{
+            //    if ((string)data["status"] == "ok")
+            //    {
+                    
+            //    }
+            //}
+            ////If the panel was cleared correctly, then add text on the panel
+            //else if ((string)data["id"] == "scene/panel/clear")
+            //{
+                
+            //}
+            ////If the node was found correctly,and if it was the groundplane node, then delete it
+            //else if ((string)data["id"] == "scene/node/find")
+            //{
+            //    if ((string)data["status"] == "ok")
+            //    {
+                    
+            //    }
+            //}        
         }
         #endregion
 
@@ -328,10 +352,10 @@ namespace TCP_naar_VR
                 this.id = id;
                 //callMethod.GetScene();
                 //callMethod.SetTime(12);
-                
+               
                 callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });    
                 callMethod.AddTerrain();
-                callMethod.AddPanelNode("panel", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new int[] { 1, 1, 1, 1 });
+                callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new int[] { 1, 1 }, new int[] { 512, 512 }, new int[] { 1, 1, 1, 1 });
                 callMethod.FindNode("Camera");
                
             }         

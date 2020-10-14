@@ -13,13 +13,13 @@ namespace simulatie
     class CallMethod
     {
         private TcpClientVR tcpClient;
-        private Dictionary<string, string> objects;
+        private Dictionary<string, string> panelId;
         private ArrayList routePoints;
 
         public CallMethod(TcpClientVR tcpClient, Dictionary<string, string> objects)
         {
             this.tcpClient = tcpClient;
-            this.objects = objects;
+            this.panelId = objects;
             this.routePoints = new ArrayList();
         }
 
@@ -151,7 +151,7 @@ namespace simulatie
         }
 
         //Add a panel to the VR scene
-        internal void AddPanelNode(string nodeName, int[] pos, int[] rot, int[] panelSize, int[] res, int[] backgrColor)
+        internal void AddPanelNode(string nodeName, double[] pos, double[] rot, int[] panelSize, int[] res, int[] backgrColor)
         {
             TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
             
@@ -163,7 +163,7 @@ namespace simulatie
                     name = nodeName,
                     components = new
                     {
-                        transforms = new
+                        transform = new
                         {
                             position = pos,
                             scale = 1,
@@ -419,6 +419,7 @@ namespace simulatie
                 }
             };
 
+            Console.WriteLine(followRouteMessage.SendDataPacket(payloadData));
             tcpClient.SendMessage(followRouteMessage.SendDataPacket(payloadData));          
         }
         #endregion
@@ -479,6 +480,17 @@ namespace simulatie
             };
 
             tcpClient.SendMessage(swapPanelMessage.SendDataPacket(payloadData));
+        }
+
+        internal void UpdatePanel(string panelId)
+        {
+            SetText("Speed in km/h: " + tcpClient.speed.ToString(), panelId, new double[] { 20, 100 }, 30.0);
+            SetText("Heart rate in bpm: " + tcpClient.heartRate.ToString(), panelId, new double[] { 20, 150 }, 30.0);
+            SetText("Distance travelled in meters: " + tcpClient.DT.ToString(), panelId, new double[] { 20, 200 }, 30.0);
+            SetText("Elapsed time in seconds: " + tcpClient.elapsedTime.ToString(), panelId, new double[] { 20, 250 }, 30.0);
+            SetText("Resistance in %: " + tcpClient.resistance.ToString(), panelId, new double[] { 20, 300 }, 30.0);
+
+            SwapPanel(panelId);
         }
         #endregion
     }

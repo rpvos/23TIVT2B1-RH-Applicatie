@@ -153,12 +153,13 @@ namespace SharedItems
             byte[] lengthMessage = BitConverter.GetBytes(message.Length);
 
 
-            //send the message length
-            networkStream.Write(lengthMessage, 0, lengthMessage.Length);
-            networkStream.Flush();
+            byte[] fullMessage = new byte[dataAsBytes.Length + lengthMessage.Length];
+            Array.Copy(lengthMessage, fullMessage, lengthMessage.Length);
+            Array.Copy(dataAsBytes,0, fullMessage,lengthMessage.Length, dataAsBytes.Length);
 
+       
             //send the message
-            networkStream.Write(dataAsBytes, 0, dataAsBytes.Length);
+            networkStream.Write(fullMessage, 0, fullMessage.Length);
             networkStream.Flush();
         }
 
@@ -182,8 +183,10 @@ namespace SharedItems
                 totalBuffer.AddRange(newMessage);
 
                 // Calculate length and totalLength
-                int length;
-                int totalLength = calculateTotalLength(out length);
+                int length = 0;
+                int totalLength = 0;
+                if (totalBuffer.Count > 4)
+                    totalLength = calculateTotalLength(out length);
 
                 // Check if the message has been received fully by comparing the total buffer to the length that the full message should be
                 while (totalBuffer.Count >= totalLength + 4 && totalLength > 0)
@@ -195,8 +198,10 @@ namespace SharedItems
                     // Decypher the message
                     string message = DecryptStringFromBytes(messageInBytes);
 
-                    // cut out the encoded extra characters
-                    message = message.Substring(0, length);
+                    // cut out the encoded extra characters                  
+                        if (length != totalLength)
+                            message = message.Substring(0, length);
+                   
 
                     // Handle the message
                     handleMethod(message);
@@ -205,8 +210,9 @@ namespace SharedItems
                     totalBuffer.RemoveRange(0, totalLength + 4);
 
                     // If the buffer contains more then 4 bytes there can be a next message
+
+                    // Calculate length and totalLength with new message
                     if (totalBuffer.Count > 4)
-                        // Calculate length and totalLength with new message
                         totalLength = calculateTotalLength(out length);
                 }
             }
@@ -228,6 +234,7 @@ namespace SharedItems
         private int calculateTotalLength(out int length)
         {
             // Get the length that the message should be
+     
             byte[] lengthArray = totalBuffer.GetRange(0, 4).ToArray();
             length = BitConverter.ToInt32(lengthArray, 0);
             // Make it a multiple of 16

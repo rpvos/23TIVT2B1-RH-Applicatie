@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace DoctorApplication
+namespace DoctorServer
 {
     public partial class DoctorForm : Form
     {
@@ -20,9 +20,11 @@ namespace DoctorApplication
         public string selectedBike { get; set; }
         public int selectedIndex { get; set; }
         private DoctorClient doctorClient;
+        private Dictionary<string, int> usernameAndResistance;
 
         public DoctorForm(DoctorClient doctorClient)
         {
+            this.usernameAndResistance = new Dictionary<string, int>();
             this.doctorClient = doctorClient;
             this.selectedIndex = -1;
             InitializeComponent();
@@ -73,10 +75,21 @@ namespace DoctorApplication
 
         public void setElapsedTime(string elapsedTime)
         {
-            ElapsedTimeValue.Invoke((MethodInvoker)(() =>
+            if (!elapsedTime.Equals(""))
             {
-                this.ElapsedTimeValue.Text = elapsedTime;
-            }));
+                TimeSpan time = TimeSpan.FromSeconds(double.Parse(elapsedTime));
+                ElapsedTimeValue.Invoke((MethodInvoker)(() =>
+                {
+                    this.ElapsedTimeValue.Text = time.ToString(@"hh\:mm\:ss");
+                }));
+            }
+            else
+            {
+                ElapsedTimeValue.Invoke((MethodInvoker)(() =>
+                {
+                    this.ElapsedTimeValue.Text = elapsedTime;
+                }));
+            }
         }
 
         public void addBike(string username)
@@ -85,6 +98,7 @@ namespace DoctorApplication
             BikeListBox.Invoke((MethodInvoker)(() =>
             {
                 BikeListBox.Items.Add(username);
+                this.usernameAndResistance.Add(username, 0);
             }));
             
             
@@ -111,7 +125,8 @@ namespace DoctorApplication
 
                 if (this.selectedIndex != -1)
                 {
-                    //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                    this.doctorClient.sendResistance(i + "", this.selectedBike);
+                    this.usernameAndResistance[selectedBike] = i;
                 }
             }
             else if (e.Delta < 0)
@@ -126,7 +141,8 @@ namespace DoctorApplication
 
                 if (this.selectedIndex != -1)
                 {
-                    //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                    this.doctorClient.sendResistance(i+"", this.selectedBike);
+                    this.usernameAndResistance[selectedBike] = i;
 
                 }
 
@@ -147,7 +163,8 @@ namespace DoctorApplication
 
             if (this.selectedIndex != -1)
             {
-                //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
+                this.doctorClient.sendResistance(i + "", this.selectedBike);
+                this.usernameAndResistance[selectedBike] = i;
 
             }
 
@@ -165,15 +182,10 @@ namespace DoctorApplication
 
             if (this.selectedIndex != -1)
             {
-                //this.doctorClient.WriteTextMessageToServer("RSTE" + selectedBike.ID + i);
 
+                this.doctorClient.sendResistance(i + "", this.selectedBike);
+                this.usernameAndResistance[selectedBike] = i;
             }
-        }
-
-        private void privateChat_SelectedIndexChanged(object sender, EventArgs e)
-        {
-          
-
         }
 
 
@@ -181,21 +193,55 @@ namespace DoctorApplication
         {
             if (this.selectedIndex != -1 && PrivateChatBox.Text != "") 
             {
-         
+                PrivateChat.Items.Add(PrivateChatBox.Text);
+                this.doctorClient.sendPrivMessage(PrivateChatBox.Text,selectedBike);
+                PrivateChatBox.Text = "";
+
 
             }
         }
 
         private void globalSendButton_Click(object sender, EventArgs e)
         {
-            
+            if (GlobalChatBox.Text != "")
+            {
+                GlobalChat.Items.Add(GlobalChatBox.Text);
+                this.doctorClient.sendGlobalChatMessage(GlobalChatBox.Text);
+                GlobalChatBox.Text = "";
+
+            }
         }
 
         private void BikeListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.selectedBike = (string)BikeListBox.SelectedItem;
-            this.selectedIndex = BikeListBox.SelectedIndex;
-            Console.WriteLine(selectedBike);
+            try
+            {
+                this.selectedBike = (string)BikeListBox.SelectedItem;
+                doctorClient.selectedUsername = (string)BikeListBox.SelectedItem;
+
+                this.selectedIndex = BikeListBox.SelectedIndex;
+
+                this.resistanceTextbox.Text = usernameAndResistance[selectedBike] + "";
+
+
+
+                setAllToEmpty();
+            }
+            catch(Exception f) {
+                Console.WriteLine(f.Message);
+            }
+
+
+        }
+
+        private void setAllToEmpty()
+        {
+            setAP("");
+            setHeartrate("");
+            setDT("");
+            setElapsedTime("");
+            setSpeed("");
+           
         }
     }
 }

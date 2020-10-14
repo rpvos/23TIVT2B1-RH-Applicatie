@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FietsDemo
@@ -13,17 +14,21 @@ namespace FietsDemo
     public class UserClient
     {
         private TcpClient server;
+        private NetworkStream stream;
+        private BluetoothBike bluetoothBike;
 
         private Crypto crypto;
+        private string username;
 
-
-        public UserClient()
+        public UserClient(string username, string password, BluetoothBike bluetoothBike)
         {
+            this.username = username;
+            this.bluetoothBike = bluetoothBike;
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.crypto = new Crypto(server.GetStream(),handleData);
 
-            WriteTextMessage(getUserDetailsMessageString("stoeptegel", "123"));
+            WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
         private void WriteTextMessage(string message)
@@ -43,6 +48,8 @@ namespace FietsDemo
                 JObject data = (JObject)json["Data"];
                 string type = json["Type"].ToString();
 
+                Console.WriteLine(type);
+
 
 
                 switch (type)
@@ -51,13 +58,29 @@ namespace FietsDemo
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
+                            Thread startThread = new Thread(start);
+                            startThread.Start();
+                            this.bluetoothBike.loginSucceeded();
+                            
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
+                            this.bluetoothBike.loginFailed();
+                            disconnect();
                         }
                         break;
 
+                    case "globalmessage":
+                        AddChatMessage(data);
+                            break;
+
+                    case "Resistance":
+                        setResistance(data);
+                        break;
+                    case "message":
+                            AddChatMessage(data);
+                        break;
                     default:
                         Console.WriteLine("Invalid type");
                         break;
@@ -68,6 +91,25 @@ namespace FietsDemo
                 Console.WriteLine(packet);
                 Console.WriteLine("Invalid message");
             }
+        }
+
+        public void start()
+        {
+            this.bluetoothBike.start();
+        }
+
+        private void AddChatMessage(JObject data)
+        {
+            string message = (string)data["Message"];
+            this.bluetoothBike.gui.addTextMessage("Doctor: "+message);
+
+        }
+
+        private void setResistance(JObject data)
+        {
+            string resistance = (string)data["Resistance"];
+            int res = Int32.Parse(resistance);
+            this.bluetoothBike.setResistance(res);
         }
 
         private bool handleUserCredentialsResponse(JObject data)
@@ -84,6 +126,12 @@ namespace FietsDemo
             foreach (byte b in data)
                 checksum ^= b;
             return checksum == 0;
+        }
+
+        public void disconnect()
+        {
+            this.server.Close();
+            this.stream.Close();
         }
         #endregion
 
@@ -128,12 +176,14 @@ namespace FietsDemo
 
             return getJsonObject("userCredentials", data);
         }
+
+
         private string getUpdateMessageString(UpdateType updateType, double value)
         {
             dynamic data = new
             {
                 UpdateType = updateType.ToString(),
-                Value = value
+                Value = value,
             };
 
             return getJsonObject("update", data);

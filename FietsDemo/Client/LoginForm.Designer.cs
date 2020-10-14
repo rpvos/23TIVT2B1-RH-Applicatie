@@ -34,6 +34,7 @@
             this.PasswordTextbox = new System.Windows.Forms.TextBox();
             this.ExitButton = new System.Windows.Forms.Button();
             this.LoginButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -92,11 +93,22 @@
             this.LoginButton.UseVisualStyleBackColor = true;
             this.LoginButton.Click += new System.EventHandler(this.ButtonLogin_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Monsters Attack!", 9.749999F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(98, 9);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(118, 26);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Patient login";
+            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(319, 188);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.LoginButton);
             this.Controls.Add(this.ExitButton);
             this.Controls.Add(this.PasswordTextbox);
@@ -118,5 +130,6 @@
         private System.Windows.Forms.TextBox PasswordTextbox;
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.Button LoginButton;
+        private System.Windows.Forms.Label label3;
     }
 }

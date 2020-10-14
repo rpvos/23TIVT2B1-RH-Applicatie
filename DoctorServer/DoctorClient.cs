@@ -114,7 +114,14 @@ namespace DoctorServer
                 totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n") + 4);
                 handleData(packet);
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            try
+            {
+                stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            }
+            catch
+            {
+
+            }
         }
         #endregion
 

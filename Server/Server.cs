@@ -77,8 +77,12 @@ namespace Server
         internal User checkUser(string username, string password)
         {
             if (dataBase.ContainsKey(username))
-                if (dataBase[username].checkPassword(password))
+                if (dataBase[username].checkPassword(password) && dataBase[username].loggedIn == false)
+                {
+                    dataBase[username].loggedIn = true;
                     return dataBase[username];
+                }
+
 
             return null;
         }

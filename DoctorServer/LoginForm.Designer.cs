@@ -34,6 +34,7 @@
             this.PasswordTextbox = new System.Windows.Forms.TextBox();
             this.ExitButton = new System.Windows.Forms.Button();
             this.LoginButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -98,11 +99,22 @@
             this.LoginButton.UseVisualStyleBackColor = true;
             this.LoginButton.Click += new System.EventHandler(this.ButtonLogin_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Demonized", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+            this.label3.Location = new System.Drawing.Point(123, 9);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(141, 23);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "Doctor login";
+            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(372, 217);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.LoginButton);
             this.Controls.Add(this.ExitButton);
             this.Controls.Add(this.PasswordTextbox);
@@ -125,5 +137,6 @@
         private System.Windows.Forms.TextBox PasswordTextbox;
         private System.Windows.Forms.Button ExitButton;
         private System.Windows.Forms.Button LoginButton;
+        private System.Windows.Forms.Label label3;
     }
 }

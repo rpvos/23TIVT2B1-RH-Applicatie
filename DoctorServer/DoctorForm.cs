@@ -20,9 +20,11 @@ namespace DoctorServer
         public string selectedBike { get; set; }
         public int selectedIndex { get; set; }
         private DoctorClient doctorClient;
+        private Dictionary<string, int> usernameAndResistance;
 
         public DoctorForm(DoctorClient doctorClient)
         {
+            this.usernameAndResistance = new Dictionary<string, int>();
             this.doctorClient = doctorClient;
             this.selectedIndex = -1;
             InitializeComponent();
@@ -96,6 +98,7 @@ namespace DoctorServer
             BikeListBox.Invoke((MethodInvoker)(() =>
             {
                 BikeListBox.Items.Add(username);
+                this.usernameAndResistance.Add(username, 0);
             }));
             
             
@@ -123,6 +126,7 @@ namespace DoctorServer
                 if (this.selectedIndex != -1)
                 {
                     this.doctorClient.sendResistance(i + "", this.selectedBike);
+                    this.usernameAndResistance[selectedBike] = i;
                 }
             }
             else if (e.Delta < 0)
@@ -138,7 +142,7 @@ namespace DoctorServer
                 if (this.selectedIndex != -1)
                 {
                     this.doctorClient.sendResistance(i+"", this.selectedBike);
-
+                    this.usernameAndResistance[selectedBike] = i;
 
                 }
 
@@ -160,7 +164,7 @@ namespace DoctorServer
             if (this.selectedIndex != -1)
             {
                 this.doctorClient.sendResistance(i + "", this.selectedBike);
-
+                this.usernameAndResistance[selectedBike] = i;
 
             }
 
@@ -180,14 +184,8 @@ namespace DoctorServer
             {
 
                 this.doctorClient.sendResistance(i + "", this.selectedBike);
-
+                this.usernameAndResistance[selectedBike] = i;
             }
-        }
-
-        private void privateChat_SelectedIndexChanged(object sender, EventArgs e)
-        {
-          
-
         }
 
 
@@ -220,6 +218,10 @@ namespace DoctorServer
             doctorClient.selectedUsername = (string)BikeListBox.SelectedItem;
 
             this.selectedIndex = BikeListBox.SelectedIndex;
+
+            this.resistanceTextbox.Text = usernameAndResistance[selectedBike] + "";
+
+
 
             setAllToEmpty();
 

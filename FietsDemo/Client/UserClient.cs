@@ -37,6 +37,7 @@ namespace FietsDemo
         }
 
 
+
         #region handle recieved data
         private void handleData(string packet)
         {
@@ -68,7 +69,7 @@ namespace FietsDemo
                         {
                             Console.WriteLine("Login failed");
                             this.bluetoothBike.loginFailed();
-                            disconnect();
+                            
                         }
                         break;
 
@@ -131,9 +132,22 @@ namespace FietsDemo
 
         public void disconnect()
         {
+            WriteTextMessage(getDisconnectString(this.username));
+            this.server.GetStream().Close();
             this.server.Close();
             this.stream.Close();
         }
+
+        private string getDisconnectString(string username)
+        {
+            dynamic data = new
+            {
+                Username = username
+            };
+
+            return getJsonObject("disconnect", data);
+        }
+
         #endregion
 
         #region send handlers
@@ -144,6 +158,7 @@ namespace FietsDemo
 
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
+
 
         public void sendPrivateMessage(string message)
         {

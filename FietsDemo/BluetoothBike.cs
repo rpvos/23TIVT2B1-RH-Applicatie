@@ -86,11 +86,13 @@ namespace FietsDemo
 
         public void startClient(string username, string password)
         {
-            Thread clientThread = new Thread(() =>
-            {
-                this.client = new UserClient(username, password,this);
-            });
-            clientThread.Start();
+            this.client = new UserClient(username, password, this);
+
+            //Thread clientThread = new Thread(() =>
+            //{
+            //    this.client = new UserClient(username, password,this);
+            //});
+            //clientThread.Start();
         }
 
         public void loginFailed()
@@ -157,6 +159,11 @@ namespace FietsDemo
         {
             this.gui = new GUI(this);
             this.gui.run();
+        }
+
+        public void disconnect()
+        {
+            this.client.disconnect();
         }
 
         public async Task initialize()

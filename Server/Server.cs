@@ -63,28 +63,39 @@ namespace Server
         private void OnConnect(IAsyncResult ar)
         {
             var tcpClient = listener.EndAcceptTcpClient(ar);
-            Console.WriteLine($"Client connected from {tcpClient.Client.RemoteEndPoint}");
+            Console.WriteLine($"Client connected from {tcpClient.Client.RemoteEndPoint}");         
 
             lock (clients)
             {
                 clients.Add(new ServerClient(tcpClient, this));
+                Console.WriteLine(this.clients.Count);
+
             }
 
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
         }
 
-        public void RemoveThisClient(ServerClient client)
-        {
-            this.clients.Remove(client);
-        }
 
         internal void Disconnect(ServerClient client)
         {
-            lock (clients)
+            bool added = true;
+            while (added)
             {
-                clients.Remove(client);
+                if (clients.Contains(client))
+                {
+                    lock (clients)
+                    {
+                        clients.Remove(client);
+                    }
+                    if (this.usernameAndResistance.ContainsKey(client.user.getUsername()))
+                    {
+                        this.usernameAndResistance.Remove(client.user.getUsername());
+                    }
+                    added = false;
+                    Console.WriteLine("Client disconnected");
+                }
+
             }
-            Console.WriteLine("Client disconnected");
         }
 
         internal User checkUser(string username, string password)
@@ -175,6 +186,25 @@ namespace Server
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
             this.usernameAndResistance[username] = resistance;
+        }
+
+        public void disconnectClient(JObject data)
+        {
+            string username = (string)data["Username"];
+            int index = -1;
+            
+           foreach (ServerClient client in this.clients)
+           {
+              index++;
+              if (client.user.getUsername() == username)
+              {
+                    break;
+              }
+           }
+            this.clients[index].Disconnect();
+
+            
+
         }
 
         public void sendPrivMessage(JObject data)

@@ -72,12 +72,13 @@
             // 
             this.ExitButton.BackColor = System.Drawing.Color.LightGray;
             this.ExitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.ExitButton.Location = new System.Drawing.Point(1252, 621);
+            this.ExitButton.Location = new System.Drawing.Point(1384, 571);
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(122, 40);
             this.ExitButton.TabIndex = 8;
             this.ExitButton.Text = "EXIT";
             this.ExitButton.UseVisualStyleBackColor = false;
+            this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click_1);
             // 
             // Speed
             // 
@@ -341,7 +342,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1513, 618);
+            this.ClientSize = new System.Drawing.Size(1513, 619);
             this.Controls.Add(this.EmergencyStopButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);

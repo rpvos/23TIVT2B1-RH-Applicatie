@@ -23,6 +23,8 @@ namespace DoctorServer
         private byte[] buffer;
         private string totalBuffer;
 
+        private string username;
+
         private Login login;
         public string selectedUsername { get; set; }
 
@@ -63,6 +65,7 @@ namespace DoctorServer
 
         public void startClient(string username, string password)
         {
+            this.username = username;
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.buffer = new byte[1024];
@@ -152,6 +155,11 @@ namespace DoctorServer
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
             this.mainForm.setResistance(resistance, username);
+        }
+
+        public void disconnect()
+        {
+            WriteTextMessage(getDisconnectString(this.username));
         }
 
         private void addMessage(JObject data)
@@ -258,7 +266,7 @@ namespace DoctorServer
             return getJsonObject("message", data);
         }
 
-        private string getResistanceString(string resistance, String username)
+        private string getResistanceString(string resistance, string username)
         {
             dynamic data = new
             {
@@ -269,7 +277,17 @@ namespace DoctorServer
             return getJsonObject("resistance", data);
         }
 
-        private string getPrivMessageString(string message, String username)
+        private string getDisconnectString(string username)
+        {
+            dynamic data = new
+            {
+                Username = username
+            };
+
+            return getJsonObject("disconnect", data);
+        }
+
+        private string getPrivMessageString(string message, string username)
         {
             dynamic data = new
             {

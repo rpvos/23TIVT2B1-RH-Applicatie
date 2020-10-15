@@ -23,7 +23,8 @@ namespace DoctorServer
 
         private void ButtonLogin_Click(object sender, EventArgs e)
         {
-            this.doctorClient.startClient(UsernameTextbox.Text, PasswordTextbox.Text);
+            if (UsernameTextbox.Text != "" && PasswordTextbox.Text != "")
+                this.doctorClient.startClient(UsernameTextbox.Text, PasswordTextbox.Text);
 
         }
 

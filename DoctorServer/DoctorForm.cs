@@ -357,5 +357,11 @@ namespace DoctorServer
 
             }
         }
+
+        private void ExitButton_Click_1(object sender, EventArgs e)
+        {
+            this.doctorClient.disconnect();
+            Application.Exit();
+        }
     }
 }

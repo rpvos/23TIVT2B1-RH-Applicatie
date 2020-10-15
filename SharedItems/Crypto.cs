@@ -37,7 +37,9 @@ namespace SharedItems
             this.key = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
             this.iV = new byte[] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16 };
 
+         
             networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+           
         }
 
         /// <summary>
@@ -223,7 +225,13 @@ namespace SharedItems
             }
 
             // Listen for more messages 
-            networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            try
+            {
+                networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            }catch(Exception e)
+            {
+                Console.WriteLine("A client disconnected");
+            }
         }
 
         /// <summary>

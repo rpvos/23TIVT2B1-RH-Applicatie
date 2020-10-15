@@ -33,7 +33,6 @@ namespace Server
             this.buffer = new byte[1024];
             this.crypto = new Crypto(client.GetStream(),handleData);
 
-
             this.logger = new StringBuilder();
         }
 
@@ -41,9 +40,22 @@ namespace Server
 
         public void WriteTextMessage(string message)
         {
-            logger.Append("\nServer:\n" + message);
+            try
+            {
+                logger.Append("\nServer:\n" + message);
 
-            crypto.WriteTextMessage(message);
+                crypto.WriteTextMessage(message);
+            }catch(Exception e)
+            {
+                Console.WriteLine("Could not send message");
+            }
+        }
+
+        public void Disconnect()
+        {
+            this.server.Disconnect(this);
+            this.client.GetStream().Close();
+            this.client.Close();            
         }
 
         private void log()
@@ -102,6 +114,10 @@ namespace Server
                         break;
                     case "privateMessageToDoctor":
                         this.server.sendPrivateMessageToDoctors(data);
+                        break;
+                    case "disconnect":
+                        this.user.loggedIn = false;
+                        this.server.disconnectClient(data);
                         break;
 
                     default:
@@ -308,7 +324,7 @@ namespace Server
                 Console.WriteLine($"Login as {role}");
             else
             {
-                server.RemoveThisClient(this);
+                server.Disconnect(this);
                 Console.WriteLine("Login attempt failed");
             }
 

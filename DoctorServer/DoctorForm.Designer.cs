@@ -335,6 +335,7 @@
             this.EmergencyStopButton.TabIndex = 24;
             this.EmergencyStopButton.Text = "Emergency stop";
             this.EmergencyStopButton.UseVisualStyleBackColor = false;
+            this.EmergencyStopButton.Click += new System.EventHandler(this.EmergencyStopButton_Click);
             // 
             // DoctorForm
             // 

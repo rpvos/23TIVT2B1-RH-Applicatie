@@ -344,6 +344,18 @@ namespace DoctorServer
         {
             if (e.KeyCode == Keys.Enter)
                 globalSendButton_Click(sender, null);
-        }
+        }
+
+        private void EmergencyStopButton_Click(object sender, EventArgs e)
+        {
+            if (this.selectedIndex != -1)
+            {
+
+                this.doctorClient.sendResistance("0", this.selectedBike);
+                this.usernameAndResistance[selectedBike] = "0";
+                resistanceTextbox.Text = "0";
+
+            }
+        }
     }
 }

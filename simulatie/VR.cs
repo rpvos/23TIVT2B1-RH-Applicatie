@@ -245,16 +245,16 @@ namespace TCP_naar_VR
                 case "scene/road/add":
                     //Add 10 trees on random positions
                     Random random = new Random();
-                    for (int i = 0; i < 4; i++)
+                    /*for (int i = 0; i < 4; i++)
                     {
                         int x = -100 + random.Next(200);
                         int y = -100 + random.Next(200);
                         int treeNumber = random.Next(11);
                         float scale = (float)(0.1 * random.Next(20));
 
-                        //Console.WriteLine(x + " " +  y);
-                        //callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { x, y, 0 }, false, "no");
-                    }
+                        Console.WriteLine(x + " " +  y);
+                        callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { x, y, 0 }, false, "no");
+                    }*/
 
                     callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "data/NetworkEngine/models/bike/bike_anim.fbx");
                     break;
@@ -271,15 +271,23 @@ namespace TCP_naar_VR
                     nodeId = nodeData[0]["uuid"].ToString();
                     string nodeName = nodeData[0]["name"].ToString();
                     Console.WriteLine("UUID found: " + nodeId);
+                    switch (nodeName)
+                    {
+                        case "Camera":
+                            this.camera = nodeId;
+                            break;
 
-                    if (nodeName == "GroundPlane")
-                    {
-                        callMethod.DeleteNode(nodeId);
+                        case "Head":
+                            Console.WriteLine("headDeleted");
+                            callMethod.DeleteNode(nodeId);
+                            break;
+                        case "GroundPlane":
+                        case "RightHand":  
+                        case "LeftHand":
+                            callMethod.DeleteNode(nodeId);
+                            break;
                     }
-                    if (nodeName == "Camera")
-                    {
-                        this.camera = nodeId;
-                    }
+                   
                     break;
             }  
         }
@@ -298,18 +306,22 @@ namespace TCP_naar_VR
             {
                 Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
                 this.id = id;
-                callMethod.GetScene();
+                
 
                 var date = DateTime.Now;
-                callMethod.SetTime(date.Hour);
-                //Console.WriteLine(date.Hour.ToString());
+                callMethod.SetTime(date.Hour);               
 
                 callMethod.AddTerrain();
                 callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });
                 callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { 512 }, new int[] { 1, 1, 1, 1 });
                 callMethod.FindNode("Camera");
-                
-                
+                callMethod.FindNode("GroundPlane");
+                callMethod.FindNode("LeftHand");
+                callMethod.FindNode("RightHand");
+                callMethod.FindNode("Head");
+
+                callMethod.GetScene();
+                             
             }         
         }
         #endregion
@@ -348,7 +360,7 @@ namespace TCP_naar_VR
         #region Timer
         private void SetTimer()
         {
-            panelUpdateTimer = new System.Timers.Timer(500);
+            panelUpdateTimer = new System.Timers.Timer(50000);
             panelUpdateTimer.Elapsed += OnTimedEvent;
             panelUpdateTimer.AutoReset = true;
             panelUpdateTimer.Enabled = true;

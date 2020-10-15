@@ -20,6 +20,7 @@ namespace FietsDemo
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
             InitializeComponent();
+            
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -105,6 +106,7 @@ namespace FietsDemo
                 doctorChat.Items.Add(message);
 
             }));
+
         }
 
         private void sendDocButton_Click(object sender, EventArgs e)
@@ -116,6 +118,12 @@ namespace FietsDemo
                 chatTextBox.Text = "";
 
             }
+        }
+
+        private void DocKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                sendDocButton_Click(null, null);
         }
     }
 

@@ -48,6 +48,7 @@
             this.doctorChat = new System.Windows.Forms.ListBox();
             this.chatTextBox = new System.Windows.Forms.TextBox();
             this.sendDocButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // Speed
@@ -236,6 +237,8 @@
             this.chatTextBox.Name = "chatTextBox";
             this.chatTextBox.Size = new System.Drawing.Size(204, 20);
             this.chatTextBox.TabIndex = 20;
+            this.chatTextBox.Tag = "";
+            this.chatTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DocKeyDown);
             // 
             // sendDocButton
             // 
@@ -247,12 +250,23 @@
             this.sendDocButton.UseVisualStyleBackColor = true;
             this.sendDocButton.Click += new System.EventHandler(this.sendDocButton_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(1133, 473);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(230, 13);
+            this.label1.TabIndex = 22;
+            this.label1.Text = "These messages will only be send to the doctor";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(1403, 667);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.sendDocButton);
             this.Controls.Add(this.chatTextBox);
             this.Controls.Add(this.doctorChat);
@@ -301,5 +315,6 @@
         private System.Windows.Forms.ListBox doctorChat;
         private System.Windows.Forms.TextBox chatTextBox;
         private System.Windows.Forms.Button sendDocButton;
+        private System.Windows.Forms.Label label1;
     }
 }

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoctorApplication", "Doctor
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedItems", "SharedItems\SharedItems.shproj", "{A7508E68-1F8F-403F-866E-CBB0D8639D33}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFDoctorApplication", "WPFDoctorApplication\WPFDoctorApplication.csproj", "{D65FDDE3-82F5-41F7-A004-2129156EDF06}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedItems\SharedItems.projitems*{5099da36-fa39-4a74-b49c-0ef3bbb1bdd5}*SharedItemsImports = 5
@@ -41,6 +43,10 @@ Global
 		{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

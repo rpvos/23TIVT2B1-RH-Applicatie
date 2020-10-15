@@ -153,10 +153,12 @@ namespace TCP_naar_VR
             {
                 case "scene/node/add":
                     JObject data2 = (JObject)data["data"];
+                    //error prevention
                     if (data2 != null)
                     {
                         string name = (string)data2["name"];
                         string uuid = (string)data2["uuid"];
+                        //looks if an object already exists
                         try
                         {
                             objects.Add(name, uuid);
@@ -170,16 +172,17 @@ namespace TCP_naar_VR
                         }
 
                         Console.WriteLine("Added node to dictionary\nName: {0}\nuuid: {1}", name, uuid);
+                        //adds textures based on name
                         switch (name)
                         {
+                            
                             case "ground":
-                                callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/grass_diffuse.png", uuid, 0, 10, 1);
+                                callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_green_d.jpg", uuid, 0, 2, 1);
+                                callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_ground_d.jpg", uuid, 1, 3, 1);
+                                callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_rocky_d.jpg", uuid, 3, 7, 1);
                                 break;
 
-                            case "water":
-                                callMethod.AddTexture("data/NetworkEngine/shaders/water.frag", "data/NetworkEngine/shaders/water.frag", uuid, 0, 10, 1);
-                                break;
-
+                                    
                             case "tree":
                                 callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_05.png", "", uuid, 0, 10, 1);
                                 break;
@@ -194,7 +197,7 @@ namespace TCP_naar_VR
 
                                 if (this.camera != null)
                                 {
-                                    //callMethod.UpdateNode(this.camera, objects["bike"], new double[] { -2.8, 0, 0 }, 1.0, new double[] { 0, 90, 0 });                           
+                                    callMethod.UpdateNode(this.camera, objects["bike"], new double[] { -2.8, 0, 0 }, 1.0, new double[] { 0, 90, 0 });                           
 
                                 }
                                 if (objects.ContainsKey("panel"))
@@ -207,16 +210,19 @@ namespace TCP_naar_VR
                     }           
                     break;
 
+                //prints the scene data
                 case "scene/get":
                     Console.WriteLine("GOT A SCENE");
                     Console.WriteLine("Get scene status: " + data["status"]);
                     //callMethod.ResetScene();
                     break;
 
+                //resets the scene
                 case "scene/reset":
                     callMethod.FindNode("GroundPlane");
                     break;
-
+                
+                //adds a route
                 case "route/add":
                     JObject routeData = (JObject)data["data"];
                     string routeName = "route";
@@ -243,18 +249,7 @@ namespace TCP_naar_VR
                     break;
 
                 case "scene/road/add":
-                    //Add 10 trees on random positions
-                    Random random = new Random();
-                    /*for (int i = 0; i < 4; i++)
-                    {
-                        int x = -100 + random.Next(200);
-                        int y = -100 + random.Next(200);
-                        int treeNumber = random.Next(11);
-                        float scale = (float)(0.1 * random.Next(20));
-
-                        Console.WriteLine(x + " " +  y);
-                        callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { x, y, 0 }, false, "no");
-                    }*/
+                    
 
                     callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "data/NetworkEngine/models/bike/bike_anim.fbx");
                     break;
@@ -278,7 +273,7 @@ namespace TCP_naar_VR
                             break;
 
                         case "Head":
-                            Console.WriteLine("headDeleted");
+                            Console.WriteLine("head deleted");
                             callMethod.DeleteNode(nodeId);
                             break;
                         case "GroundPlane":
@@ -309,9 +304,9 @@ namespace TCP_naar_VR
                 
 
                 var date = DateTime.Now;
-                callMethod.SetTime(date.Hour);               
-
-                callMethod.AddTerrain();
+                callMethod.SetTime(date.Hour);
+                callMethod.GetScene();
+                callMethod.AddTerrain(40000);
                 callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });
                 callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { 512 }, new int[] { 1, 1, 1, 1 });
                 callMethod.FindNode("Camera");
@@ -320,9 +315,20 @@ namespace TCP_naar_VR
                 callMethod.FindNode("RightHand");
                 callMethod.FindNode("Head");
 
-                callMethod.GetScene();
-                             
-            }         
+                //Adds trees on random positions
+                Random random = new Random();
+                for (int i = 0; i < 4; i++)
+                {
+                    int x = -100 + random.Next(200);
+                    int y = -100 + random.Next(200);
+                    int treeNumber = random.Next(11);
+                    float scale = (float)(0.1 * random.Next(20));
+
+                    Console.WriteLine(x + " " +  y);
+                    callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { x, y, 0 }, false, "no");
+                }
+
+            }
         }
         #endregion
 
@@ -360,7 +366,7 @@ namespace TCP_naar_VR
         #region Timer
         private void SetTimer()
         {
-            panelUpdateTimer = new System.Timers.Timer(50000);
+            panelUpdateTimer = new System.Timers.Timer(500);
             panelUpdateTimer.Elapsed += OnTimedEvent;
             panelUpdateTimer.AutoReset = true;
             panelUpdateTimer.Enabled = true;

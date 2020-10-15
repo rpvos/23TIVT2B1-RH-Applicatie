@@ -100,37 +100,7 @@ namespace simulatie
             Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
         }
 
-        internal void AddWaterNode(string nodeName, int[] pos, int[] rot)
-        {
-            TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
-
-            dynamic payloadData = new
-            {
-                id = "scene/node/add",
-                data = new
-                {
-                    name = nodeName,
-                    components = new
-                    {
-                        transform = new
-                        {
-                            position = pos,
-                            scale = 1,
-                            rotation = rot
-                        },
-                        water = new
-                        {
-                            size = new int[] {200,200},
-                            resolution = 0.1
-                        }
-                    }
-                }
-            };
-
-            tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
-            Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
-        }
-
+        
         //Add a panel to the VR scene
         internal void AddPanelNode(string nodeName, double[] pos, double[] rot, double[] panelSize, int[] res, int[] backgrColor)
         {
@@ -259,36 +229,40 @@ namespace simulatie
 
         #region Terrain
         //Add a height map to the terrain
-        internal void AddTerrain()
+        internal void AddTerrain(int size)
         {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TerrainAdd.json");
 
-            double[] heights = new double[40000];
+            double[] heights = new double[size];
             Random random = new Random();
             double lastInt = 0.0;
             double reduction = 1;
 
             for (int i = 0; i < heights.Length; i++)
             {
-                if (i > 200)
+                if (i > (int)Math.Sqrt(size))
                 {
-                    lastInt = (heights[i - 200] + heights[i - 1]) / 2;
+                    lastInt = (heights[i - (int)Math.Sqrt(size)] + heights[i - 1]) / 2;
                 }
                 if (i % 1000 == 0)
                 {
                     reduction += ((random.NextDouble() * 2) - 1) / 50;
+                    
                 }
                 heights[i] = (lastInt + ((random.NextDouble() * 2 - reduction) / 10));
                 if(heights[i] < 0)
                 {
                     heights[i] = 0;
                     reduction -= 0.2;
+                    
                 }
-                if(heights[i] > 6)
+                if(heights[i] >= 6)
                 {
                     heights[i] = 6;
                     reduction += 0.2;
+                    
                 }
+                
                 
                 lastInt = heights[i];
             }
@@ -300,7 +274,7 @@ namespace simulatie
                 id = "scene/terrain/add",
                 data = new
                 {
-                    size = new int[] { 200, 200 },
+                    size = new int[] { (int)Math.Sqrt(size), (int)Math.Sqrt(size) },
                     heights = heightsArray
                 }
 
@@ -309,28 +283,7 @@ namespace simulatie
             tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
         }
 
-        internal void AddWater()
-        {
-            TunnelMessage timeMessage = tcpClient.GetTunnelMessage("WaterAdd.json");
-            double[] heights = new double[40000];
-            for (int i = 0; i < heights.Length; i++)
-            {
-                heights[i] = 0.5;
-            }
-
-            dynamic payloadData = new
-            {
-                id = "scene/terrain/add",
-                data = new
-                {
-                    size = new int[] { 200, 200 },
-                    heights = heights
-                }
-
-            };
-
-            tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
-        }
+        
 
         //Add texture to the VR scene
         internal void AddTexture(string fileNormal, string fileDiffuse, string uuid, int minimumHeight, int maximumHeight, int fadeDistance)

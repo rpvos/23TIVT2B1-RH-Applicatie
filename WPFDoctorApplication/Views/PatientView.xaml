@@ -4,11 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WPFDoctorApplication.Views"
+             xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="610" d:DesignWidth="1050" Background="White" FontSize="24">
+             d:DesignHeight="610" d:DesignWidth="1050" Background="White" FontSize="28">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto" MaxWidth="100"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
@@ -21,15 +24,40 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         
         <!--Row 0-->
-        <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" Text="PatientName" FontSize="36" x:Name="patientNameBlock"/>
+        <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Text="PatientName" FontSize="36" x:Name="patientNameBlock"/>
         
         <!--Row 1-->
         <TextBlock Grid.Column="1" Grid.Row="1"/>
         
         <!--Row 2-->
-        
+        <wpf:CartesianChart Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="450" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20"/>
+        <wpf:CartesianChart Grid.Column="5" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="450" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20"/>
+        <!--Row 3-->
+        <TextBlock Grid.Column="1" Grid.Row="3" Text="Speed:"/>
+        <TextBlock Grid.Column="2" Grid.Row="3" Text="Value"  x:Name="speedBlock"/>
+
+        <!--Row 4-->
+        <TextBlock Grid.Column="1" Grid.Row="4" Text="Heart rate:"/>
+        <TextBlock Grid.Column="2" Grid.Row="4" Text="Value" x:Name="heartRateBlock"/>
+
+        <!--Row 5-->
+        <TextBlock Grid.Column="1" Grid.Row="5" Text="Active time:"/>
+        <TextBlock Grid.Column="2" Grid.Row="5" Text="Value" x:Name="elapsedTimeBlock"/>
+
+        <!--Row 6-->
+        <TextBlock Grid.Column="1" Grid.Row="6" Text="Distance traveled:"/>
+        <TextBlock Grid.Column="2" Grid.Row="6" Text="Value" x:Name="distanceTraveledBlock"/>
+
+        <!--Row 7-->
+        <TextBlock Grid.Column="1" Grid.Row="7" Text="Accumalated power:"/>
+        <TextBlock Grid.Column="2" Grid.Row="7" Text="Value" x:Name="accumulatedPowerBlock"/>
+
     </Grid>
 </UserControl>

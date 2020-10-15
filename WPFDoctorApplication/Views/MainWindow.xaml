@@ -25,11 +25,11 @@
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
         <!--Row 1-->
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="DoctorClient" FontSize="36" FontFamily="Segoe UI Light" />
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="DoctorClient" FontSize="48" FontFamily="Segoe UI Light" />
         <!--Row 2-->
         <ScrollViewer Grid.Row="2" Grid.Column="1" Grid.RowSpan="4">
             <ListBox x:Name="patientList"/>
         </ScrollViewer>
-        <ContentControl x:Name="contentControl" Grid.Row="2" Grid.Column="2" Grid.RowSpan="4" Grid.ColumnSpan="3"/>
+        <ContentControl Content="{Binding PatientViewModel, UpdateSourceTrigger=PropertyChanged}" x:Name="contentControl" Grid.Row="2" Grid.Column="2" Grid.RowSpan="4" Grid.ColumnSpan="3"/>
     </Grid>
 </Window>

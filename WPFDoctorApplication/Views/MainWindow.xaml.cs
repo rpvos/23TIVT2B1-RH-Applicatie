@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WPFDoctorApplication.ViewModels;
 
 namespace WPFDoctorApplication
 {
@@ -23,6 +24,7 @@ namespace WPFDoctorApplication
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new ShellViewModel();
         }
     }
 }

@@ -95,6 +95,7 @@ namespace Server
                     case "resistance":
                         this.server.sendResistanceToOneClient(data);
                         this.server.sendResistanceToAllDoctors(data,this);
+                        this.server.setResistancePerUsername(data);
                         break;
                     case "privMessage":
                         this.server.sendPrivMessage(data);
@@ -113,7 +114,7 @@ namespace Server
                 Console.WriteLine(packet);
                 Console.WriteLine("Invalid message");
             }
-        }
+        }       
 
 
         private void handleUpdateInformation(JObject data)
@@ -139,8 +140,11 @@ namespace Server
             this.user = server.checkUser(username, password);
             if (user != null)
             {
-                if (user.getRole() == Role.Patient)              
+                if (user.getRole() == Role.Patient)
+                {
                     sendAddUserMessage(username);
+                    this.server.usernameAndResistance.Add(username, "0");
+                }
 
                 if (user.getRole() == Role.Doctor)
                     this.server.addUsersToThisDoctorClient(this);
@@ -157,6 +161,7 @@ namespace Server
         {
             this.server.SendToDoctors(getAddUserString(username));
         }
+
 
         public void sendResistance(string resistance)
         {

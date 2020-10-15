@@ -15,6 +15,7 @@ namespace Server
         #region private atributes
 
         private List<ServerClient> clients;
+        public Dictionary<string, string> usernameAndResistance { get; set; }
         private TcpListener listener;
         private Dictionary<string, User> dataBase;
 
@@ -29,6 +30,7 @@ namespace Server
 
         public Server()
         {
+            this.usernameAndResistance = new Dictionary<string, string>();
             this.clients = new List<ServerClient>();
 
             this.dataBase = new Dictionary<string, User>();
@@ -105,7 +107,11 @@ namespace Server
                 foreach (ServerClient client in this.clients)
                 {
                     if (client.user.getRole() == Role.Patient)
-                        doctorClient.sendAddUserMessage(client.user.getUsername());
+                    {
+                        string username = client.user.getUsername();
+                        doctorClient.sendAddUserMessage(username);
+                        doctorClient.sendResistanceToDoctor(this.usernameAndResistance[username], username);
+                    }
                 }
 
         }
@@ -141,7 +147,9 @@ namespace Server
         {
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
-            foreach(ServerClient client in clients)
+
+
+            foreach (ServerClient client in clients)
             {
 
                 if(client.user.getRole() == Role.Patient && client.user.getUsername() == username)
@@ -160,6 +168,13 @@ namespace Server
                 if (client.user.getRole() == Role.Doctor && client != serverClient)              
                     client.sendResistanceToDoctor(resistance,username);              
             }
+        }
+
+        public void setResistancePerUsername(JObject data)
+        {
+            string resistance = (string)data["Resistance"];
+            string username = (string)data["Username"];
+            this.usernameAndResistance[username] = resistance;
         }
 
         public void sendPrivMessage(JObject data)

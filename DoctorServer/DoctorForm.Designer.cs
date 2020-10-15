@@ -54,6 +54,7 @@
             this.SessionButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.EmergencyStopButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // BikeListBox
@@ -293,7 +294,7 @@
             // SessionButton
             // 
             this.SessionButton.Font = new System.Drawing.Font("Showcard Gothic", 18F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
-            this.SessionButton.Location = new System.Drawing.Point(255, 438);
+            this.SessionButton.Location = new System.Drawing.Point(263, 430);
             this.SessionButton.Name = "SessionButton";
             this.SessionButton.Size = new System.Drawing.Size(215, 52);
             this.SessionButton.TabIndex = 20;
@@ -321,11 +322,24 @@
             this.label2.TabIndex = 23;
             this.label2.Text = "Global chat";
             // 
+            // EmergencyStopButton
+            // 
+            this.EmergencyStopButton.BackColor = System.Drawing.Color.Red;
+            this.EmergencyStopButton.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.EmergencyStopButton.ForeColor = System.Drawing.Color.Black;
+            this.EmergencyStopButton.Location = new System.Drawing.Point(614, 561);
+            this.EmergencyStopButton.Name = "EmergencyStopButton";
+            this.EmergencyStopButton.Size = new System.Drawing.Size(215, 55);
+            this.EmergencyStopButton.TabIndex = 24;
+            this.EmergencyStopButton.Text = "Emergency stop";
+            this.EmergencyStopButton.UseVisualStyleBackColor = false;
+            // 
             // DoctorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1513, 618);
+            this.Controls.Add(this.EmergencyStopButton);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.SessionButton);
@@ -388,6 +402,7 @@
         private System.Windows.Forms.Button SessionButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button EmergencyStopButton;
     }
 }
 

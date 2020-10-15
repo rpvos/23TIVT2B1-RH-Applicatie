@@ -13,11 +13,11 @@ namespace FietsDemo
     {
 
        private MainForm form;
-       private BluetoothBike program;
+       public BluetoothBike bluetoothBike { get; set; }
 
         public GUI(BluetoothBike program)
         {
-            this.program = program;
+            this.bluetoothBike = program;
         }
 
        public void run()
@@ -37,12 +37,12 @@ namespace FietsDemo
 
         public void stopSimulator()
         {
-            this.program.stopSimulator();
+            this.bluetoothBike.stopSimulator();
         }
 
         public void startSimulator()
         {
-            this.program.startSimulator();
+            this.bluetoothBike.startSimulator();
         }
 
         public void setResistance(int resistance)

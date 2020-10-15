@@ -109,7 +109,13 @@ namespace FietsDemo
 
         private void sendDocButton_Click(object sender, EventArgs e)
         {
+            if (chatTextBox.Text != "")
+            {
+                doctorChat.Items.Add(chatTextBox.Text);
+                this.gui.bluetoothBike.sendPrivateMessage(chatTextBox.Text);
+                chatTextBox.Text = "";
 
+            }
         }
     }
 

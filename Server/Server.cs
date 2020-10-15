@@ -176,6 +176,20 @@ namespace Server
             }
         }
 
+        public void sendPrivateMessageToDoctors(JObject data)
+        {
+            string message = (string)data["Message"];
+            string username = (string)data["Username"];
+            foreach (ServerClient client in clients)
+            {
+
+                if (client.user.getRole() == Role.Doctor)
+                {
+                    client.sendPrivateMessageToDoctor(username,message);
+                }
+            }
+        }
+
         #endregion
     }
 }

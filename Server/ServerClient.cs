@@ -99,6 +99,9 @@ namespace Server
                     case "privMessage":
                         this.server.sendPrivMessage(data);
                         break;
+                    case "privateMessageToDoctor":
+                        this.server.sendPrivateMessageToDoctors(data);
+                        break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -170,6 +173,11 @@ namespace Server
             WriteTextMessage(getMessageString(message));
         }
 
+        public void sendPrivateMessageToDoctor(string username, string message)
+        {
+            WriteTextMessage(getMessageStringToDoctor(username,message));
+        }
+
         private string getAddUserString(string username)
         {
             dynamic data = new
@@ -235,6 +243,17 @@ namespace Server
             dynamic data = new
             {
                 Message = message
+            };
+
+            return getJsonObject("message", data);
+        }
+
+        private string getMessageStringToDoctor(string username, string message)
+        {
+            dynamic data = new
+            {
+                Message = message,
+                Username = username
             };
 
             return getJsonObject("message", data);

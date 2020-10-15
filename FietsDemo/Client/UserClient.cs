@@ -36,6 +36,7 @@ namespace FietsDemo
             crypto.WriteTextMessage(message);
         }
 
+
         #region handle recieved data
         private void handleData(string packet)
         {
@@ -144,6 +145,11 @@ namespace FietsDemo
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
+        public void sendPrivateMessage(string message)
+        {
+            WriteTextMessage(getPrivateMessageString(this.username, message));
+        }
+
         internal Task sendUpdatedValues(SharedItems.UpdateType valueType, double value)
         {
             WriteTextMessage(getUpdateMessageString(valueType, value));
@@ -175,6 +181,17 @@ namespace FietsDemo
             };
 
             return getJsonObject("userCredentials", data);
+        }
+
+        private string getPrivateMessageString(string username, string message)
+        {
+            dynamic data = new
+            {
+                Username = username,
+                Message = message
+            };
+
+            return getJsonObject("privateMessageToDoctor", data);
         }
 
 

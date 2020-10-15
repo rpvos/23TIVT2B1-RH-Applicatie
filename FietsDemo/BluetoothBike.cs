@@ -497,6 +497,11 @@ namespace FietsDemo
 
         }
 
+        public void sendPrivateMessage(string message)
+        {
+            this.client.sendPrivateMessage(message);
+        }
+
         public double setResistance(double percentage)
         {
 

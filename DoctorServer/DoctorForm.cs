@@ -21,10 +21,14 @@ namespace DoctorServer
         public int selectedIndex { get; set; }
         private DoctorClient doctorClient;
         private Dictionary<string, string> usernameAndResistance;
+        private Dictionary<string, bool> usernameAndSession;
+        private Dictionary<string, List<String>> usernameAndMessages;
        
 
         public DoctorForm(DoctorClient doctorClient)
         {
+            this.usernameAndMessages = new Dictionary<string, List<String>>();
+            this.usernameAndSession = new Dictionary<string, bool>();
             this.usernameAndResistance = new Dictionary<string, string>();
             this.doctorClient = doctorClient;
             this.selectedIndex = -1;
@@ -108,6 +112,8 @@ namespace DoctorServer
                     {
                         BikeListBox.Items.Add(username);
                         this.usernameAndResistance.Add(username, 0+"");
+                        this.usernameAndSession.Add(username, false);
+                        this.usernameAndMessages.Add(username, new List<string>());
                     }
 
                 }));
@@ -117,6 +123,9 @@ namespace DoctorServer
                 {
                     BikeListBox.Items.Add(username);
                     this.usernameAndResistance.Add(username, 0 + "");
+                    this.usernameAndSession.Add(username, false);
+                    this.usernameAndMessages.Add(username, new List<string>());
+
                 }
             }
             
@@ -226,6 +235,7 @@ namespace DoctorServer
             {
                 PrivateChat.Items.Add(PrivateChatBox.Text);
                 this.doctorClient.sendPrivMessage(PrivateChatBox.Text,selectedBike);
+                this.usernameAndMessages[this.selectedBike].Add(PrivateChatBox.Text);
                 PrivateChatBox.Text = "";
 
 
@@ -254,7 +264,16 @@ namespace DoctorServer
 
                 this.resistanceTextbox.Text = usernameAndResistance[selectedBike] + "";
 
+                if (this.usernameAndSession[this.selectedBike] == true)
+                {
+                    SessionButton.Text = "Stop session";
+                }
+                else
+                {
+                    SessionButton.Text = "Start session";
+                }
 
+                setChat();
 
                 setAllToEmpty();
             }
@@ -263,6 +282,27 @@ namespace DoctorServer
             }
 
 
+        }
+
+        public void setChat()
+        {
+            PrivateChat.Items.Clear();
+            List<string> messages = this.usernameAndMessages[selectedBike];
+            foreach(string message in messages)
+            {
+                PrivateChat.Items.Add(message);
+            }
+        }
+
+        public void addMessage(string username, string receivedMessage)
+        {
+            string message = "Patient: " + receivedMessage;
+            this.usernameAndMessages[username].Add(message);
+            if(this.selectedBike == username)
+            {
+                PrivateChat.Items.Add(message);
+            }
+         
         }
 
 
@@ -283,8 +323,16 @@ namespace DoctorServer
 
             if (this.selectedIndex != -1)
             {
+                if(this.usernameAndSession[this.selectedBike] == false)
+                {
+                    SessionButton.Text = "Stop session";
+                    this.usernameAndSession[this.selectedBike] = true;
+                }else
+                {
+                    SessionButton.Text = "Start session";
+                    this.usernameAndSession[this.selectedBike] = false;
+                }
 
-                
             }
         }
     }

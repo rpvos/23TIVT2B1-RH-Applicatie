@@ -65,7 +65,7 @@
             this.UsernameTextbox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.UsernameTextbox.Name = "UsernameTextbox";
             this.UsernameTextbox.Size = new System.Drawing.Size(154, 23);
-            this.UsernameTextbox.TabIndex = 2;
+            this.UsernameTextbox.TabIndex = 1;
             // 
             // PasswordTextbox
             // 
@@ -83,7 +83,7 @@
             this.ExitButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(88, 29);
-            this.ExitButton.TabIndex = 4;
+            this.ExitButton.TabIndex = 3;
             this.ExitButton.Text = "Cancel";
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
@@ -94,7 +94,7 @@
             this.LoginButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.LoginButton.Name = "LoginButton";
             this.LoginButton.Size = new System.Drawing.Size(93, 29);
-            this.LoginButton.TabIndex = 5;
+            this.LoginButton.TabIndex = 4;
             this.LoginButton.Text = "Login";
             this.LoginButton.UseVisualStyleBackColor = true;
             this.LoginButton.Click += new System.EventHandler(this.ButtonLogin_Click);
@@ -102,10 +102,10 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Demonized", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point);
             this.label3.Location = new System.Drawing.Point(123, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(141, 23);
+            this.label3.Size = new System.Drawing.Size(106, 20);
             this.label3.TabIndex = 6;
             this.label3.Text = "Doctor login";
             // 

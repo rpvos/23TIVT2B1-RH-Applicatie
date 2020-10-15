@@ -263,6 +263,7 @@
             this.PrivateChatBox.Name = "PrivateChatBox";
             this.PrivateChatBox.Size = new System.Drawing.Size(225, 23);
             this.PrivateChatBox.TabIndex = 17;
+            this.PrivateChatBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PrivKeyDown);
             // 
             // GlobalChatBox
             // 
@@ -270,6 +271,7 @@
             this.GlobalChatBox.Name = "GlobalChatBox";
             this.GlobalChatBox.Size = new System.Drawing.Size(226, 23);
             this.GlobalChatBox.TabIndex = 17;
+            this.GlobalChatBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GlobalKeyDown);
             // 
             // privSendButton
             // 

@@ -335,5 +335,15 @@ namespace DoctorServer
 
             }
         }
+        private void PrivKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            privSendButton_Click(sender, null);
+        }
+        private void GlobalKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                globalSendButton_Click(sender, null);
+        }
     }
 }

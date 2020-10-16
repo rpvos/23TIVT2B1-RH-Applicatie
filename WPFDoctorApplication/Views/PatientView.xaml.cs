@@ -23,7 +23,7 @@ namespace WPFDoctorApplication.Views
         public PatientView()
         {
             InitializeComponent();
-            DataContext = new PatientViewModel();
+            //DataContext = new PatientViewModel();
         }
     }
 }

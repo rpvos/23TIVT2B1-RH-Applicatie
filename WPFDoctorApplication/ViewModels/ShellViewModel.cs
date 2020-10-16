@@ -7,22 +7,30 @@ using System.Text;
 using System.Windows.Input;
 using WPFDoctorApplication.Utils;
 using WPFDoctorApplication.Models;
+using WPFDoctorApplication.ViewModels;
 
 namespace WPFDoctorApplication.ViewModels
 {
     public class ShellViewModel : MyObservableObject
     {
         public ICommand PatientViewCommand { get; set; }
-        public MyObservableObject SelectedPatientViewModel { get; set; }
-        public List<PatientBike> PatientBikeList;
+        public MyObservableObject SelectedViewModel { get; set; }
+        public List<PatientBike> PatientBikeList { get; set; }
+        public DoctorClient DoctorClient { get; set; }
 
 
-        public ShellViewModel(List<PatientBike> patientBikeList)
+        public ShellViewModel()
         {
-            this.PatientBikeList = patientBikeList;
+            Initialize();   
+        }
+        public void Initialize()
+        {
+            this.PatientBikeList = new List<PatientBike>();
+            this.DoctorClient = new DoctorClient(PatientBikeList);
+            this.SelectedViewModel = new LoginViewModel();
             PatientViewCommand = new RelayCommand(() =>
-            {                
-                SelectedPatientViewModel = new PatientViewModel(new PatientBike("test"));
+            {
+                SelectedViewModel = new PatientViewModel(new PatientBike("test"));
             });
         }
     }

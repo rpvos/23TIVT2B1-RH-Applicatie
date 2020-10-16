@@ -28,15 +28,16 @@ namespace WPFDoctorApplication
         public string selectedUsername { get; set; }
         public List<PatientBike> PatientBikeList;
 
-        static void Main()
-        {
-            DoctorClient doctorServer = new DoctorClient();
-            doctorServer.startLogin();
-        }
+        //static void Main()
+        //{
+        //    DoctorClient doctorServer = new DoctorClient();
+        //    doctorServer.startLogin();
+        //}
 
-        public DoctorClient()
+        public DoctorClient(List<PatientBike> patientBikeList)
         {
             this.selectedUsername = "-1";
+            this.PatientBikeList = patientBikeList;
         }
 
         public void startLogin()

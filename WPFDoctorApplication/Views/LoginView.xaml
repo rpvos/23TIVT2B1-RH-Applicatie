@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="WPFDoctorApplication.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFDoctorApplication.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="620" d:DesignWidth="1240" FontSize="24" Background="white">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        
+        <!--Row 1-->
+        <TextBlock Grid.Column="1" Grid.Row="1" Text="Username"/>
+        <!--Row 2-->
+        <TextBox Grid.Column="1" Grid.Row="2" Width="200"/>
+        <!--Row 3-->
+        <TextBlock Grid.Column="1" Grid.Row="3" Text="Password"/>
+        <!--Row 4-->
+        <PasswordBox Grid.Column="1" Grid.Row="4" Width="200"/>
+        <!--Row 5-->
+        <TextBlock Grid.Column="1" Grid.Row="5" FontSize="16"/>
+        <!--Row 6-->
+        <Button Grid.Column="1" Grid.Row="6" Content="Login" Width="115" Height="35"/>
+
+    </Grid>
+</UserControl>

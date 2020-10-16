@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFDoctorApplication"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="1280">
+        Title="MainWindow" Height="740" Width="1280">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
@@ -31,6 +31,6 @@
         <ScrollViewer Grid.Row="2" Grid.Column="1" Grid.RowSpan="4">
             <ListBox x:Name="patientList"/>
         </ScrollViewer>
-        <ContentControl Content="{Binding PatientViewModel}" x:Name="contentControl" Grid.Row="2" Grid.Column="2" Grid.RowSpan="4" Grid.ColumnSpan="3"/>
+        <ContentControl Content="{Binding SelectedPatientViewModel}" x:Name="contentControl" Grid.Row="2" Grid.Column="2" Grid.RowSpan="4" Grid.ColumnSpan="3"/>
     </Grid>
 </Window>

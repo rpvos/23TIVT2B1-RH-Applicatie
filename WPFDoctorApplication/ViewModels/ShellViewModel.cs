@@ -1,47 +1,29 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Windows.Input;
+using WPFDoctorApplication.Utils;
+using WPFDoctorApplication.Models;
 
 namespace WPFDoctorApplication.ViewModels
 {
-    public class ShellViewModel
+    public class ShellViewModel : MyObservableObject
     {
-        private PatientViewModel _patientViewModel;
+        public ICommand PatientViewCommand { get; set; }
+        public MyObservableObject SelectedPatientViewModel { get; set; }
+        public List<PatientBike> PatientBikeList;
 
-        public ICommand PatientViewCommand
-        {
-            get;
-            set;
-        }
-        public PatientViewModel PatientViewModel
-        {
-            get
-            {
-                return _patientViewModel;
-            }
-    set
-            {
-                _patientViewModel = value;
-                //NotifyOfPropertyChange(() => PatientViewModel);
-            }
-        }
 
-        public ShellViewModel()
+        public ShellViewModel(List<PatientBike> patientBikeList)
         {
-            //PatientViewModel = new PatientViewModel();
-            PatientViewModel = null;
+            this.PatientBikeList = patientBikeList;
             PatientViewCommand = new RelayCommand(() =>
             {                
-                PatientViewModel = new PatientViewModel();
+                SelectedPatientViewModel = new PatientViewModel(new PatientBike("test"));
             });
         }
-
-        //public void Test()
-        //{
-            
-        //}
     }
 }

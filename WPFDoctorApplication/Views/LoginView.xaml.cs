@@ -22,7 +22,6 @@ namespace WPFDoctorApplication.Views
         public LoginView()
         {
             InitializeComponent();
-            DataContext = new LoginViewModel();
         }
     }
 }

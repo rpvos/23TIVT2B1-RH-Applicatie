@@ -15,7 +15,7 @@ namespace WPFDoctorApplication
     public class DoctorClient
     {
 
-        private ShellViewModel mainForm;
+        private ShellViewModel shellViewModel;
         private TcpClient server;
 
         private List<string> usernames;
@@ -34,10 +34,11 @@ namespace WPFDoctorApplication
         //    doctorServer.startLogin();
         //}
 
-        public DoctorClient(List<PatientBike> patientBikeList)
+        public DoctorClient(ShellViewModel shellViewModel)
         {
             this.selectedUsername = "-1";
-            this.PatientBikeList = patientBikeList;
+            this.shellViewModel = shellViewModel;
+            this.PatientBikeList = shellViewModel.PatientBikeList;
         }
 
         public void startLogin()
@@ -64,7 +65,7 @@ namespace WPFDoctorApplication
 
 
 
-        public void startClient(string username, string password)
+        public void StartClient(string username, string password)
         {
             this.server = new TcpClient("127.0.0.1", 8080);
 
@@ -121,12 +122,11 @@ namespace WPFDoctorApplication
                             Console.WriteLine("Login succesful");
                             Thread startThread = new Thread(Start);
                             startThread.Start();
-                            //this.login.loginSucceeded();
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
-                            //this.login.loginFailed();
+                            this.shellViewModel.LoginViewModel.LoginFailed(); 
                         }
                         break;
                     case "update":

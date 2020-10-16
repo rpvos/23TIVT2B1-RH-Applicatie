@@ -9,5 +9,14 @@
         <DataTemplate DataType="{x:Type viewModels:PatientViewModel}">
             <views:PatientView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:LoginViewModel}">
+            <views:LoginView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:PatientListViewModel}">
+            <views:PatientListView/>
+        </DataTemplate>
+        <!--<DataTemplate DataType="{x:Type viewModels:PatientListItemViewModel}">
+            <views:/>
+        </DataTemplate>-->
     </Application.Resources>
 </Application>

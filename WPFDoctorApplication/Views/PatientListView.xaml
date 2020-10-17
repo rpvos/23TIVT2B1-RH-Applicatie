@@ -38,7 +38,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <UserControl Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="4" Content="{Binding SelectedPatientViewModel}"/>
+        <UserControl Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="4" Content="{Binding SelectedPatientViewModel, UpdateSourceTrigger=PropertyChanged}"/>
         <!--Row 2-->
         
     </Grid>

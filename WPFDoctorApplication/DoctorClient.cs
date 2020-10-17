@@ -10,6 +10,7 @@ using System.Threading;
 using WPFDoctorApplication.Models;
 using WPFDoctorApplication.ViewModels;
 using System.Collections.ObjectModel;
+using WPFDoctorApplication.Utils;
 
 namespace WPFDoctorApplication
 {
@@ -122,8 +123,8 @@ namespace WPFDoctorApplication
                         if (handleUserCredentialsResponse(data))
                         {
                             Console.WriteLine("Login succesful");
-                            Thread startThread = new Thread(Start);
-                            startThread.Start();
+                            //Thread startThread = new Thread(Start);
+                            //startThread.Start();
                             this.shellViewModel.LoginViewModel.LoginSucces();
                             
                         }
@@ -181,6 +182,7 @@ namespace WPFDoctorApplication
                             patientBike.Speed = value;
                             break;
                         case UpdateType.AccumulatedPower:
+                            patientBike.AccumulatedPower = value;
                             break;
                         case UpdateType.InstantaniousPower:
                             break;

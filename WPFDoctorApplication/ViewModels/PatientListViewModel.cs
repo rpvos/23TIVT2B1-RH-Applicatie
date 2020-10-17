@@ -22,10 +22,11 @@ namespace WPFDoctorApplication.ViewModels
              set 
             {
                 _patientBikeList = value;
-                OnPropertyChanged("PatientBikeList");
+                //OnPropertyChanged("PatientBikeList");
             } 
         }
         public CustomObservableObject SelectedPatientViewModel { get; set; }
+        //public ObservableCollection<PatientViewModel> ActivePatientViewModels { get; set; }
         private PatientBike _selectedPatientBike;
 
         public PatientBike SelectedPatientBike

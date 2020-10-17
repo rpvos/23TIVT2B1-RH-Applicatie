@@ -63,6 +63,7 @@
             this.UsernameTextbox.Name = "UsernameTextbox";
             this.UsernameTextbox.Size = new System.Drawing.Size(133, 20);
             this.UsernameTextbox.TabIndex = 1;
+            this.UsernameTextbox.Text = "stoeptegel";
             // 
             // PasswordTextbox
             // 
@@ -71,6 +72,7 @@
             this.PasswordTextbox.Name = "PasswordTextbox";
             this.PasswordTextbox.Size = new System.Drawing.Size(133, 20);
             this.PasswordTextbox.TabIndex = 2;
+            this.PasswordTextbox.Text = "123";
             this.PasswordTextbox.UseSystemPasswordChar = true;
             // 
             // ExitButton
@@ -96,10 +98,10 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Monsters Attack!", 9.749999F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.749999F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(98, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(118, 26);
+            this.label3.Size = new System.Drawing.Size(94, 16);
             this.label3.TabIndex = 6;
             this.label3.Text = "Patient login";
             // 

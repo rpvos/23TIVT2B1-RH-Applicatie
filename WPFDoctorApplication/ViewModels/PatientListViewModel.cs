@@ -25,7 +25,17 @@ namespace WPFDoctorApplication.ViewModels
                 OnPropertyChanged("PatientBikeList");
             } 
         }
-        //public ObservableCollection<PatientViewModel> PatientViewModelList { get; set; }
+        public CustomObservableObject SelectedPatientViewModel { get; set; }
+        private PatientBike _selectedPatientBike;
+
+        public PatientBike SelectedPatientBike
+        {
+            get { return _selectedPatientBike; }
+            set { _selectedPatientBike = value;
+                SelectedPatientViewModel = new PatientViewModel(value);
+            }
+        }
+
 
         public PatientListViewModel(ShellViewModel shellViewModel)
         {

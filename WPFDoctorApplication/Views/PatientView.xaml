@@ -31,7 +31,7 @@
         </Grid.RowDefinitions>
         
         <!--Row 0-->
-        <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Text="PatientName" FontSize="36" x:Name="patientNameBlock"/>
+        <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontSize="36" Text="{Binding Username}"/>
         
         <!--Row 1-->
         <TextBlock Grid.Column="1" Grid.Row="1"/>

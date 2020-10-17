@@ -27,19 +27,18 @@
         
         <!--Row 1-->
         <!--ItemsSource="{Binding PatientBikeList, Converter={StaticResource ModelToViewModelConverter}, UpdateSourceTrigger=PropertyChanged}"-->
-        <ListBox Grid.Column="1" Grid.Row="1" Width="250" Height="500"  ItemsSource="{Binding PatientBikeList, UpdateSourceTrigger=PropertyChanged}">
-            <ListBox.ItemTemplate>
+        <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" Width="250" ItemsSource="{Binding PatientBikeList, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPatientBike}">
+            <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Black" BorderThickness="1">
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="{Binding Username}"/>
-                            <TextBlock Text="FUCKING WERK"/>
                         </StackPanel>
                     </Border>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <UserControl Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="4"/>
+            </ListView.ItemTemplate>
+        </ListView>
+        <UserControl Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="4" Content="{Binding SelectedPatientViewModel}"/>
         <!--Row 2-->
         
     </Grid>

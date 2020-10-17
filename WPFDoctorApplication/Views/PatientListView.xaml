@@ -4,8 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WPFDoctorApplication.Views"
+             xmlns:utils="clr-namespace:WPFDoctorApplication.Utils"
              mc:Ignorable="d" 
              d:DesignHeight="620" d:DesignWidth="1240" Background="White">
+    <UserControl.Resources>
+        <utils:ModelToViewModelConverter x:Key="ModelToViewModelConverter"/>
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -21,7 +26,19 @@
         </Grid.RowDefinitions>
         
         <!--Row 1-->
-        <ListView Grid.Column="1" Grid.Row="1" Width="250"/>
+        <!--ItemsSource="{Binding PatientBikeList, Converter={StaticResource ModelToViewModelConverter}, UpdateSourceTrigger=PropertyChanged}"-->
+        <ListBox Grid.Column="1" Grid.Row="1" Width="250" Height="500"  ItemsSource="{Binding PatientBikeList, UpdateSourceTrigger=PropertyChanged}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderBrush="Black" BorderThickness="1">
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Username}"/>
+                            <TextBlock Text="FUCKING WERK"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <UserControl Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="4"/>
         <!--Row 2-->
         

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WPFDoctorApplication.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="620" d:DesignWidth="1240" FontSize="24" Background="white">
+             d:DesignHeight="620" d:DesignWidth="1240" FontSize="24" Background="white" Visibility="{Binding LoginVisibility, UpdateSourceTrigger=PropertyChanged}" >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>

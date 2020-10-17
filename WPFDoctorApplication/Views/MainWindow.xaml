@@ -26,9 +26,10 @@
         </Grid.RowDefinitions>
         <!--Row 1-->
         <TextBlock Grid.Row="1" Grid.Column="1" Text="DoctorClient" FontSize="48" FontFamily="Segoe UI Light" />
-        <Button Grid.Row="1" Grid.Column="2" Content="test" Command="{Binding PatientViewCommand}"/>
+        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding DebugMessage}"/>
         <!--Row 2-->
         <UserControl Grid.Row="2" Grid.Column="1" Grid.RowSpan="4" Grid.ColumnSpan="4" Content="{Binding SelectedViewModel}"/>
+        
         <!--<ScrollViewer Grid.Row="2" Grid.Column="1" Grid.RowSpan="4">
             <ListBox x:Name="patientList"/>
         </ScrollViewer>

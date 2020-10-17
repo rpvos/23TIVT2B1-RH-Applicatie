@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using System.Threading;
 using WPFDoctorApplication.Models;
 using WPFDoctorApplication.ViewModels;
+using System.Collections.ObjectModel;
 
 namespace WPFDoctorApplication
 {
@@ -26,7 +27,7 @@ namespace WPFDoctorApplication
 
         private Login login;
         public string selectedUsername { get; set; }
-        public List<PatientBike> PatientBikeList;
+        public ObservableCollection<PatientBike> PatientBikeList;
 
         //static void Main()
         //{
@@ -38,7 +39,9 @@ namespace WPFDoctorApplication
         {
             this.selectedUsername = "-1";
             this.shellViewModel = shellViewModel;
-            this.PatientBikeList = shellViewModel.PatientBikeList;
+            PatientBikeList = new ObservableCollection<PatientBike>();
+            this.shellViewModel.PatientBikeList = PatientBikeList;
+            //this.PatientBikeList = shellViewModel.PatientBikeList;
         }
 
         public void startLogin()
@@ -73,7 +76,6 @@ namespace WPFDoctorApplication
             this.crypto = new Crypto(server.GetStream(), handleData);
 
             this.usernames = new List<string>();
-            this.PatientBikeList = new List<PatientBike>();
 
             //stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
@@ -101,8 +103,8 @@ namespace WPFDoctorApplication
         #region handle received data
         private void handleData(string packet)
         {
-            try
-            {
+            { 
+
                 Console.WriteLine(packet);
 
                 JObject json = JObject.Parse(packet);
@@ -122,6 +124,8 @@ namespace WPFDoctorApplication
                             Console.WriteLine("Login succesful");
                             Thread startThread = new Thread(Start);
                             startThread.Start();
+                            this.shellViewModel.LoginViewModel.LoginSucces();
+                            
                         }
                         else
                         {
@@ -141,18 +145,20 @@ namespace WPFDoctorApplication
                         break;
                 }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.StackTrace);
-            }
+
         }
 
         private void AddUser(JObject data)
         {
-
             string username = (string)data["Username"];
-            this.PatientBikeList.Add(new PatientBike(username));
 
+            //App.Current.Dispatcher in order to avoid threading problems
+            App.Current.Dispatcher.Invoke((System.Action)delegate
+            {
+                this.PatientBikeList.Add(new PatientBike(username));
+            }
+             );
+            this.shellViewModel.DebugMessage = "Added Client";
 
         }
 

@@ -6,13 +6,14 @@
              xmlns:local="clr-namespace:WPFDoctorApplication.Views"
              xmlns:utils="clr-namespace:WPFDoctorApplication.Utils"
              mc:Ignorable="d" 
-             d:DesignHeight="620" d:DesignWidth="1240" Background="White">
+             d:DesignHeight="800" d:DesignWidth="1570" Background="White">
     <UserControl.Resources>
         <utils:ModelToViewModelConverter x:Key="ModelToViewModelConverter"/>
     </UserControl.Resources>
     
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
@@ -38,7 +39,19 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <UserControl Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="4" Content="{Binding SelectedPatientViewModel, UpdateSourceTrigger=PropertyChanged}"/>
+        <UserControl Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="4" Width="1050" Content="{Binding SelectedPatientViewModel, UpdateSourceTrigger=PropertyChanged}"/>
+        <StackPanel Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Bottom">
+            <Border BorderBrush="Black" BorderThickness="1">
+                <ScrollViewer  MinWidth="250" Height="400" VerticalScrollBarVisibility="Auto" >
+                    <ItemsControl ItemsSource="{Binding GlobalChatList}" FontSize="12"/>
+                </ScrollViewer>
+            </Border>
+            <TextBox Width="auto" MinHeight="35" AcceptsReturn="False" Text="{Binding GlobalChatMessage, UpdateSourceTrigger=PropertyChanged}" FontFamily="22">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding GlobalChatKeyDownCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
+        </StackPanel>
         <!--Row 2-->
         
     </Grid>

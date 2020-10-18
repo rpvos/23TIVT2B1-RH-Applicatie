@@ -7,7 +7,7 @@
              xmlns:utils="clr-namespace:WPFDoctorApplication.Utils"
              xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="610" d:DesignWidth="1050" Background="White" FontSize="28">
+             d:DesignHeight="800" d:DesignWidth="1050" Background="White" FontSize="28">
     <UserControl.Resources>
         <utils:PatientValueConverter x:Key="PatientValueConverter"/>
     </UserControl.Resources>

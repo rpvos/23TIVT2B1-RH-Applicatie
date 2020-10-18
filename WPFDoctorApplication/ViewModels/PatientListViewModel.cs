@@ -1,9 +1,11 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
+using System.Windows.Input;
 using WPFDoctorApplication.Models;
 using WPFDoctorApplication.Utils;
 
@@ -11,6 +13,7 @@ namespace WPFDoctorApplication.ViewModels
 {
     public class PatientListViewModel : CustomObservableObject
     {
+        private PatientBike _selectedPatientBike;
         private ShellViewModel shellViewModel;
         private ObservableCollection<PatientBike> _patientBikeList;
         public ObservableCollection<PatientBike> PatientBikeList
@@ -26,8 +29,10 @@ namespace WPFDoctorApplication.ViewModels
             } 
         }
         public CustomObservableObject SelectedPatientViewModel { get; set; }
-        //public ObservableCollection<PatientViewModel> ActivePatientViewModels { get; set; }
-        private PatientBike _selectedPatientBike;
+        public string GlobalChatMessage { get; set; }
+        public ICommand GlobalChatKeyDownCommand { get; set; }
+        public ObservableCollection<string> GlobalChatList { get; set; }
+
 
         public PatientBike SelectedPatientBike
         {
@@ -42,10 +47,15 @@ namespace WPFDoctorApplication.ViewModels
         {
             this.shellViewModel = shellViewModel;
             this.PatientBikeList = shellViewModel.PatientBikeList;
+            GlobalChatList = new ObservableCollection<string>();
+            GlobalChatKeyDownCommand = new RelayCommand(() => GlobalChatKeyDown()); ;
+        }
 
-            //this.PatientViewModelList = new ObservableCollection<PatientViewModel>(this.patientBikeList.Select(md => new PatientViewModel(md)));
-            //this.PatientViewModelList = this.patientBikeList.ConvertAll(x => new PatientViewModel(x));
-            //this.PatientViewModelList.Add(new PatientViewModel(new PatientBike("test")));
+        private void GlobalChatKeyDown()
+        {
+            GlobalChatList.Add("Global?? Doctor: " + GlobalChatMessage);
+            shellViewModel.DoctorClient.sendGlobalChatMessage(GlobalChatMessage);
+            GlobalChatMessage = "";
         }
     }
 }

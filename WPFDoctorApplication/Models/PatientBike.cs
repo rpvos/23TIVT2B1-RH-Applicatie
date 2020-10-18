@@ -15,7 +15,6 @@ namespace WPFDoctorApplication.Models
     /// </summary>
     public class PatientBike : CustomObservableObject
     {
-        private string _privateChatMessage;
         private DoctorClient doctorClient;
 
         public string Username { get; set; }
@@ -28,7 +27,7 @@ namespace WPFDoctorApplication.Models
         public ObservableCollection<string> PrivateChatList { get; set; }
         public ICommand PrivateChatKeyDownCommand { get; set; }
 
-        public string PrivateChatMessage { get { return _privateChatMessage; } set { _privateChatMessage = value;  } }
+        public string PrivateChatMessage { get; set; }
 
         public PatientBike(DoctorClient doctorClient, string username)
         {

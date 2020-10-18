@@ -103,9 +103,10 @@ namespace FietsDemo
             this.login.loginSucceeded();
         }
 
-     
-        
-
+        public void sendPrivateMessage(string message)
+        {
+            this.client.sendPrivateMessage(message);
+        }        
 
         public void startVR()
         {

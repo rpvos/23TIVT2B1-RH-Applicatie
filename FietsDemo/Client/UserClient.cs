@@ -143,12 +143,29 @@ namespace FietsDemo
 
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
+        public void sendPrivateMessage(string message)
+        {
+            WriteTextMessage(getPrivateMessageString(this.username, message));
+        }
+
+        private string getPrivateMessageString(string username, string message)
+        {
+            dynamic data = new
+            {
+                Username = username,
+                Message = message
+            };
+
+            return getJsonObject("privateMessageToDoctor", data);
+        }
 
         internal Task sendUpdatedValues(SharedItems.UpdateType valueType, double value)
         {
             WriteTextMessage(getUpdateMessageString(valueType, value));
             return Task.CompletedTask;
         }
+
+
 
 
         #endregion

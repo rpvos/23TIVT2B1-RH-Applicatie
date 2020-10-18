@@ -31,7 +31,7 @@ namespace Server
             this.server = server;
 
             this.buffer = new byte[1024];
-            this.crypto = new Crypto(client.GetStream(),handleData);
+            this.crypto = new Crypto(client.GetStream(), handleData);
 
 
             this.logger = new StringBuilder();
@@ -90,13 +90,17 @@ namespace Server
                         handleUpdateInformation(data);
                         break;
                     case "globalmessage":
-                        this.server.SendToPatients(getJsonObject("globalmessage",data));
+                        this.server.SendToPatients(getJsonObject("globalmessage", data));
                         break;
                     case "resistance":
                         this.server.sendResistanceToOneClient(data);
+                        this.server.sendResistanceToAllDoctors(data, this);
                         break;
                     case "privMessage":
                         this.server.sendPrivMessage(data);
+                        break;
+                    case "privateMessageToDoctor":
+                        this.server.sendPrivateMessageToDoctors(data);
                         break;
 
                     default:
@@ -135,10 +139,14 @@ namespace Server
             this.user = server.checkUser(username, password);
             if (user != null)
             {
-                if(user.getRole() == Role.Patient)
+                if (user.getRole() == Role.Patient)
                     sendAddUserMessage(username);
 
+                if (user.getRole() == Role.Doctor)
+                    this.server.addUsersToThisDoctorClient(this);
+
                 return user.getRole();
+
 
             }
             else
@@ -152,12 +160,22 @@ namespace Server
 
         public void sendResistance(string resistance)
         {
-            WriteTextMessage(getResistanceString(resistance));
+            WriteTextMessage(getResistanceString(resistance, this.user.getUsername()));
+        }
+
+        public void sendResistanceToDoctor(string resistance, string username)
+        {
+            WriteTextMessage(getResistanceString(resistance, username));
         }
 
         public void sendPrivMessage(string message)
         {
             WriteTextMessage(getMessageString(message));
+        }
+
+        public void sendPrivateMessageToDoctor(string username, string message)
+        {
+            WriteTextMessage(getMessageStringToDoctor(username, message));
         }
 
         private string getAddUserString(string username)
@@ -230,16 +248,30 @@ namespace Server
             return getJsonObject("message", data);
         }
 
-
-        private  string getResistanceString(string resistance)
+        private string getMessageStringToDoctor(string username, string message)
         {
             dynamic data = new
             {
-                Resistance = resistance
+                Message = message,
+                Username = username
+            };
+
+            return getJsonObject("message", data);
+        }
+
+
+        private string getResistanceString(string resistance, string username)
+        {
+            dynamic data = new
+            {
+                Resistance = resistance,
+                Username = username
             };
 
             return getJsonObject("Resistance", data);
         }
+
+
 
         /// <summary>
         /// Adds an value to the checksum of the message
@@ -260,7 +292,7 @@ namespace Server
             return json.ToString();
         }
 
-       
+
         #endregion
 
         #region send handlers
@@ -270,7 +302,10 @@ namespace Server
             if (role != Role.Invallid)
                 Console.WriteLine($"Login as {role}");
             else
+            {
+                server.RemoveThisClient(this);
                 Console.WriteLine("Login attempt failed");
+            }
 
             WriteTextMessage(getUserCredentialsResponse(role));
         }

@@ -12,15 +12,15 @@ namespace FietsDemo
     public class GUI
     {
 
-       private MainForm form;
-       private BluetoothBike program;
+        private MainForm form;
+        public BluetoothBike bluetoothBike { get; set; }
 
         public GUI(BluetoothBike program)
         {
-            this.program = program;
+            this.bluetoothBike = program;
         }
 
-       public void run()
+        public void run()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -37,12 +37,12 @@ namespace FietsDemo
 
         public void stopSimulator()
         {
-            this.program.stopSimulator();
+            this.bluetoothBike.stopSimulator();
         }
 
         public void startSimulator()
         {
-            this.program.startSimulator();
+            this.bluetoothBike.startSimulator();
         }
 
         public void setResistance(int resistance)
@@ -55,6 +55,6 @@ namespace FietsDemo
             this.form.addMessage(message);
         }
 
-   
+
     }
 }

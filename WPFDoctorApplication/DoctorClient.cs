@@ -46,30 +46,6 @@ namespace WPFDoctorApplication
             //this.PatientBikeList = shellViewModel.PatientBikeList;
         }
 
-        public void startLogin()
-        {
-
-            this.login = new Login(this);
-            //this.login.run();
-
-        }
-
-
-        public void Start()
-        {
-            ////startClient();
-
-            //Application.SetHighDpiMode(HighDpiMode.SystemAware);
-            //Application.EnableVisualStyles();
-
-            //this.mainForm = new DoctorForm(this);
-            ////ShowDialog() instead of Application.Run() could affect the working a bit
-            //this.mainForm.ShowDialog();
-            ////Application.Run(mainForm);
-        }
-
-
-
         public void StartClient(string username, string password)
         {
             this.server = new TcpClient("127.0.0.1", 8080);
@@ -141,6 +117,9 @@ namespace WPFDoctorApplication
                     case "AddUser":
                         AddUser(data);
                         break;
+                    case "message":
+                        AddMessage(data);
+                        break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -162,6 +141,21 @@ namespace WPFDoctorApplication
              );
             this.shellViewModel.DebugMessage = "Added Client";
 
+        }
+
+        private void AddMessage(JObject data)
+        {
+            string message = (string)data["Message"];
+            string username = (string)data["Username"];
+
+            foreach (PatientBike patientBike in PatientBikeList)
+            {
+                if (patientBike.Username.Equals(username))
+                    App.Current.Dispatcher.Invoke((System.Action)delegate
+                    {
+                        patientBike.PrivateChatList.Add(username + ": " + message);
+                    });
+            }
         }
 
         private void handleUpdate(JObject data)

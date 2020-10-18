@@ -40,7 +40,7 @@ namespace WPFDoctorApplication.Models
 
         private void PrivateChatKeyDown()
         {
-            PrivateChatList.Add(PrivateChatMessage);
+            PrivateChatList.Add("Doctor: " + PrivateChatMessage);
             doctorClient.sendPrivMessage(PrivateChatMessage, Username);
             PrivateChatMessage = "";
         }

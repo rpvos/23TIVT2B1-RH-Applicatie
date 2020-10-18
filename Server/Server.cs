@@ -52,6 +52,8 @@ namespace Server
             dataBase.Add("aardappel", new User("Piet", "aardappel", "321", Role.Patient));
 
             dataBase.Add("dokter", new User("dokter", "dokter", "123", Role.Doctor));
+            dataBase.Add("dokter2", new User("dokter2", "dokter2", "321", Role.Doctor));
+
         }
 
         #endregion
@@ -67,6 +69,11 @@ namespace Server
             }
 
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
+        }
+
+        public void RemoveThisClient(ServerClient client)
+        {
+            this.clients.Remove(client);
         }
 
         internal void Disconnect(ServerClient client)
@@ -93,6 +100,15 @@ namespace Server
 
         #region message methods
 
+        public void addUsersToThisDoctorClient(ServerClient doctorClient)
+        {
+            foreach (ServerClient client in this.clients)
+            {
+                if (client.user.getRole() == Role.Patient)
+                    doctorClient.sendAddUserMessage(client.user.getUsername());
+            }
+
+        }
         internal void broadcast(string message)
         {
             foreach (ServerClient client in clients)
@@ -125,13 +141,24 @@ namespace Server
         {
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
-            foreach(ServerClient client in clients)
+            foreach (ServerClient client in clients)
             {
 
-                if(client.user.getRole() == Role.Patient && client.user.getUsername() == username)
+                if (client.user.getRole() == Role.Patient && client.user.getUsername() == username)
                 {
                     client.sendResistance(resistance);
                 }
+            }
+        }
+
+        public void sendResistanceToAllDoctors(JObject data, ServerClient serverClient)
+        {
+            string resistance = (string)data["Resistance"];
+            string username = (string)data["Username"];
+            foreach (ServerClient client in clients)
+            {
+                if (client.user.getRole() == Role.Doctor && client != serverClient)
+                    client.sendResistanceToDoctor(resistance, username);
             }
         }
 
@@ -145,6 +172,20 @@ namespace Server
                 if (client.user.getRole() == Role.Patient && client.user.getUsername() == username)
                 {
                     client.sendPrivMessage(message);
+                }
+            }
+        }
+
+        public void sendPrivateMessageToDoctors(JObject data)
+        {
+            string message = (string)data["Message"];
+            string username = (string)data["Username"];
+            foreach (ServerClient client in clients)
+            {
+
+                if (client.user.getRole() == Role.Doctor)
+                {
+                    client.sendPrivateMessageToDoctor(username, message);
                 }
             }
         }

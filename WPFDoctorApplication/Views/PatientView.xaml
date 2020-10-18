@@ -41,8 +41,15 @@
         <TextBlock Grid.Column="1" Grid.Row="1"/>
         
         <!--Row 2-->
-        <wpf:CartesianChart Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="450" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20"/>
-        <wpf:CartesianChart Grid.Column="5" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="450" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20"/>
+        <wpf:CartesianChart Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="450" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20" Series="{Binding PatientBike.SpeedCollection}" LegendLocation="None" Hoverable="False" DataTooltip="{x:Null}">
+            <wpf:CartesianChart.AxisY>
+                <wpf:Axis Title="Speed" MinValue="0" MaxValue="144"/>
+            </wpf:CartesianChart.AxisY>
+            <wpf:CartesianChart.AxisX>
+                <wpf:Axis Title="Time" Labels="{Binding PatientBike.SpeedLabels}"/>
+            </wpf:CartesianChart.AxisX>
+        </wpf:CartesianChart>
+        
         <!--Row 3-->
         <TextBlock Grid.Column="1" Grid.Row="3" Text="Speed:"/>
         <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding PatientBike.Speed, Converter={StaticResource PatientValueConverter}, ConverterParameter=SPEED}"/>

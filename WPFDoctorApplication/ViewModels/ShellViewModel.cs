@@ -29,7 +29,7 @@ namespace WPFDoctorApplication.ViewModels
             Initialize();
 
             //TEST
-            PatientBikeList.Add(new PatientBike("TEST"));
+            PatientBikeList.Add(new PatientBike(DoctorClient, "TEST"));
         }
         public void Initialize()
         {

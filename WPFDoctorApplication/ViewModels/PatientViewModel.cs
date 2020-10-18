@@ -9,14 +9,11 @@ namespace WPFDoctorApplication.ViewModels
 {
     public class PatientViewModel : CustomObservableObject
     {
-        private double _speed;
         public PatientBike PatientBike { get; set; }
-        public double Speed { get { return _speed; } set
-            {
-                _speed = value;
-                OnPropertyChanged("Speed");
-            } 
-        }
+        public double Speed { get; }
+
+        //public double Speed { get {return PatientBike.Speed; } set { Speed = value; } }
+
         public string Username { get; set; }
         public PatientViewModel(PatientBike patientBike)
         {

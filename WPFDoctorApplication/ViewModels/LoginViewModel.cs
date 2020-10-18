@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using WPFDoctorApplication.Utils;
@@ -44,6 +45,9 @@ namespace WPFDoctorApplication.ViewModels
 
         private void Login()
         {
+            //Questionable threading
+            //Thread doctorClientThread = new Thread(() => doctorClient.StartClient(Username, Password));
+            //doctorClientThread.Start();            
             doctorClient.StartClient(Username, Password);
         }
     }

@@ -25,6 +25,7 @@ namespace WPFDoctorApplication
 
         private byte[] buffer;
         private string totalBuffer;
+        private int testCounter;
 
         private Login login;
         public string selectedUsername { get; set; }
@@ -156,7 +157,7 @@ namespace WPFDoctorApplication
             //App.Current.Dispatcher in order to avoid threading problems
             App.Current.Dispatcher.Invoke((System.Action)delegate
             {
-                this.PatientBikeList.Add(new PatientBike(username));
+                this.PatientBikeList.Add(new PatientBike(this, username));
             }
              );
             this.shellViewModel.DebugMessage = "Added Client";
@@ -169,32 +170,42 @@ namespace WPFDoctorApplication
 
             string username = (string)data["Username"];
             double value = (double)data["Value"];
-
-            foreach (PatientBike patientBike in PatientBikeList)
+            
+            //Somehow makes the GUI update quicker by invoking UI Main Thread, doesn't feel right
+            App.Current.Dispatcher.Invoke((System.Action)delegate
             {
-                if (patientBike.Username.Equals(username))
+                foreach (PatientBike patientBike in PatientBikeList)
                 {
-                    switch (type)
+                    if (patientBike.Username.Equals(username))
                     {
-                        case UpdateType.Heartrate:
-                            break;
-                        case UpdateType.Speed:
-                            patientBike.Speed = value;
-                            break;
-                        case UpdateType.AccumulatedPower:
-                            patientBike.AccumulatedPower = value;
-                            break;
-                        case UpdateType.InstantaniousPower:
-                            break;
-                        case UpdateType.AccumulatedDistance:
-                            break;
-                        case UpdateType.ElapsedTime:
-                            break;
-                        case UpdateType.Resistance:
-                            break;
+                        switch (type)
+                        {
+                            case UpdateType.Heartrate:
+                                patientBike.HeartRate = value;
+                                break;
+                            case UpdateType.Speed:
+                                patientBike.Speed = value;
+                                break;
+                            case UpdateType.AccumulatedPower:
+                                patientBike.AccumulatedPower = value;
+                                break;
+                            case UpdateType.InstantaniousPower:
+                                
+                                break;
+                            case UpdateType.AccumulatedDistance:
+                                patientBike.DistanceTraveled = value;
+                                break;
+                            case UpdateType.ElapsedTime:
+                                patientBike.ElapsedTime = value;
+                                break;
+                            case UpdateType.Resistance:
+                                //patientBike.Resistance = value;
+                                break;
+                        }
                     }
                 }
-            }
+            });
+        
 
             //if (username == this.selectedUsername)
             //{

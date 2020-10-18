@@ -24,5 +24,10 @@ namespace WPFDoctorApplication.Views
         {
             InitializeComponent();
         }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
     }
 }

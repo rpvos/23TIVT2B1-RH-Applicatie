@@ -191,7 +191,7 @@ namespace simulatie
                         {
                             file = fileNameModel,
                             cullbackfaces = true,
-                            animated = false,
+                            animated = anim,
                             animation = hasAnimation
                         }
                     }

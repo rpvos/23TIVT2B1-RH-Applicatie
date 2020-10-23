@@ -248,7 +248,7 @@ namespace TCP_naar_VR
                         //callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { 0, 0, 0 }, false, "no");
                     }
 
-                    callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "data/NetworkEngine/models/bike/bike_anim.fbx");
+                    callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike_anim.fbx", "bike", new int[] { 0, 0, 0 }, new int[] { 0, 0, 0 }, true, "Armature|Fietsen");
                     break;
 
                 case "scene/panel/clear":

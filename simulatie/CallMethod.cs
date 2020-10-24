@@ -16,6 +16,7 @@ namespace simulatie
         private Dictionary<string, string> panelId;
         private ArrayList routePoints;
 
+        //This class generates all the messages that will be send to the server
         public CallMethod(TcpClientVR tcpClient, Dictionary<string, string> objects)
         {
             this.tcpClient = tcpClient;
@@ -58,7 +59,6 @@ namespace simulatie
         {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TimeSetMessage.json");
 
-
             dynamic payloadData = new
             {
                 time = setTime
@@ -97,7 +97,6 @@ namespace simulatie
             };
 
             tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
-            Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
         }
 
         
@@ -238,6 +237,7 @@ namespace simulatie
             double lastInt = 0.0;
             double reduction = 1;
 
+            //Randomization for all the Terrain heights
             for (int i = 0; i < heights.Length; i++)
             {
                 if (i > (int)Math.Sqrt(size))
@@ -262,8 +262,6 @@ namespace simulatie
                     reduction += 0.2;
                     
                 }
-                
-                
                 lastInt = heights[i];
             }
 
@@ -462,6 +460,7 @@ namespace simulatie
             tcpClient.SendMessage(swapPanelMessage.SendDataPacket(payloadData));
         }
 
+        //Updates the panel with the new values
         internal void UpdatePanel(string panelId)
         {
             int textSize = 45;

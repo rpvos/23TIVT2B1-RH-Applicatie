@@ -158,7 +158,7 @@ namespace TCP_naar_VR
                     {
                         string name = (string)data2["name"];
                         string uuid = (string)data2["uuid"];
-                        //looks if an object already exists
+                        //Adds the object to the objects dictionary, and looks if an object already exists
                         try
                         {
                             objects.Add(name, uuid);
@@ -177,51 +177,50 @@ namespace TCP_naar_VR
                         {
                             
                             case "ground":
+                                //Adds 3 layers of groundTexture, grasses for the lower levels, rocks for higher levels
                                 callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_green_d.jpg", uuid, 0, 2, 1);
                                 callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_ground_d.jpg", uuid, 1, 3, 1);
                                 callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_rocky_d.jpg", uuid, 3, 7, 1);
                                 break;
 
                             case "tree":
+                                //Adds tree texture
                                 callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_05.png", "", uuid, 0, 10, 1);
                                 break;
 
                             case "panel":
+                                //Clears the panel
                                 callMethod.ClearPanel(uuid);
                                 break;
 
                             case "bike":
+                                //Scales the bike and lets the bike follow the route
                                 callMethod.UpdateNode(objects["bike"], objects["bike"], new double[] { 0, 0, 0 }, 0.015, new double[] { 0, 0, 0 });
-
-                                Console.WriteLine("ROUTE UUID TO FOLLOW: " + objects["route"]);
                                 callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new double[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
-                                
-                                if (this.camera != null)
+
+                                //Connects the camera and panel with the bike. Scales the objects correctly
+                                if (objects.ContainsKey("panel") && objects.ContainsKey("camera"))
                                 {
-                                    callMethod.UpdateNode(this.camera, objects["bike"], new double[] { -660, -150, 0 }, 200, new double[] { 0, 90, 0 });
-                                }
-                                if (objects.ContainsKey("panel"))
-                                {
-                                    callMethod.UpdateNode(objects["panel"], this.camera, new double[] { 1, 1.7, 1.9 }, 0.3, new double[] { 0, 0, 0 });                                   
+                                    callMethod.UpdateNode(objects["camera"], objects["bike"], new double[] { -660, -150, 0 }, 200, new double[] { 0, 90, 0 });
+                                    callMethod.UpdateNode(objects["panel"], objects["camera"], new double[] { 1, 1.7, 1.9 }, 0.3, new double[] { 0, 0, 0 });                                   
                                 }
                                 break;
                         }       
                     }           
                     break;
 
-                //prints the scene data
+                //Prints the scene data
                 case "scene/get":
                     Console.WriteLine("GOT A SCENE");
                     Console.WriteLine("Get scene status: " + data["status"]);
-                    //callMethod.ResetScene();
                     break;
 
-                //resets the scene
+                //Resets the scene
                 case "scene/reset":
                     callMethod.FindNode("GroundPlane");
                     break;
-                
-                //adds a route
+
+                //Adds a route
                 case "route/add":
                     JObject routeData = (JObject)data["data"];
                     string routeName = "route";
@@ -235,12 +234,10 @@ namespace TCP_naar_VR
 
                     }
 
-                    //Console.WriteLine("Added route to dictionary\nName: {0}\nuuid: {1}", name, uuid);
                     callMethod.AddRoad("data/NetworkEngine/textures/tarmac_normal.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", routeId);
                     break;
 
                 case "scene/node/update":
-                    Console.WriteLine();
                     break;
 
                 case "scene/node/addlayer":
@@ -248,32 +245,35 @@ namespace TCP_naar_VR
                     break;
 
                 case "scene/road/add":
+                    //Adds the bike
+                    //Prevention of adding multiple bikes.
                     if (!bikeAdded)
                     {
-                        callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike_anim.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "Armature|Fietsen", 0.1);
-                        
+                        callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike_anim.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "Armature|Fietsen", 0.1);                       
                         bikeAdded = true;
                     }
                     break;
 
                 case "scene/panel/clear":
-                    Console.WriteLine("GOT THROUGH THE CLEARING PANEL RETURN STATUS");
+                    //Updates the panel with the new values
                     callMethod.SetText("Welcome", objects["panel"], new double[] { 20, 50 }, 30.0);
                     callMethod.UpdatePanel(objects["panel"]);
                     break;
 
                 case "scene/node/find":
+                    //Finds a node
                     JArray nodeData = (JArray)data["data"];
-
                     nodeId = nodeData[0]["uuid"].ToString();
                     string nodeName = nodeData[0]["name"].ToString();
                     Console.WriteLine("UUID found: " + nodeId);
                     switch (nodeName)
                     {
+                        //Finds the camera and adds it to the objects
                         case "Camera":
-                            this.camera = nodeId;
+                            objects.Add("camera", nodeId);
                             break;
 
+                        //Deletes the Head, GroundPlane, RightHand and LeftHand from the VR
                         case "Head":
                             Console.WriteLine("head deleted");
                             callMethod.DeleteNode(nodeId);
@@ -284,7 +284,6 @@ namespace TCP_naar_VR
                             callMethod.DeleteNode(nodeId);
                             break;
                     }
-                   
                     break;
             }  
         }
@@ -296,7 +295,6 @@ namespace TCP_naar_VR
         {
             JObject data = (JObject)json["data"];
             string status = (string)data["status"];
-
             string id = (string)data["id"];
 
             if (status == "ok")
@@ -305,7 +303,7 @@ namespace TCP_naar_VR
                 this.id = id;
                 var date = DateTime.Now;
 
-                //calls all the first methods
+                //Calls all the first methods
                 callMethod.SetTime(date.Hour);
                 callMethod.GetScene();
                 callMethod.AddTerrain(40000);
@@ -327,7 +325,7 @@ namespace TCP_naar_VR
                     float scale = (float)(0.1 * random.Next(20));
 
                     Console.WriteLine(x + " " +  y);
-                    callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { x, y, 0 }, false, "no", scale);
+                    callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { 0, 0, 0 }, false, "no", scale);
                 }
 
             }
@@ -353,7 +351,7 @@ namespace TCP_naar_VR
             }
         }
 
-        //Set new routepoints for a new, non-existing route
+        //Set new routepoints for a route
         private void SetRoute()
         {
             callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, 0 });
@@ -366,6 +364,7 @@ namespace TCP_naar_VR
         #endregion
 
         #region Timer
+        //Sets a Timer for the panel
         private void SetTimer()
         {
             panelUpdateTimer = new System.Timers.Timer(50000);
@@ -374,6 +373,7 @@ namespace TCP_naar_VR
             panelUpdateTimer.Enabled = true;
         }
 
+        //Updates the panel when expired.
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
             if (objects.ContainsKey("panel"))
@@ -381,6 +381,7 @@ namespace TCP_naar_VR
                 callMethod.ClearPanel(objects["panel"]);
             }
             
+            //Needs to be updated with the values from the server when the VR is done! Do not forget!
             this.DT += 2.5;
             this.elapsedTime += 0.5;
         }

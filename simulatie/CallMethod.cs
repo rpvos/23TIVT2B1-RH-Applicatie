@@ -170,7 +170,7 @@ namespace simulatie
         }
 
         //Add a new object with node to the VR scene
-        internal void AddObjectNode(string fileNameModel, string objectNodeName, int[] pos, int[] rot, bool anim, string hasAnimation)
+        internal void AddObjectNode(string fileNameModel, string objectNodeName, int[] pos, int[] rot, bool anim, string hasAnimation, double objectScale)
         {
             TunnelMessage addObjectMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
             
@@ -185,14 +185,14 @@ namespace simulatie
                         transforms = new
                         {
                             position = pos,
-                            scale = 1,
+                            scale = objectScale,
                             rotation = rot
                         },
                         model = new
                         {
                             file = fileNameModel,
                             cullbackfaces = true,
-                            animated = false,
+                            animated = anim,
                             animation = hasAnimation
                         }
                     }

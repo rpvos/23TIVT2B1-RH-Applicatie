@@ -18,9 +18,8 @@ namespace TCP_naar_VR
         private NetworkStream stream;
         private TcpClient tcpClient;
         private Dictionary<string, string> objects;
-        private bool receiving;
+        private bool receiving, bikeAdded;     
         private string id, nodeId, camera;
-        private double time;
         private System.Timers.Timer panelUpdateTimer;
         private CallMethod callMethod;
         internal double speed { get; set; }
@@ -38,6 +37,7 @@ namespace TCP_naar_VR
             stream = tcpClient.GetStream();
             callMethod = new CallMethod(this, objects);
             receiving = true;
+            bikeAdded = false;
             SetTimer();            
             
             Thread receivingTCPDataThread = new Thread(new ThreadStart(Receive));
@@ -192,17 +192,18 @@ namespace TCP_naar_VR
                                 break;
 
                             case "bike":
+                                callMethod.UpdateNode(objects["bike"], objects["bike"], new double[] { 0, 0, 0 }, 0.015, new double[] { 0, 0, 0 });
+
                                 Console.WriteLine("ROUTE UUID TO FOLLOW: " + objects["route"]);
                                 callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new double[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
-
+                                
                                 if (this.camera != null)
                                 {
-                                    callMethod.UpdateNode(this.camera, objects["bike"], new double[] { -2.8, 0, 0 }, 1.0, new double[] { 0, 90, 0 });                           
-
+                                    callMethod.UpdateNode(this.camera, objects["bike"], new double[] { 0, 0, 0 }, 200, new double[] { 0, 90, 0 });
                                 }
                                 if (objects.ContainsKey("panel"))
                                 {
-                                    callMethod.UpdateNode(objects["panel"], this.camera, new double[] { 1.5, 1.5, 1 }, 0.5, new double[] { 0, 0, 0 });                                   
+                                    callMethod.UpdateNode(objects["panel"], this.camera, new double[] { 1.5, 1.5, 1 }, 0.3, new double[] { 0, 0, 0 });                                   
                                 }
                                 break;
                         }
@@ -249,9 +250,12 @@ namespace TCP_naar_VR
                     break;
 
                 case "scene/road/add":
-                    
-
-                    callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "data/NetworkEngine/models/bike/bike_anim.fbx");
+                    if (!bikeAdded)
+                    {
+                        callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike_anim.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "Armature|Fietsen", 0.1);
+                        
+                        bikeAdded = true;
+                    }
                     break;
 
                 case "scene/panel/clear":
@@ -325,7 +329,7 @@ namespace TCP_naar_VR
                     float scale = (float)(0.1 * random.Next(20));
 
                     Console.WriteLine(x + " " +  y);
-                    callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { x, y, 0 }, false, "no");
+                    callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { x, y, 0 }, false, "no", scale);
                 }
 
             }
@@ -366,7 +370,7 @@ namespace TCP_naar_VR
         #region Timer
         private void SetTimer()
         {
-            panelUpdateTimer = new System.Timers.Timer(500);
+            panelUpdateTimer = new System.Timers.Timer(50000);
             panelUpdateTimer.Elapsed += OnTimedEvent;
             panelUpdateTimer.AutoReset = true;
             panelUpdateTimer.Enabled = true;

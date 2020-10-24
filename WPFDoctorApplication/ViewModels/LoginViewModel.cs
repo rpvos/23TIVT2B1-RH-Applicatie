@@ -23,6 +23,7 @@ namespace WPFDoctorApplication.ViewModels
 
         public LoginViewModel(ShellViewModel shellViewModel, DoctorClient doctorClient)
         {
+            doctorClient.StartClient();
             ShellViewModel = shellViewModel;
             this.doctorClient = doctorClient;
             LoginCommand = new RelayCommand(() =>
@@ -48,7 +49,7 @@ namespace WPFDoctorApplication.ViewModels
             //Questionable threading
             //Thread doctorClientThread = new Thread(() => doctorClient.StartClient(Username, Password));
             //doctorClientThread.Start();            
-            doctorClient.StartClient(Username, Password);
+            doctorClient.senderUserCredentials(Username, Password);
         }
     }
 }

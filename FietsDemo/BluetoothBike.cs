@@ -84,15 +84,13 @@ namespace FietsDemo
             initialize();
         }
 
-        public void startClient(string username, string password)
+        public void startClient()
         {
-            this.client = new UserClient(username, password, this);
-
-            //Thread clientThread = new Thread(() =>
-            //{
-            //    this.client = new UserClient(username, password,this);
-            //});
-            //clientThread.Start();
+            Thread clientThread = new Thread(() =>
+            {
+                this.client = new UserClient(this);
+            });
+            clientThread.Start();
         }
 
         public void loginFailed()

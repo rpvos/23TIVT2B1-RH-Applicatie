@@ -166,8 +166,8 @@ namespace SharedItems
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.StackTrace);
-                Console.WriteLine(e.Message);
+                Console.WriteLine("A client disconnected");
+
             }
         }
 
@@ -179,7 +179,6 @@ namespace SharedItems
         {
             try
             {
-                Console.WriteLine("4");
                 int receivedBytes = networkStream.EndRead(ar);
 
                 // Add the content of the buffer to the total buffer
@@ -227,8 +226,7 @@ namespace SharedItems
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.StackTrace);
-                Console.WriteLine(e.Message);
+                Console.WriteLine("A client disconnected");
 
                 return;
             }
@@ -240,8 +238,7 @@ namespace SharedItems
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.StackTrace);
-                Console.WriteLine(e.Message);
+                Console.WriteLine("A client disconnected");
             }
 
         }

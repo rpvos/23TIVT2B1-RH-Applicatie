@@ -17,12 +17,13 @@ namespace FietsDemo
         {
             this.bluetoothBike = bluetoothBike;
             InitializeComponent();
+            this.bluetoothBike.startClient();
         }
 
         private void ButtonLogin_Click(object sender, EventArgs e)
         {
             if(UsernameTextbox.Text != "" && PasswordTextbox.Text != "")
-            this.bluetoothBike.startClient(UsernameTextbox.Text, PasswordTextbox.Text);
+            this.bluetoothBike.client.sendUserCredentials(UsernameTextbox.Text, PasswordTextbox.Text);
             
         }
 

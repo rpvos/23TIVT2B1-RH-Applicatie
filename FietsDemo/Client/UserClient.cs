@@ -16,19 +16,25 @@ namespace FietsDemo
         private TcpClient server;
         private NetworkStream stream;
         private BluetoothBike bluetoothBike;
+        public bool connected { get; set; }
 
         private Crypto crypto;
         private string username;
 
-        public UserClient(string username, string password, BluetoothBike bluetoothBike)
+        public UserClient(BluetoothBike bluetoothBike)
         {
             this.username = username;
             this.bluetoothBike = bluetoothBike;
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.crypto = new Crypto(server.GetStream(),handleData);
-            WriteTextMessage(getUserDetailsMessageString(username, password));
+            //WriteTextMessage(getUserDetailsMessageString(username, password));
 
+        }
+
+        public void sendUserCredentials(string username, string password)
+        {
+            WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
         private void WriteTextMessage(string message)

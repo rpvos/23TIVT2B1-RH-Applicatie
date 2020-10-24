@@ -47,7 +47,7 @@ namespace WPFDoctorApplication
             //this.PatientBikeList = shellViewModel.PatientBikeList;
         }
 
-        public void StartClient(string username, string password)
+        public void StartClient()
         {
             this.username = username;
             this.server = new TcpClient("127.0.0.1", 8080);
@@ -59,6 +59,10 @@ namespace WPFDoctorApplication
 
             //stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
+        }
+
+        public void senderUserCredentials(string username, string password)
+        {
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 

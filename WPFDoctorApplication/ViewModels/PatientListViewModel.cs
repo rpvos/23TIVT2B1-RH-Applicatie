@@ -31,9 +31,8 @@ namespace WPFDoctorApplication.ViewModels
         public CustomObservableObject SelectedPatientViewModel { get; set; }
         public string GlobalChatMessage { get; set; }
         public ICommand GlobalChatKeyDownCommand { get; set; }
+        public ICommand QuitCommand { get; set; }
         public ObservableCollection<string> GlobalChatList { get; set; }
-
-
         public PatientBike SelectedPatientBike
         {
             get { return _selectedPatientBike; }
@@ -48,6 +47,7 @@ namespace WPFDoctorApplication.ViewModels
             this.PatientBikeList = shellViewModel.PatientBikeList;
             GlobalChatList = new ObservableCollection<string>();
             GlobalChatKeyDownCommand = new RelayCommand(() => GlobalChatKeyDown()); ;
+            QuitCommand = new RelayCommand(Quit);
         }
 
         private void GlobalChatKeyDown()
@@ -55,6 +55,11 @@ namespace WPFDoctorApplication.ViewModels
             GlobalChatList.Add("Global?? Doctor: " + GlobalChatMessage);
             shellViewModel.DoctorClient.sendGlobalChatMessage(GlobalChatMessage);
             GlobalChatMessage = "";
+        }
+
+        private void Quit()
+        {
+
         }
     }
 }

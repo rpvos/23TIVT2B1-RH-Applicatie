@@ -52,6 +52,8 @@
                 </TextBox.InputBindings>
             </TextBox>
         </StackPanel>
+
+        <Button Grid.Column="3" Grid.Row="1" Content="Quit" FontSize="30" HorizontalAlignment="Right" Margin="20" Width="70" Command="{Binding QuitCommand}"/>
         <!--Row 2-->
         
     </Grid>

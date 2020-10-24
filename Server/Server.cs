@@ -14,7 +14,7 @@ namespace Server
     {
         #region private atributes
 
-        private List<ServerClient> clients;
+        public List<ServerClient> clients { get; set; }
         private TcpListener listener;
         public Dictionary<string, string> usernameAndResistance { get; set; }
         private Dictionary<string, User> dataBase;

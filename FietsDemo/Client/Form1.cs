@@ -28,6 +28,7 @@ namespace FietsDemo
 
         private void exitButton_Click(object sender, EventArgs e)
         {
+            this.gui.bluetoothBike.client.disconnect();
             Application.Exit();
         }
 

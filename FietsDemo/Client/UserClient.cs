@@ -27,8 +27,8 @@ namespace FietsDemo
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.crypto = new Crypto(server.GetStream(),handleData);
-
             WriteTextMessage(getUserDetailsMessageString(username, password));
+
         }
 
         private void WriteTextMessage(string message)
@@ -41,6 +41,7 @@ namespace FietsDemo
         {
             try
             {
+
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
                     return;
@@ -67,7 +68,7 @@ namespace FietsDemo
                         {
                             Console.WriteLine("Login failed");
                             this.bluetoothBike.loginFailed();
-                            disconnect();
+                            
                         }
                         break;
 
@@ -130,8 +131,8 @@ namespace FietsDemo
 
         public void disconnect()
         {
-            this.server.Close();
-            this.stream.Close();
+            WriteTextMessage(getDisconnectString(this.username));
+            this.crypto.disconnect();
         }
         #endregion
 
@@ -171,7 +172,15 @@ namespace FietsDemo
         #endregion
 
         #region message construction
+        private string getDisconnectString(string username)
+        {
+            dynamic data = new
+            {
+                Username = username
+            };
 
+            return getJsonObject("disconnect", data);
+        }
         private string getJsonObject(string type, dynamic data)
         {
             dynamic json = new

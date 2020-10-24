@@ -47,7 +47,7 @@ namespace WPFDoctorApplication.ViewModels
             this.PatientBikeList = shellViewModel.PatientBikeList;
             GlobalChatList = new ObservableCollection<string>();
             GlobalChatKeyDownCommand = new RelayCommand(() => GlobalChatKeyDown()); ;
-            QuitCommand = new RelayCommand(Quit);
+            QuitCommand = new RelayCommand<ICloseable>(Quit);
         }
 
         private void GlobalChatKeyDown()
@@ -57,9 +57,9 @@ namespace WPFDoctorApplication.ViewModels
             GlobalChatMessage = "";
         }
 
-        private void Quit()
+        private void Quit(ICloseable window)
         {
-
+            shellViewModel.DoctorClient.disconnect();
         }
     }
 }

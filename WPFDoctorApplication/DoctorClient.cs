@@ -19,6 +19,7 @@ namespace WPFDoctorApplication
 
         private ShellViewModel shellViewModel;
         private TcpClient server;
+        private string username;
 
         private List<string> usernames;
         private Crypto crypto;
@@ -48,6 +49,7 @@ namespace WPFDoctorApplication
 
         public void StartClient(string username, string password)
         {
+            this.username = username;
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.buffer = new byte[1024];
@@ -284,6 +286,15 @@ namespace WPFDoctorApplication
 
         #region message construction
 
+        private string getDisconnectString(string username)
+        {
+            dynamic data = new
+            {
+                Username = username
+            };
+
+            return getJsonObject("disconnect", data);
+        }
         private string getJsonObject(string type, dynamic data)
         {
             dynamic json = new
@@ -372,6 +383,16 @@ namespace WPFDoctorApplication
         private void sendCredentialMessage(string username, string password)
         {
             WriteTextMessage(getUserDetailsMessageString(username, password));
+        }
+        #endregion
+
+        #region disconnecting
+      
+
+        public void disconnect()
+        {
+            WriteTextMessage(getDisconnectString(this.username));
+            this.crypto.disconnect();
         }
         #endregion
     }

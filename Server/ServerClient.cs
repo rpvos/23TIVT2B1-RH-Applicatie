@@ -33,7 +33,6 @@ namespace Server
             this.buffer = new byte[1024];
             this.crypto = new Crypto(client.GetStream(), handleData);
 
-
             this.logger = new StringBuilder();
         }
 
@@ -102,6 +101,9 @@ namespace Server
                         break;
                     case "privateMessageToDoctor":
                         this.server.sendPrivateMessageToDoctors(data);
+                        break;
+                    case "disconnect":
+                        Disconnect();
                         break;
 
                     default:
@@ -320,6 +322,19 @@ namespace Server
             WriteTextMessage(getMessageString(message));
         }
 
+        #endregion
+
+        #region disconnecting
+        public void Disconnect()
+        {
+            this.server.clients.Remove(this);
+            this.server.usernameAndResistance.Remove(this.user.getUsername());
+            this.user.loggedIn = false;
+            this.server.Disconnect(this);
+            this.client.GetStream().Close();
+            this.client.Close();
+            Console.WriteLine(this.user.getUsername() + " disconnected");
+        }
         #endregion
     }
 }

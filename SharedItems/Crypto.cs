@@ -157,10 +157,18 @@ namespace SharedItems
             Array.Copy(lengthMessage, fullMessage, lengthMessage.Length);
             Array.Copy(dataAsBytes,0, fullMessage,lengthMessage.Length, dataAsBytes.Length);
 
-       
+
             //send the message
-            networkStream.Write(fullMessage, 0, fullMessage.Length);
-            networkStream.Flush();
+            try
+            {
+                networkStream.Write(fullMessage, 0, fullMessage.Length);
+                networkStream.Flush();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.Message);
+            }
         }
 
         /// <summary>
@@ -171,6 +179,7 @@ namespace SharedItems
         {
             try
             {
+                Console.WriteLine("4");
                 int receivedBytes = networkStream.EndRead(ar);
 
                 // Add the content of the buffer to the total buffer
@@ -199,9 +208,9 @@ namespace SharedItems
                     string message = DecryptStringFromBytes(messageInBytes);
 
                     // cut out the encoded extra characters                  
-                        if (length != totalLength)
-                            message = message.Substring(0, length);
-                   
+                    if (length != totalLength)
+                        message = message.Substring(0, length);
+
 
                     // Handle the message
                     handleMethod(message);
@@ -216,14 +225,25 @@ namespace SharedItems
                         totalLength = calculateTotalLength(out length);
                 }
             }
-            catch (IOException)
+            catch (Exception e)
             {
-                Console.WriteLine("Disconnected");
+                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.Message);
+
                 return;
             }
 
             // Listen for more messages 
-            networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+
+            try {   
+                networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.Message);
+            }
+
         }
 
         /// <summary>
@@ -242,6 +262,11 @@ namespace SharedItems
         }
 
         #endregion
+
+        public void disconnect()
+        {
+            this.networkStream.Close();
+        }
 
 
 

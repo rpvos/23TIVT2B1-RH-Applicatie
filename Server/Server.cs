@@ -16,6 +16,7 @@ namespace Server
 
         private List<ServerClient> clients;
         private TcpListener listener;
+        public Dictionary<string, string> usernameAndResistance { get; set; }
         private Dictionary<string, User> dataBase;
 
         #endregion
@@ -29,6 +30,7 @@ namespace Server
 
         public Server()
         {
+            this.usernameAndResistance = new Dictionary<string, string>();
             this.clients = new List<ServerClient>();
 
             this.dataBase = new Dictionary<string, User>();
@@ -85,6 +87,7 @@ namespace Server
             Console.WriteLine("Client disconnected");
         }
 
+
         internal User checkUser(string username, string password)
         {
             if (dataBase.ContainsKey(username))
@@ -105,9 +108,20 @@ namespace Server
             foreach (ServerClient client in this.clients)
             {
                 if (client.user.getRole() == Role.Patient)
-                    doctorClient.sendAddUserMessage(client.user.getUsername());
+                {
+                    string username = client.user.getUsername();
+                    doctorClient.sendAddUserMessage(username);
+                    doctorClient.sendResistanceToDoctor(this.usernameAndResistance[username], username);
+                }
             }
 
+        }
+
+        public void setResistancePerClient(JObject data)
+        {
+            string resistance = (string)data["Resistance"];
+            string username = (string)data["Username"];
+            this.usernameAndResistance[username] = resistance;
         }
         internal void broadcast(string message)
         {

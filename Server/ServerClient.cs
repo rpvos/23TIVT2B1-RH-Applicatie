@@ -95,6 +95,7 @@ namespace Server
                     case "resistance":
                         this.server.sendResistanceToOneClient(data);
                         this.server.sendResistanceToAllDoctors(data, this);
+                        this.server.setResistancePerClient(data);
                         break;
                     case "privMessage":
                         this.server.sendPrivMessage(data);
@@ -142,6 +143,7 @@ namespace Server
                 if (this.user.getRole() == Role.Patient)
                 {
                     sendAddUserMessage(username);
+                    this.server.usernameAndResistance.Add(username, "0");
                 }
 
                 if (this.user.getRole() == Role.Doctor)

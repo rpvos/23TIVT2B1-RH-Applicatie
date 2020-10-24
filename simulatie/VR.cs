@@ -182,7 +182,6 @@ namespace TCP_naar_VR
                                 callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_rocky_d.jpg", uuid, 3, 7, 1);
                                 break;
 
-                                    
                             case "tree":
                                 callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_05.png", "", uuid, 0, 10, 1);
                                 break;
@@ -199,15 +198,14 @@ namespace TCP_naar_VR
                                 
                                 if (this.camera != null)
                                 {
-                                    callMethod.UpdateNode(this.camera, objects["bike"], new double[] { 0, 0, 0 }, 200, new double[] { 0, 90, 0 });
+                                    callMethod.UpdateNode(this.camera, objects["bike"], new double[] { -660, -150, 0 }, 200, new double[] { 0, 90, 0 });
                                 }
                                 if (objects.ContainsKey("panel"))
                                 {
-                                    callMethod.UpdateNode(objects["panel"], this.camera, new double[] { 1.5, 1.5, 1 }, 0.3, new double[] { 0, 0, 0 });                                   
+                                    callMethod.UpdateNode(objects["panel"], this.camera, new double[] { 1, 1.7, 1.9 }, 0.3, new double[] { 0, 0, 0 });                                   
                                 }
                                 break;
-                        }
-                   
+                        }       
                     }           
                     break;
 
@@ -305,9 +303,9 @@ namespace TCP_naar_VR
             {
                 Console.WriteLine("Status for tunnel: {0}\nid: {1}", status, id);
                 this.id = id;
-                
-
                 var date = DateTime.Now;
+
+                //calls all the first methods
                 callMethod.SetTime(date.Hour);
                 callMethod.GetScene();
                 callMethod.AddTerrain(40000);

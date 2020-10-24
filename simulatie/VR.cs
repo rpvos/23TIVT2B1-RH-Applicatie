@@ -18,8 +18,8 @@ namespace TCP_naar_VR
         private NetworkStream stream;
         private TcpClient tcpClient;
         private Dictionary<string, string> objects;
-        private bool receiving, bikeAdded;     
-        private string id, nodeId, camera;
+        private bool receiving, bikeAdded;
+        private string id, nodeId;
         private System.Timers.Timer panelUpdateTimer;
         private CallMethod callMethod;
         internal double speed { get; set; }
@@ -196,13 +196,13 @@ namespace TCP_naar_VR
                             case "bike":
                                 //Scales the bike and lets the bike follow the route
                                 callMethod.UpdateNode(objects["bike"], objects["bike"], new double[] { 0, 0, 0 }, 0.015, new double[] { 0, 0, 0 });
-                                callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new double[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
+                                callMethod.FollowRoute(objects["route"], objects["bike"], 10, true, new double[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
 
                                 //Connects the camera and panel with the bike. Scales the objects correctly
                                 if (objects.ContainsKey("panel") && objects.ContainsKey("camera"))
                                 {
                                     callMethod.UpdateNode(objects["camera"], objects["bike"], new double[] { -660, -150, 0 }, 200, new double[] { 0, 90, 0 });
-                                    callMethod.UpdateNode(objects["panel"], objects["camera"], new double[] { 1, 1.7, 1.9 }, 0.3, new double[] { 0, 0, 0 });                                   
+                                    callMethod.UpdateNode(objects["panel"], objects["camera"], new double[] { 1, 1.7, 1.9 }, 0.3, new double[] { 0, 0, 0 });
                                 }
                                 break;
                         }       
@@ -317,15 +317,16 @@ namespace TCP_naar_VR
 
                 //Adds trees on random positions
                 Random random = new Random();
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 10; i++)
                 {
                     int x = -100 + random.Next(200);
                     int y = -100 + random.Next(200);
                     int treeNumber = random.Next(11);
                     float scale = (float)(0.1 * random.Next(20));
 
+                    //TODO fix height
                     Console.WriteLine(x + " " +  y);
-                    callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, y, 0 }, new int[] { 0, 0, 0 }, false, "no", scale);
+                    callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, 0, y }, new int[] { 0, 0, 0 }, false, "no", scale);
                 }
 
             }
@@ -354,10 +355,29 @@ namespace TCP_naar_VR
         //Set new routepoints for a route
         private void SetRoute()
         {
-            callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, 0 });
+            //TODO make a nice route
+            //callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 10, 0, 0 });
+            //callMethod.NewRoutePoints(new int[] { 20, 0, 0 }, new int[] { 10, 0, 0 });
+            //callMethod.NewRoutePoints(new int[] { 20, 0, -20 }, new int[] { 0, 0, -10 });
+            //callMethod.NewRoutePoints(new int[] { 0, 0, -20 }, new int[] { 0, 0, 10 });
+
+            callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 8, 0, 0 });
             callMethod.NewRoutePoints(new int[] { 20, 0, 0 }, new int[] { 10, 0, 0 });
-            callMethod.NewRoutePoints(new int[] { 20, 0, -20 }, new int[] { 0, 0, -10 });
-            callMethod.NewRoutePoints(new int[] { 0, 0, -20 }, new int[] { 0, 0, 10 });
+            callMethod.NewRoutePoints(new int[] { 30, 0, -15 }, new int[] { 10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 50, 0, -15 }, new int[] { 10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 70, 0, 10 }, new int[] { 0, 0, 10 });
+            callMethod.NewRoutePoints(new int[] { 65, 0, 80 }, new int[] { -20, 0, -20 });
+            callMethod.NewRoutePoints(new int[] { 40, 0, 60 }, new int[] { -10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 20, 0, 70 }, new int[] { -10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 0, 0, 30 }, new int[] { -10, 0, -10 });
+            callMethod.NewRoutePoints(new int[] { -50, 0, 70 }, new int[] { -10, 0, -10 });
+            callMethod.NewRoutePoints(new int[] { -70, 0, 30 }, new int[] { 3, 0, -5 });
+            callMethod.NewRoutePoints(new int[] { -50, 0, 0 }, new int[] { -4, 0, -5 });
+            callMethod.NewRoutePoints(new int[] { -40, 0, -60 }, new int[] { 10, 0, 8 });
+            callMethod.NewRoutePoints(new int[] { 60, 0, -60 }, new int[] { 10, 0, 8 });
+            callMethod.NewRoutePoints(new int[] { 65, 0, -40 }, new int[] { -10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 30, 0,  -30}, new int[] { 20, 0, 20 });
+            callMethod.NewRoutePoints(new int[] { -20, 0, -15 }, new int[] { 20, 0, 20 });
 
             callMethod.AddRoute();
         }

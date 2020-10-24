@@ -181,7 +181,7 @@ namespace simulatie
                     name = objectNodeName,
                     components = new
                     {
-                        transforms = new
+                        transform = new
                         {
                             position = pos,
                             scale = objectScale,

@@ -28,7 +28,7 @@ namespace Server
             if(lastUpdate.TryGetValue(valueType,out lastUpdateForThisValueType))
             {
                 // Check if the lastUpdateForThisValueType is longer then a second ago
-                if (DateTime.Now.CompareTo(lastUpdateForThisValueType.AddSeconds(1)) <= 0)
+                if (DateTime.Now.CompareTo(lastUpdateForThisValueType.AddSeconds(1)) >= 0)
                 {
                     // The lastUpdateForThisValueType is longer ago or equal to 1 second
                     lastUpdate.Add(valueType, DateTime.Now);

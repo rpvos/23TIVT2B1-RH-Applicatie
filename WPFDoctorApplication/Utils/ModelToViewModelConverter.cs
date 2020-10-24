@@ -17,12 +17,13 @@ namespace WPFDoctorApplication.Utils
             if (value != null)
             {
                 List<PatientBike> patientList = (List<PatientBike>)value;
-                List<PatientViewModel> convertedList = patientList.ConvertAll(x => new PatientViewModel(x));
+                List<PatientViewModel> convertedList = patientList.ConvertAll(x => new PatientViewModel(x, x.DoctorClient));
                 return convertedList;
             }
             else if (value as PatientBike != null)
             {
-                return new PatientViewModel((PatientBike)value);
+                //return new PatientViewModel((PatientBike)value);
+                throw new NotImplementedException();
             }
             //else if (value as ObservableCollection<PatientBike> != null)
             //{

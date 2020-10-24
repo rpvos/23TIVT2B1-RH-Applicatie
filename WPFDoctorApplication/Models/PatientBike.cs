@@ -19,11 +19,11 @@ namespace WPFDoctorApplication.Models
     /// </summary>
     public class PatientBike : CustomObservableObject
     {
-        private DoctorClient doctorClient;
         private double _speed;
 
         //This has to change for performance
         private bool IsReading = true;
+        public DoctorClient DoctorClient;
 
         public double Speed
         {
@@ -41,7 +41,7 @@ namespace WPFDoctorApplication.Models
         public double DistanceTraveled { get; set; }
         public double AccumulatedPower { get; set; }
         public double ElapsedTime { get; set; }
-        public int Resistance { get; set; }
+        public int ResistanceValue { get; set; }
         public double HeartRate { get; set; }
         public ObservableCollection<string> PrivateChatList { get; set; }
         public ICommand PrivateChatKeyDownCommand { get; set; }
@@ -56,7 +56,7 @@ namespace WPFDoctorApplication.Models
             this.Username = username;
             PrivateChatList = new ObservableCollection<string>();
             PrivateChatKeyDownCommand = new RelayCommand(() => PrivateChatKeyDown()); ;
-            this.doctorClient = doctorClient;
+            this.DoctorClient = doctorClient;
 
             InitializeGraphs();
         }
@@ -65,7 +65,7 @@ namespace WPFDoctorApplication.Models
         private void PrivateChatKeyDown()
         {
             PrivateChatList.Add("Doctor: " + PrivateChatMessage);
-            doctorClient.sendPrivMessage(PrivateChatMessage, Username);
+            DoctorClient.sendPrivMessage(PrivateChatMessage, Username);
             PrivateChatMessage = "";
         }
 

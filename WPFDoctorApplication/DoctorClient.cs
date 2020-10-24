@@ -120,7 +120,9 @@ namespace WPFDoctorApplication
                     case "message":
                         AddMessage(data);
                         break;
-
+                    case "resistance":
+                        handleUpdate(data);
+                        break;
                     default:
                         Console.WriteLine("Invalid type");
                         break;
@@ -193,7 +195,8 @@ namespace WPFDoctorApplication
                                 patientBike.ElapsedTime = value;
                                 break;
                             case UpdateType.Resistance:
-                                //patientBike.Resistance = value;
+                                patientBike.ResistanceValue = (int)value;
+                                //Console.WriteLine("Value changed");
                                 break;
                         }
                     }

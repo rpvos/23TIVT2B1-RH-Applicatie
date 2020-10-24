@@ -38,10 +38,9 @@ namespace WPFDoctorApplication.ViewModels
         {
             get { return _selectedPatientBike; }
             set { _selectedPatientBike = value;
-                SelectedPatientViewModel = new PatientViewModel(value);
+                SelectedPatientViewModel = new PatientViewModel(value, value.DoctorClient);
             }
         }
-
 
         public PatientListViewModel(ShellViewModel shellViewModel)
         {

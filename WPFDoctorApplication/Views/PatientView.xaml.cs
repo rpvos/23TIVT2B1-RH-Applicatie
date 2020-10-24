@@ -23,11 +23,13 @@ namespace WPFDoctorApplication.Views
         public PatientView()
         {
             InitializeComponent();
-        }
+        }        
 
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-
+            //Slider slider = sender as Slider;
+            PatientViewModel patientViewModel = (PatientViewModel)DataContext;
+            patientViewModel.SendResistance();
         }
     }
 }

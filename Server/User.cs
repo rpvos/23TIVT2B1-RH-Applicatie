@@ -37,7 +37,5 @@ namespace Server
         {
             return this.username;
         }
-
-
     }
 }

@@ -268,7 +268,7 @@ namespace Server
                 Username = username
             };
 
-            return getJsonObject("Resistance", data);
+            return getJsonObject("resistance", data);
         }
 
 

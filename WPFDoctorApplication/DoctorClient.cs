@@ -121,7 +121,7 @@ namespace WPFDoctorApplication
                         AddMessage(data);
                         break;
                     case "resistance":
-                        handleUpdate(data);
+                        setResistance(data);
                         break;
                     default:
                         Console.WriteLine("Invalid type");
@@ -138,7 +138,18 @@ namespace WPFDoctorApplication
             //App.Current.Dispatcher in order to avoid threading problems
             App.Current.Dispatcher.Invoke((System.Action)delegate
             {
-                this.PatientBikeList.Add(new PatientBike(this, username));
+                bool contains = false;
+                foreach (PatientBike bike in this.PatientBikeList)
+                {
+                    if (bike.Username == username) {
+                        contains = true;
+                        break;
+                    }
+
+                }
+
+                if(!contains)
+                    this.PatientBikeList.Add(new PatientBike(this, username));
             }
              );
             this.shellViewModel.DebugMessage = "Added Client";
@@ -160,6 +171,14 @@ namespace WPFDoctorApplication
             }
         }
 
+        public void setResistance(JObject data)
+        {
+            string username = (string)data["Username"];
+            double resistance = (double)data["Resistance"];
+
+            typeDivider(UpdateType.Resistance, username, resistance);
+        }
+
         private void handleUpdate(JObject data)
         {
             UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
@@ -170,38 +189,9 @@ namespace WPFDoctorApplication
             //Somehow makes the GUI update quicker by invoking UI Main Thread, doesn't feel right
             App.Current.Dispatcher.Invoke((System.Action)delegate
             {
-                foreach (PatientBike patientBike in PatientBikeList)
-                {
-                    if (patientBike.Username.Equals(username))
-                    {
-                        switch (type)
-                        {
-                            case UpdateType.Heartrate:
-                                patientBike.HeartRate = value;
-                                break;
-                            case UpdateType.Speed:
-                                patientBike.Speed = value;
-                                break;
-                            case UpdateType.AccumulatedPower:
-                                patientBike.AccumulatedPower = value;
-                                break;
-                            case UpdateType.InstantaniousPower:
-                                
-                                break;
-                            case UpdateType.AccumulatedDistance:
-                                patientBike.DistanceTraveled = value;
-                                break;
-                            case UpdateType.ElapsedTime:
-                                patientBike.ElapsedTime = value;
-                                break;
-                            case UpdateType.Resistance:
-                                patientBike.ResistanceValue = (int)value;
-                                //Console.WriteLine("Value changed");
-                                break;
-                        }
-                    }
-                }
+                typeDivider(type, username, value);
             });
+
         
 
             //if (username == this.selectedUsername)
@@ -237,6 +227,41 @@ namespace WPFDoctorApplication
             //            break;
             //    }
             //}
+        }
+
+        public void typeDivider(UpdateType type, string username, double value)
+        {
+            foreach (PatientBike patientBike in PatientBikeList)
+            {
+                if (patientBike.Username.Equals(username))
+                {
+                    switch (type)
+                    {
+                        case UpdateType.Heartrate:
+                            patientBike.HeartRate = value;
+                            break;
+                        case UpdateType.Speed:
+                            patientBike.Speed = value;
+                            break;
+                        case UpdateType.AccumulatedPower:
+                            patientBike.AccumulatedPower = value;
+                            break;
+                        case UpdateType.InstantaniousPower:
+
+                            break;
+                        case UpdateType.AccumulatedDistance:
+                            patientBike.DistanceTraveled = value;
+                            break;
+                        case UpdateType.ElapsedTime:
+                            patientBike.ElapsedTime = value;
+                            break;
+                        case UpdateType.Resistance:
+                            patientBike.ResistanceValue = (int)value;
+                            //Console.WriteLine("Value changed");
+                            break;
+                    }
+                }
+            }
         }
 
         private bool handleUserCredentialsResponse(JObject data)

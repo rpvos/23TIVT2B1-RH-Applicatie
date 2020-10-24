@@ -75,7 +75,7 @@ namespace FietsDemo
                         AddChatMessage(data);
                             break;
 
-                    case "Resistance":
+                    case "resistance":
                         setResistance(data);
                         break;
                     case "message":

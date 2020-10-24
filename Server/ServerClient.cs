@@ -139,10 +139,12 @@ namespace Server
             this.user = server.checkUser(username, password);
             if (user != null)
             {
-                if (user.getRole() == Role.Patient)
+                if (this.user.getRole() == Role.Patient)
+                {
                     sendAddUserMessage(username);
+                }
 
-                if (user.getRole() == Role.Doctor)
+                if (this.user.getRole() == Role.Doctor)
                     this.server.addUsersToThisDoctorClient(this);
 
                 return user.getRole();

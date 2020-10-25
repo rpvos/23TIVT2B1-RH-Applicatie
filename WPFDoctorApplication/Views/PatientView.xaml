@@ -48,7 +48,7 @@
                 <wpf:Axis Title="Speed" MinValue="0" MaxValue="144"/>
             </wpf:CartesianChart.AxisY>
             <wpf:CartesianChart.AxisX>
-                <wpf:Axis Title="Time" Labels="{Binding PatientBike.SpeedLabels}"/>
+                <wpf:Axis Title="Time" Labels="{Binding SpeedLabels}"/>
             </wpf:CartesianChart.AxisX>
         </wpf:CartesianChart>
         
@@ -65,7 +65,7 @@
             </Border>
             <TextBox Width="auto" MinHeight="35" AcceptsReturn="False" Text="{Binding PatientBike.PrivateChatMessage, UpdateSourceTrigger=PropertyChanged}" FontFamily="22">
                 <TextBox.InputBindings>
-                    <KeyBinding Key="Enter" Command="{Binding PatientBike.PrivateChatKeyDownCommand}"/>
+                    <KeyBinding Key="Enter" Command="{Binding PrivateChatKeyDownCommand}"/>
                 </TextBox.InputBindings>
             </TextBox>
         </StackPanel>

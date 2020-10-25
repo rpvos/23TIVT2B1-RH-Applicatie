@@ -29,18 +29,12 @@ namespace WPFDoctorApplication
         private int testCounter;
 
         private Login login;
-        public string selectedUsername { get; set; }
+        public string SelectedUsername { get; set; }
         public ObservableCollection<PatientBike> PatientBikeList;
-
-        //static void Main()
-        //{
-        //    DoctorClient doctorServer = new DoctorClient();
-        //    doctorServer.startLogin();
-        //}
 
         public DoctorClient(ShellViewModel shellViewModel)
         {
-            this.selectedUsername = "-1";
+            this.SelectedUsername = "-1";
             this.shellViewModel = shellViewModel;
             PatientBikeList = new ObservableCollection<PatientBike>();
             this.shellViewModel.PatientBikeList = PatientBikeList;
@@ -49,7 +43,6 @@ namespace WPFDoctorApplication
 
         public void StartClient()
         {
-            this.username = username;
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.buffer = new byte[1024];

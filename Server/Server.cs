@@ -157,13 +157,13 @@ namespace Server
         public void addUsersToThisDoctorClient(ServerClient doctorClient)
         {
             foreach (ServerClient client in this.Clients)
-            {
-                if (client.user.getRole() == Role.Patient)
-                {
-                    string username = client.user.getUsername();
-                    doctorClient.sendAddUserMessage(username);
-                    doctorClient.sendResistanceToDoctor(this.usernameAndResistance[username], username);
-                }
+            {                
+                    if (client.user?.getRole() == Role.Patient)
+                    {
+                        string username = client.user.getUsername();
+                        doctorClient.sendAddUserMessage(username);
+                        doctorClient.sendResistanceToDoctor(this.usernameAndResistance[username], username);
+                    }               
             }
 
         }

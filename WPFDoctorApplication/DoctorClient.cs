@@ -75,6 +75,11 @@ namespace WPFDoctorApplication
         {
             WriteTextMessage(getResistanceString(resistance, username));
         }
+
+        public void sendInSession(bool inSession, string username)
+        {
+            WriteTextMessage(getInSessionString(inSession, username));
+        }
         #endregion
 
         #region handle received data
@@ -312,7 +317,7 @@ namespace WPFDoctorApplication
             return getJsonObject("message", data);
         }
 
-        private string getResistanceString(string resistance, String username)
+        private string getResistanceString(string resistance, string username)
         {
             dynamic data = new
             {
@@ -323,7 +328,18 @@ namespace WPFDoctorApplication
             return getJsonObject("resistance", data);
         }
 
-        private string getPrivMessageString(string message, String username)
+        private string getInSessionString(bool inSession, string username)
+        {
+            dynamic data = new
+            {
+                InSession = inSession,
+                Username = username
+            };
+
+            return getJsonObject("inSession", data);
+        }
+
+        private string getPrivMessageString(string message, string username)
         {
             dynamic data = new
             {

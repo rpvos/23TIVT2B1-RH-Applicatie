@@ -68,7 +68,7 @@ namespace Server
 
         #endregion
 
-        #region handle recieved data
+        #region handle received data
         private void handleData(string packet)
         {
             try
@@ -105,6 +105,9 @@ namespace Server
                     case "disconnect":
                         Disconnect();
                         break;
+                    case "inSession":
+                        StartAndStopSession(data);
+                        break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -115,6 +118,20 @@ namespace Server
             {
                 Console.WriteLine(packet);
                 Console.WriteLine("Invalid message");
+            }
+        }
+
+        public void StartAndStopSession(JObject data)
+        {
+            string username = (string)data["Username"];
+            bool inSession = (bool)data["InSession"];
+            if (inSession)
+            {
+                //TODO start recording
+            }
+            else
+            {
+                //TODO stop recording
             }
         }
 

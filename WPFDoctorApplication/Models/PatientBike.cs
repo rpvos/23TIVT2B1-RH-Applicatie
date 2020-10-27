@@ -87,6 +87,7 @@ namespace WPFDoctorApplication.Models
         public void StartSession()
         {
             IsInSession = !IsInSession;
+            this.DoctorClient.sendInSession(IsInSession, this.Username);
         }
     }
 }

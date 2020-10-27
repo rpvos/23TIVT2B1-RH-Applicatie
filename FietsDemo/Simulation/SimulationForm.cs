@@ -43,8 +43,7 @@ namespace FietsDemo
                 i = 40;
             }
            SpeedTextBox.Text = i + "";
-            this.BikeSimulator.setSpeed((byte)i);
-
+           this.BikeSimulator.setSpeed((byte)i);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -57,7 +56,6 @@ namespace FietsDemo
             }
             SpeedTextBox.Text = i + "";
             this.BikeSimulator.setSpeed((byte)i);
-
         }
 
 
@@ -71,7 +69,6 @@ namespace FietsDemo
             }
             HeartrateTextBox.Text = i + "";
             this.BikeSimulator.setHeartRate((byte)i);
-
         }
 
         private void minHeartrate_Click(object sender, EventArgs e)
@@ -84,7 +81,6 @@ namespace FietsDemo
             }
             HeartrateTextBox.Text = i + "";
             this.BikeSimulator.setHeartRate((byte)i);
-
         }
 
         void changeHeartrate(object sender, MouseEventArgs e)
@@ -99,9 +95,6 @@ namespace FietsDemo
                 }
                 HeartrateTextBox.Text = i + "";
                 this.BikeSimulator.setHeartRate((byte)i);
-
-
-
             }
             else if(e.Delta < 0)
             {
@@ -113,9 +106,6 @@ namespace FietsDemo
                 }
                 HeartrateTextBox.Text = i + "";
                 this.BikeSimulator.setHeartRate((byte)i);
-
-
-
             }
 
         }

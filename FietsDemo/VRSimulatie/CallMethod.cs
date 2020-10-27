@@ -15,6 +15,7 @@ namespace simulatie
         private TcpClientVR tcpClient;
         private Dictionary<string, string> panelId;
         private ArrayList routePoints;
+        private int minutes;
 
         //This class generates all the messages that will be send to the server
         public CallMethod(TcpClientVR tcpClient, Dictionary<string, string> objects)
@@ -22,34 +23,35 @@ namespace simulatie
             this.tcpClient = tcpClient;
             this.panelId = objects;
             this.routePoints = new ArrayList();
+            this.minutes = 0;
         }
 
         #region Scene
         //Get the VR scene that is in use
         internal void GetScene()
         {
-            TunnelMessage getSceneMessage = tcpClient.GetTunnelMessage("SceneGet.json");
+            TunnelMessage getSceneMessage = this.tcpClient.GetTunnelMessage("SceneGet.json");
 
             dynamic payload = new
             {
                 id = "scene/get"
             };
 
-            tcpClient.SendMessage(getSceneMessage.SendDataPacket(payload));
+            this.tcpClient.SendMessage(getSceneMessage.SendDataPacket(payload));
         }
 
         //Reset the whole VR scene
         internal void ResetScene()
         {
             Console.WriteLine("RESET SCENE CALLED");
-            TunnelMessage resetMessage = tcpClient.GetTunnelMessage("SceneReset.json");
+            TunnelMessage resetMessage = this.tcpClient.GetTunnelMessage("SceneReset.json");
 
             dynamic payloadData = new
             {
                 id = "scene/reset"
             };
 
-            tcpClient.SendMessage(resetMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(resetMessage.SendDataPacket(payloadData));
         }       
         #endregion 
 
@@ -57,14 +59,14 @@ namespace simulatie
         //Set the time in the VR scene
         internal void SetTime(double setTime)
         {
-            TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TimeSetMessage.json");
+            TunnelMessage timeMessage = this.tcpClient.GetTunnelMessage("TimeSetMessage.json");
 
             dynamic payloadData = new
             {
                 time = setTime
             };
 
-            tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
         }
         #endregion
 
@@ -72,7 +74,7 @@ namespace simulatie
         //Add a ground node to the VR scene on which you can add texture
         internal void AddGroundNode(string nodeName, int[] pos, int[] rot)
         {
-            TunnelMessage nodeMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
+            TunnelMessage nodeMessage = this.tcpClient.GetTunnelMessage("NodeAdd.json");
 
             dynamic payloadData = new
             {
@@ -96,7 +98,7 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
         }
 
         
@@ -130,13 +132,13 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));           
+            this.tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));           
         }
 
         //Find a specific node from the VR scene
         internal void FindNode(string nodeName)
         {
-            TunnelMessage findNodeMessage = tcpClient.GetTunnelMessage("NodeFind.json");
+            TunnelMessage findNodeMessage = this.tcpClient.GetTunnelMessage("NodeFind.json");
 
             dynamic payloadData = new
             {
@@ -148,13 +150,13 @@ namespace simulatie
             };
             
             Console.WriteLine(findNodeMessage.SendDataPacket(payloadData));
-            tcpClient.SendMessage(findNodeMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(findNodeMessage.SendDataPacket(payloadData));
         }
 
         //Delete a specific node from the VR scene
         internal void DeleteNode(string nodeId)
         {
-            TunnelMessage deleteNodeMessage = tcpClient.GetTunnelMessage("NodeDelete.json");
+            TunnelMessage deleteNodeMessage = this.tcpClient.GetTunnelMessage("NodeDelete.json");
 
             dynamic payloadData = new
             {
@@ -165,13 +167,13 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(deleteNodeMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(deleteNodeMessage.SendDataPacket(payloadData));
         }
 
         //Add a new object with node to the VR scene
         internal void AddObjectNode(string fileNameModel, string objectNodeName, int[] pos, int[] rot, bool anim, string hasAnimation, double objectScale)
         {
-            TunnelMessage addObjectMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
+            TunnelMessage addObjectMessage = this.tcpClient.GetTunnelMessage("NodeAdd.json");
             
             dynamic payloadData = new
             {
@@ -198,13 +200,13 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(addObjectMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(addObjectMessage.SendDataPacket(payloadData));
         }
 
         //Bind a specific node to a parent node, and update it
         internal void UpdateNode(string nodeId, string parentId, double[] pos,double transScale, double[] rot)
         {
-            TunnelMessage updateMessage = tcpClient.GetTunnelMessage("NodeUpdate.json");
+            TunnelMessage updateMessage = this.tcpClient.GetTunnelMessage("NodeUpdate.json");
 
             dynamic payload = new
             {
@@ -222,7 +224,7 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(updateMessage.SendDataPacket(payload));
+            this.tcpClient.SendMessage(updateMessage.SendDataPacket(payload));
         }
         #endregion
 
@@ -230,7 +232,7 @@ namespace simulatie
         //Add a height map to the terrain
         internal void AddTerrain(int size)
         {
-            TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TerrainAdd.json");
+            TunnelMessage timeMessage = this.tcpClient.GetTunnelMessage("TerrainAdd.json");
 
             double[] heights = new double[size];
             Random random = new Random();
@@ -278,7 +280,7 @@ namespace simulatie
 
             };
             
-            tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
         }
 
         
@@ -286,7 +288,7 @@ namespace simulatie
         //Add texture to the VR scene
         internal void AddTexture(string fileNormal, string fileDiffuse, string uuid, int minimumHeight, int maximumHeight, int fadeDistance)
         {
-            TunnelMessage textureMessage = tcpClient.GetTunnelMessage("AddTexture.json");
+            TunnelMessage textureMessage = this.tcpClient.GetTunnelMessage("AddTexture.json");
 
             dynamic payloadData = new
             {
@@ -302,13 +304,13 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(textureMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(textureMessage.SendDataPacket(payloadData));
         }
 
         //Add a new road to the VR scene
         internal void AddRoad(string normalTexture, string diffuseTexture, string specularTexture, string uuid)
         {
-            TunnelMessage roadMessage = tcpClient.GetTunnelMessage("RoadSetMessage.json");
+            TunnelMessage roadMessage = this.tcpClient.GetTunnelMessage("RoadSetMessage.json");
 
             dynamic payloadData = new
             {
@@ -323,7 +325,7 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(roadMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(roadMessage.SendDataPacket(payloadData));
         }
         #endregion
 
@@ -332,7 +334,7 @@ namespace simulatie
         internal void AddRoute()
         {
             ArrayList points = routePoints;
-            TunnelMessage routeMessage = tcpClient.GetTunnelMessage("RouteSetMessage.json");
+            TunnelMessage routeMessage = this.tcpClient.GetTunnelMessage("RouteSetMessage.json");
             JArray nodesArray = new JArray();
 
             foreach (RoutePoint p in points)
@@ -353,7 +355,7 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(routeMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(routeMessage.SendDataPacket(payloadData));
         }
 
         //Add new routepoints to the routePoints array
@@ -377,7 +379,7 @@ namespace simulatie
         //Let an object follow a set route with a specific nodeID
         internal void FollowRoute(string routeId, string nodeId, double followSpeed, bool heightFollow, double[]rotOff, int[] posOff)
         {
-            TunnelMessage followRouteMessage = tcpClient.GetTunnelMessage("FollowRoute.json");
+            TunnelMessage followRouteMessage = this.tcpClient.GetTunnelMessage("FollowRoute.json");
 
             dynamic payloadData = new
             {
@@ -398,7 +400,7 @@ namespace simulatie
             };
 
             Console.WriteLine(followRouteMessage.SendDataPacket(payloadData));
-            tcpClient.SendMessage(followRouteMessage.SendDataPacket(payloadData));          
+            this.tcpClient.SendMessage(followRouteMessage.SendDataPacket(payloadData));          
         }
         #endregion
 
@@ -406,7 +408,7 @@ namespace simulatie
         //Clear a panel in the vr simulator for first use
         internal void ClearPanel(string uuid)
         {
-            TunnelMessage clearPannelMessage = tcpClient.GetTunnelMessage("ClearPanel.json");
+            TunnelMessage clearPannelMessage = this.tcpClient.GetTunnelMessage("ClearPanel.json");
 
             dynamic payloadData = new
             {
@@ -418,13 +420,13 @@ namespace simulatie
             };
 
             Console.WriteLine("ID of the clear data: " + uuid);
-            tcpClient.SendMessage(clearPannelMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(clearPannelMessage.SendDataPacket(payloadData));
         }
 
         //Draw text on a panel in the vr simulator
         internal void SetText(string textToShow, string uuid, double[] coord, double textSize)
         {
-            TunnelMessage setTextMessage = tcpClient.GetTunnelMessage("SetText.json");
+            TunnelMessage setTextMessage = this.tcpClient.GetTunnelMessage("SetText.json");
 
             dynamic payloadData = new
             {
@@ -440,13 +442,13 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(setTextMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(setTextMessage.SendDataPacket(payloadData));
         } 
         
         //Swap the buffered panel to show the text
         internal void SwapPanel(string uuid)
         {
-            TunnelMessage swapPanelMessage = tcpClient.GetTunnelMessage("SwapPanel.json");
+            TunnelMessage swapPanelMessage = this.tcpClient.GetTunnelMessage("SwapPanel.json");
 
             dynamic payloadData = new
             {
@@ -457,7 +459,7 @@ namespace simulatie
                 }
             };
 
-            tcpClient.SendMessage(swapPanelMessage.SendDataPacket(payloadData));
+            this.tcpClient.SendMessage(swapPanelMessage.SendDataPacket(payloadData));
         }
 
         //Updates the panel with the new values
@@ -465,14 +467,16 @@ namespace simulatie
         {
             int textSize = 45;
             int x = 20;
+
+            var timeSpan = TimeSpan.FromSeconds((double)this.tcpClient.elapsedTime);
             
-            SetText("Speed in km/h: " + tcpClient.speed.ToString(), panelId, new double[] { x, 100 }, textSize);
-            SetText("Heart rate in bpm: " + tcpClient.heartRate.ToString(), panelId, new double[] { x, 150 }, textSize);
+            SetText("Speed in km/h: " + this.tcpClient.speed.ToString(), panelId, new double[] { x, 100 }, textSize);
+            SetText("Heart rate in bpm: " + this.tcpClient.heartRate.ToString(), panelId, new double[] { x, 150 }, textSize);
             SetText("Distance travelled in meters: ", panelId, new double[] { x, 200 }, textSize);
-            SetText(tcpClient.DT.ToString() + "m", panelId, new double[] { x, 250 }, textSize);
+            SetText(this.tcpClient.DT.ToString() + "m", panelId, new double[] { x, 250 }, textSize);
             SetText("Elapsed time in seconds: ", panelId, new double[] { x, 300 }, textSize);
-            SetText(tcpClient.elapsedTime.ToString() + "s", panelId, new double[] { x, 350 }, textSize);
-            SetText("Resistance in %: " + tcpClient.resistance.ToString(), panelId, new double[] { x, 400 }, textSize);
+            SetText(timeSpan.ToString(@"hh\:mm\:ss"), panelId, new double[] { x, 350 }, textSize);
+            SetText("Resistance in %: " + this.tcpClient.resistance.ToString(), panelId, new double[] { x, 400 }, textSize);
 
             SwapPanel(panelId);
         }

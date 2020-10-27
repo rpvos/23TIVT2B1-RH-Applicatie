@@ -48,8 +48,8 @@ namespace WPFDoctorApplication.ViewModels
                 {
                     PatientBike.SpeedValues.Add(PatientBike.Speed);
 
-                    // Use the last 30 values
-                    if (PatientBike.SpeedValues.Count > 30)
+                    // Use the last 15 values
+                    if (PatientBike.SpeedValues.Count > 15)
                         PatientBike.SpeedValues.RemoveAt(0);
                 });
             }

@@ -10,6 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using WPFDoctorApplication.Utils;
+using WPFDoctorApplication.ViewModels;
+using WPFDoctorApplication.Views;
 
 namespace WPFDoctorApplication.Models
 {
@@ -22,10 +24,8 @@ namespace WPFDoctorApplication.Models
         private double _speed;
         private string _sessionText = "Start session";
         private bool _isInSession = false;
-        //This has to change for performance
         public DoctorClient DoctorClient;
         public List<DataSet> HistoricalData{ get; set; }
-
         public double Speed
         {
             get { return _speed; }
@@ -47,8 +47,7 @@ namespace WPFDoctorApplication.Models
                 if (value)
                     SessionText = "Stop session";
                 else
-                    SessionText = "Start session";
-                
+                    SessionText = "Start session";                
             } 
         }
         public string SessionText { 
@@ -77,7 +76,7 @@ namespace WPFDoctorApplication.Models
             this.Username = username;
             PrivateChatList = new ObservableCollection<string>();
             this.DoctorClient = doctorClient;
-            SpeedValues = new ChartValues<double> { 0, 0, 0, 0, 0 };
+            SpeedValues = new ChartValues<double> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             HistoricalData = new List<DataSet>();
         }
         public void SendMessage()
@@ -95,6 +94,7 @@ namespace WPFDoctorApplication.Models
 
         public void AskUserDataFromServer()
         {
+            HistoricalData.Clear();
             this.DoctorClient.AskUserData(Username);
         }
         public void SendResistance()
@@ -106,6 +106,18 @@ namespace WPFDoctorApplication.Models
         {
             ResistanceValue = 100;
             DoctorClient.sendResistance(ResistanceValue + "", Username);
+        }
+
+        public void AddDataSet(DataSet data)
+        {
+            HistoricalData.Add(data);
+        }
+
+        public void ShowHistoricalDataWindow()
+        {
+            PatientHistoryWindow patientHistoryWindow = new PatientHistoryWindow();
+            patientHistoryWindow.DataContext = new PatientHistoryViewModel(this);
+            patientHistoryWindow.Show();
         }
     }
 }

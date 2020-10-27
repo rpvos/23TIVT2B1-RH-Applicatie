@@ -111,6 +111,7 @@ namespace Server
                     case "inSession":
                         StartAndStopSession(data);
                         break;
+                   
                     case"dataRequest":
                         requestData(data);
                             break;
@@ -161,6 +162,7 @@ namespace Server
                 sendDataSet(set.UpdateType, set.Value, set.DateStamp,client.user.getUsername());
                 Console.WriteLine("Send!");
             }
+            WriteTextMessage(getFinishedUserString(client.user.getUsername()));
             Console.WriteLine("3");
         }
 
@@ -247,6 +249,15 @@ namespace Server
             };
 
             return getJsonObject("AddUser", data);
+        }
+        private string getFinishedUserString(string username)
+        {
+            dynamic data = new
+            {
+                username = username
+            };
+
+            return getJsonObject("SendingDataSetsFinished", data);
         }
 
 

@@ -45,7 +45,7 @@
         <TextBlock Grid.Column="1" Grid.Row="1"/>
         
         <!--Row 2-->
-        <wpf:CartesianChart Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="450" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20" Series="{Binding SpeedCollection}" LegendLocation="None" Hoverable="False" DataTooltip="{x:Null}">
+        <wpf:CartesianChart Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="450" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20"  Series="{Binding SpeedCollection}" LegendLocation="None"  DisableAnimations="True" DataTooltip="{x:Null}">
             <wpf:CartesianChart.AxisY>
                 <wpf:Axis Title="Speed" MinValue="0" MaxValue="144"/>
             </wpf:CartesianChart.AxisY>

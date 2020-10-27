@@ -130,12 +130,14 @@ namespace WPFDoctorApplication
                     case "dataSet":
                         addDataSet(data);
                         break;
+                    case "SendingDataSetsFinished":
+                        OpenHistoryWindow(data);
+                        break;
                     default:
                         Console.WriteLine("Invalid type");
                         break;
                 }
             }
-
         }
 
         private void AddUser(JObject data)
@@ -162,7 +164,15 @@ namespace WPFDoctorApplication
             }
              );
             this.shellViewModel.DebugMessage = "Added Client";
-
+        }
+        private void OpenHistoryWindow(JObject data)
+        {
+            string username = (string)data["username"];
+            foreach (PatientBike patientBike in PatientBikeList)
+            {
+                if (patientBike.Username == username)
+                    App.Current.Dispatcher.Invoke(patientBike.ShowHistoricalDataWindow);
+            }
         }
 
         private void AddMessage(JObject data)
@@ -191,7 +201,7 @@ namespace WPFDoctorApplication
             {
                 if (patientBike.Username == username)
                 {
-                    patientBike.HistoricalData.Add(new DataSet(type, value, dateStamp));
+                    patientBike.AddDataSet(new DataSet(type, value, dateStamp));
                 }
             }
         }

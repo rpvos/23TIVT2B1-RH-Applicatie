@@ -16,6 +16,7 @@ namespace simulatie
         private Dictionary<string, string> panelId;
         private ArrayList routePoints;
 
+        //This class generates all the messages that will be send to the server
         public CallMethod(TcpClientVR tcpClient, Dictionary<string, string> objects)
         {
             this.tcpClient = tcpClient;
@@ -58,7 +59,6 @@ namespace simulatie
         {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TimeSetMessage.json");
 
-
             dynamic payloadData = new
             {
                 time = setTime
@@ -97,9 +97,9 @@ namespace simulatie
             };
 
             tcpClient.SendMessage(nodeMessage.SendDataPacket(payloadData));
-            Console.WriteLine(nodeMessage.SendDataPacket(payloadData));
         }
 
+        
         //Add a panel to the VR scene
         internal void AddPanelNode(string nodeName, double[] pos, double[] rot, double[] panelSize, int[] res, int[] backgrColor)
         {
@@ -169,7 +169,7 @@ namespace simulatie
         }
 
         //Add a new object with node to the VR scene
-        internal void AddObjectNode(string fileNameModel, string objectNodeName, int[] pos, int[] rot, bool anim, string hasAnimation)
+        internal void AddObjectNode(string fileNameModel, string objectNodeName, int[] pos, int[] rot, bool anim, string hasAnimation, double objectScale)
         {
             TunnelMessage addObjectMessage = tcpClient.GetTunnelMessage("NodeAdd.json");
             
@@ -181,10 +181,10 @@ namespace simulatie
                     name = objectNodeName,
                     components = new
                     {
-                        transforms = new
+                        transform = new
                         {
                             position = pos,
-                            scale = 1,
+                            scale = objectScale,
                             rotation = rot
                         },
                         model = new
@@ -228,37 +228,40 @@ namespace simulatie
 
         #region Terrain
         //Add a height map to the terrain
-        internal void AddTerrain()
+        internal void AddTerrain(int size)
         {
             TunnelMessage timeMessage = tcpClient.GetTunnelMessage("TerrainAdd.json");
 
-            double[] heights = new double[40000];
+            double[] heights = new double[size];
             Random random = new Random();
             double lastInt = 0.0;
             double reduction = 1;
 
+            //Randomization for all the Terrain heights
             for (int i = 0; i < heights.Length; i++)
             {
-                if (i > 200)
+                if (i > (int)Math.Sqrt(size))
                 {
-                    lastInt = (heights[i - 200] + heights[i - 1]) / 2;
+                    lastInt = (heights[i - (int)Math.Sqrt(size)] + heights[i - 1]) / 2;
                 }
                 if (i % 1000 == 0)
                 {
                     reduction += ((random.NextDouble() * 2) - 1) / 50;
+                    
                 }
                 heights[i] = (lastInt + ((random.NextDouble() * 2 - reduction) / 10));
                 if(heights[i] < 0)
                 {
                     heights[i] = 0;
                     reduction -= 0.2;
+                    
                 }
-                if(heights[i] > 6)
+                if(heights[i] >= 6)
                 {
                     heights[i] = 6;
                     reduction += 0.2;
+                    
                 }
-                
                 lastInt = heights[i];
             }
 
@@ -269,7 +272,7 @@ namespace simulatie
                 id = "scene/terrain/add",
                 data = new
                 {
-                    size = new int[] { 200, 200 },
+                    size = new int[] { (int)Math.Sqrt(size), (int)Math.Sqrt(size) },
                     heights = heightsArray
                 }
 
@@ -277,6 +280,8 @@ namespace simulatie
             
             tcpClient.SendMessage(timeMessage.SendDataPacket(payloadData));
         }
+
+        
 
         //Add texture to the VR scene
         internal void AddTexture(string fileNormal, string fileDiffuse, string uuid, int minimumHeight, int maximumHeight, int fadeDistance)
@@ -455,6 +460,7 @@ namespace simulatie
             tcpClient.SendMessage(swapPanelMessage.SendDataPacket(payloadData));
         }
 
+        //Updates the panel with the new values
         internal void UpdatePanel(string panelId)
         {
             int textSize = 45;

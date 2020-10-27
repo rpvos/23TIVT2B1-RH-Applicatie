@@ -30,7 +30,7 @@
         <!--Row 3-->
         <TextBlock Grid.Column="1" Grid.Row="3" Text="Password"/>
         <!--Row 4-->
-        <TextBox Grid.Column="1" Grid.Row="4" Width="200" TabIndex="1" Text="{Binding Password}"/>
+        <PasswordBox Grid.Column="1" Grid.Row="4" Width="200" TabIndex="1" PasswordChanged="PasswordBox_PasswordChanged"/>
         <!--Row 5-->
         <TextBlock Grid.Column="1" Grid.Row="5" FontSize="16" Text="{Binding ErrorMessage, UpdateSourceTrigger=PropertyChanged}"/>
         <!--Row 6-->

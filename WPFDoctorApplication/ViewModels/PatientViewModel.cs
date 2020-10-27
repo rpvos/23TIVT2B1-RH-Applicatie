@@ -21,6 +21,7 @@ namespace WPFDoctorApplication.ViewModels
         public string Username { get; set; }
         public ICommand StopCommand{ get; set; }
         public ICommand PrivateChatKeyDownCommand { get; set; }
+        public ICommand StartSessionCommand { get; set; }
         public string[] SpeedLabels { get; set; }
         public SeriesCollection SpeedCollection { get; set; }
 
@@ -31,6 +32,7 @@ namespace WPFDoctorApplication.ViewModels
             Username = patientBike.Username;
             PrivateChatKeyDownCommand = new RelayCommand(PatientBike.SendMessage);
             StopCommand = new RelayCommand(EmergencyStop);
+            StartSessionCommand = new RelayCommand(PatientBike.StartSession);
 
             InitializeGraphs();
         }
@@ -55,7 +57,7 @@ namespace WPFDoctorApplication.ViewModels
 
                 PatientBike.SpeedValues.Add(PatientBike.Speed);
 
-                //lets only use the last 30 values
+                // Use the last 30 values
                 if (PatientBike.SpeedValues.Count > 30)
                     PatientBike.SpeedValues.RemoveAt(0);
             }

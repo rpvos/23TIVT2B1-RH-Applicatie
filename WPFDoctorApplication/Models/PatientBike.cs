@@ -19,7 +19,8 @@ namespace WPFDoctorApplication.Models
     public class PatientBike : CustomObservableObject
     {
         private double _speed;
-
+        private string _sessionText = "Start session";
+        private bool _isInSession = false;
         //This has to change for performance
         public DoctorClient DoctorClient;
 
@@ -33,7 +34,31 @@ namespace WPFDoctorApplication.Models
                 //SpeedValues.Add(value);
             }
         }
-
+        public bool IsInSession {
+            get 
+            {
+                return _isInSession;
+            } 
+            set 
+            {
+                _isInSession = value;
+                if (value)
+                    SessionText = "Stop session";
+                else
+                    SessionText = "Start session";
+                
+            } 
+        }
+        public string SessionText { 
+            get
+            {
+                return _sessionText;
+            } 
+            set 
+            {
+                _sessionText = value;
+            } 
+        } 
         public string Username { get; set; }
         //public double Speed { get; set; }
         public double DistanceTraveled { get; set; }
@@ -58,5 +83,10 @@ namespace WPFDoctorApplication.Models
             DoctorClient.sendPrivMessage(PrivateChatMessage, Username);
             PrivateChatMessage = "";
         }       
+
+        public void StartSession()
+        {
+            IsInSession = !IsInSession;
+        }
     }
 }

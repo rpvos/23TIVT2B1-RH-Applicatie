@@ -16,7 +16,7 @@ namespace WPFDoctorApplication.ViewModels
         private readonly DoctorClient doctorClient;
         public Visibility LoginVisibility { get; set; }
         public string Username { get; set; } = "dokter";
-        public string Password { get; set; } = "123";
+        public string Password { get; set; } = "123"; // Could be made SecureString for more security if someone understood how it works
         public string ErrorMessage { get; set; }
         public ICommand LoginCommand { get; set; }
         public ShellViewModel ShellViewModel { get; }
@@ -34,7 +34,6 @@ namespace WPFDoctorApplication.ViewModels
         
         public void LoginFailed()
         {
-            Password = "";
             ErrorMessage = "Please try again.";
         }
 
@@ -46,9 +45,6 @@ namespace WPFDoctorApplication.ViewModels
 
         private void Login()
         {
-            //Questionable threading
-            //Thread doctorClientThread = new Thread(() => doctorClient.StartClient(Username, Password));
-            //doctorClientThread.Start();            
             doctorClient.senderUserCredentials(Username, Password);
         }
     }

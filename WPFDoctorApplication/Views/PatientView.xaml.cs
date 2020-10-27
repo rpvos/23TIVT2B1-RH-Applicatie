@@ -27,7 +27,6 @@ namespace WPFDoctorApplication.Views
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            //Slider slider = sender as Slider;
             PatientViewModel patientViewModel = (PatientViewModel)DataContext;
             patientViewModel.SendResistance();
         }

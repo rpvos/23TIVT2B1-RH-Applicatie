@@ -31,6 +31,7 @@ namespace Server
                 // Check if the lastUpdateForThisUpdateType is longer then a second ago
                 if (DateTime.Now.CompareTo(lastUpdateForThisUpdateType.AddSeconds(1)) >= 0)
                 {
+                    lastUpdate.Remove(updateType);
                     // The lastUpdateForThisUpdateType is longer ago or equal to 1 second
                     lastUpdate.Add(updateType, DateTime.Now);
 

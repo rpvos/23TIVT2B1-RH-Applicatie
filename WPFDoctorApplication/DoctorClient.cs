@@ -28,12 +28,15 @@ namespace WPFDoctorApplication
         private string totalBuffer;
         private int testCounter;
 
+        public Dictionary<string, List<DataSet>> dataPerUser { get; set; }
+
         private Login login;
         public string SelectedUsername { get; set; }
         public ObservableCollection<PatientBike> PatientBikeList;
 
         public DoctorClient(ShellViewModel shellViewModel)
         {
+            this.dataPerUser = new Dictionary<string, List<DataSet>>();
             this.SelectedUsername = "-1";
             this.shellViewModel = shellViewModel;
             PatientBikeList = new ObservableCollection<PatientBike>();
@@ -80,14 +83,17 @@ namespace WPFDoctorApplication
         {
             WriteTextMessage(getInSessionString(inSession, username));
         }
+        
+        public void askUserData(string username)
+        {
+            WriteTextMessage(getUserDataRequestString(username));
+        }
         #endregion
 
         #region handle received data
         private void handleData(string packet)
         {
             { 
-
-                Console.WriteLine(packet);
 
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
@@ -127,6 +133,9 @@ namespace WPFDoctorApplication
                     case "resistance":
                         setResistance(data);
                         break;
+                    case "dataSet":
+                        addDataSet(data);
+                        break;
                     default:
                         Console.WriteLine("Invalid type");
                         break;
@@ -152,8 +161,11 @@ namespace WPFDoctorApplication
 
                 }
 
-                if(!contains)
+                if (!contains)
+                {
                     this.PatientBikeList.Add(new PatientBike(this, username));
+                    this.dataPerUser.Add(username, new List<DataSet>());
+                }
             }
              );
             this.shellViewModel.DebugMessage = "Added Client";
@@ -173,6 +185,17 @@ namespace WPFDoctorApplication
                         patientBike.PrivateChatList.Add(username + ": " + message);
                     });
             }
+        }
+
+        private void addDataSet(JObject data)
+        {
+            UpdateType type = (UpdateType)Enum.Parse(typeof(UpdateType), (string)data["UpdateType"], true);
+            double value = (double)data["Value"];
+            DateTime dateStamp = (DateTime)data["DateStamp"];
+            string username = (string)data["Username"];
+
+            this.dataPerUser[username].Add(new DataSet(type, value, dateStamp));
+
         }
 
         public void setResistance(JObject data)
@@ -337,6 +360,16 @@ namespace WPFDoctorApplication
             };
 
             return getJsonObject("inSession", data);
+        }
+
+        public string getUserDataRequestString(string username)
+        {
+            dynamic data = new
+            {
+                Username = username
+            };
+
+            return getJsonObject("dataRequest", data);
         }
 
         private string getPrivMessageString(string message, string username)

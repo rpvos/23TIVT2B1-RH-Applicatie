@@ -35,7 +35,7 @@ namespace Server
         public bool checkPassword(string password)
         {
             return password == this.password;
-        }
+        }     
 
         internal Role getRole()
         {

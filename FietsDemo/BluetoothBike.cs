@@ -462,11 +462,11 @@ namespace FietsDemo
             }
         }
 
-        public void setValuesInGui(UpdateType valueType, double value)
+        public void setValuesInGui(UpdateType updateType, double value)
         {
-            this.client.sendUpdatedValues(valueType,value);
+            this.client.sendUpdatedValues(updateType,value);
 
-            switch (valueType)
+            switch (updateType)
             {
                 case UpdateType.Speed:
                     this.gui.getForm().setSpeed(value);

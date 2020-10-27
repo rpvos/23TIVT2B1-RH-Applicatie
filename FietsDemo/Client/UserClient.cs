@@ -166,9 +166,9 @@ namespace FietsDemo
             return getJsonObject("privateMessageToDoctor", data);
         }
 
-        internal Task sendUpdatedValues(SharedItems.UpdateType valueType, double value)
+        internal Task sendUpdatedValues(SharedItems.UpdateType updateType, double value)
         {
-            WriteTextMessage(getUpdateMessageString(valueType, value));
+            WriteTextMessage(getUpdateMessageString(updateType, value));
             return Task.CompletedTask;
         }
 

@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Server
 {
-    internal class ServerClient
+    public class ServerClient
     {
 
         private TcpClient client;
@@ -22,6 +22,8 @@ namespace Server
         private byte[] buffer;
         private string totalBuffer;
 
+        public bool inSession { get; set; }
+
         public User user { get; set; }
         private StringBuilder logger;
 
@@ -29,6 +31,7 @@ namespace Server
         {
             this.client = client;
             this.server = server;
+            this.inSession = false; 
 
             this.buffer = new byte[1024];
             this.crypto = new Crypto(client.GetStream(), handleData);
@@ -108,6 +111,9 @@ namespace Server
                     case "inSession":
                         StartAndStopSession(data);
                         break;
+                    case"dataRequest":
+                        requestData(data);
+                            break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -125,14 +131,37 @@ namespace Server
         {
             string username = (string)data["Username"];
             bool inSession = (bool)data["InSession"];
-            if (inSession)
+
+            foreach (ServerClient client in this.server.Clients)
+                if (client.user.getUsername() == username)
+                {
+                    client.inSession = inSession;
+                    if (!this.inSession)
+                        this.server.saveUser(client.user);
+                    break;
+                }
+
+           
+        }
+
+        public void requestData(JObject data)
+        {
+            string username = (string)data["Username"];
+            foreach(ServerClient client in this.server.Clients)
+                if(client.user.getUsername() == username)
+                {
+                    sendDataToDoctor(client);
+                }
+        }
+
+        public void sendDataToDoctor(ServerClient client)
+        {
+            foreach (DataSet set in client.user.userDataStorage.dataSets)
             {
-                //TODO start recording
+                sendDataSet(set.UpdateType, set.Value, set.DateStamp,client.user.getUsername());
+                Console.WriteLine("Send!");
             }
-            else
-            {
-                //TODO stop recording
-            }
+            Console.WriteLine("3");
         }
 
 
@@ -148,7 +177,9 @@ namespace Server
                 Value = value
             };
 
-            this.user.userDataStorage.addDataSet(updateType, value);
+            if (this.inSession)
+                this.user.userDataStorage.addDataSet(updateType, value);
+            
             this.server.SendToDoctors(getJsonObject("update", parsedData, this.user));
         }
 
@@ -156,6 +187,7 @@ namespace Server
         {
             string username = (string)data["Username"];
             string password = (string)data["Password"];
+            Console.WriteLine("USERNAME: "+ username+"WW: "+password);
 
             this.user = server.checkUser(username, password);
             if (user != null)
@@ -185,6 +217,11 @@ namespace Server
         public void sendResistance(string resistance)
         {
             WriteTextMessage(getResistanceString(resistance, this.user.getUsername()));
+        }
+
+        private void sendDataSet(UpdateType updateType, double value, DateTime dateStamp, string username)
+        {
+            WriteTextMessage(getDataSetString(updateType, value, dateStamp, username));
         }
 
         public void sendResistanceToDoctor(string resistance, string username)
@@ -272,6 +309,19 @@ namespace Server
             return getJsonObject("message", data);
         }
 
+        private string getDataSetString(UpdateType updateType, double value, DateTime dateStamp, string username)
+        {
+            dynamic data = new
+            {
+                UpdateType = updateType,
+                Value = value,
+                DateStamp = dateStamp,
+                Username = username
+            };
+
+            return getJsonObject("dataSet", data);
+        }
+
         private string getMessageStringToDoctor(string username, string message)
         {
             dynamic data = new
@@ -282,7 +332,6 @@ namespace Server
 
             return getJsonObject("message", data);
         }
-
 
         private string getResistanceString(string resistance, string username)
         {
@@ -345,7 +394,7 @@ namespace Server
         #region disconnecting
         public void Disconnect()
         {
-            this.server.clients.Remove(this);
+            this.server.Clients.Remove(this);
             this.server.usernameAndResistance.Remove(this.user.getUsername());
             this.user.loggedIn = false;
             this.server.Disconnect(this);

@@ -15,7 +15,7 @@ namespace Server
     {
         #region private atributes
 
-        public List<ServerClient> clients { get; set; }
+        public List<ServerClient> Clients { get; set; }
         private TcpListener listener;
         public Dictionary<string, string> usernameAndResistance { get; set; }
         private Dictionary<string, User> dataBase;
@@ -33,11 +33,11 @@ namespace Server
         public Server()
         {
             this.usernameAndResistance = new Dictionary<string, string>();
-            this.clients = new List<ServerClient>();
+            this.Clients = new List<ServerClient>();
 
             this.dataBase = new Dictionary<string, User>();
             this.cryptoFileSaver = new CryptoFileSaver("data_saves");
-            loadUsers();
+            //loadUsers();
 
             if (dataBase.Keys.Count == 0)
                 fillUsers();
@@ -78,7 +78,7 @@ namespace Server
 
                 foreach (JObject dataSet in jArray)
                 {
-                    user.userDataStorage.dataSets.Add(new DataSet((UpdateType)Enum.Parse(typeof(UpdateType), (string)dataSet["ValueType"]), (double)dataSet["Value"],(DateTime)dataSet["DateStamp"]));
+                    user.userDataStorage.dataSets.Add(new DataSet((UpdateType)Enum.Parse(typeof(UpdateType), (string)dataSet["UpdateType"]), (double)dataSet["Value"],(DateTime)dataSet["DateStamp"]));
                 }
 
                 this.dataBase.Add(user.username, user);
@@ -116,9 +116,9 @@ namespace Server
             var tcpClient = listener.EndAcceptTcpClient(ar);
             Console.WriteLine($"Client connected from {tcpClient.Client.RemoteEndPoint}");
 
-            lock (clients)
+            lock (Clients)
             {
-                clients.Add(new ServerClient(tcpClient, this));
+                Clients.Add(new ServerClient(tcpClient, this));
             }
 
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
@@ -126,14 +126,14 @@ namespace Server
 
         public void RemoveThisClient(ServerClient client)
         {
-            this.clients.Remove(client);
+            this.Clients.Remove(client);
         }
 
         internal void Disconnect(ServerClient client)
         {
-            lock (clients)
+            lock (Clients)
             {
-                clients.Remove(client);
+                Clients.Remove(client);
             }
             Console.WriteLine("Client disconnected");
         }
@@ -156,7 +156,7 @@ namespace Server
 
         public void addUsersToThisDoctorClient(ServerClient doctorClient)
         {
-            foreach (ServerClient client in this.clients)
+            foreach (ServerClient client in this.Clients)
             {
                 if (client.user.getRole() == Role.Patient)
                 {
@@ -176,13 +176,13 @@ namespace Server
         }
         internal void broadcast(string message)
         {
-            foreach (ServerClient client in clients)
+            foreach (ServerClient client in Clients)
                 client.sendMessage(message);
         }
 
         internal void SendToDoctors(string jsonMessage)
         {
-            foreach (ServerClient client in clients)
+            foreach (ServerClient client in Clients)
             {
                 if (client.user != null)
                     if (client.user.getRole() == Role.Doctor)
@@ -193,7 +193,7 @@ namespace Server
 
         internal void SendToPatients(string jsonMessage)
         {
-            foreach (ServerClient client in clients)
+            foreach (ServerClient client in Clients)
             {
                 if (client.user != null)
                     if (client.user.getRole() == Role.Patient)
@@ -206,7 +206,7 @@ namespace Server
         {
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
-            foreach (ServerClient client in clients)
+            foreach (ServerClient client in Clients)
             {
 
                 if (client.user.getRole() == Role.Patient && client.user.getUsername() == username)
@@ -220,7 +220,7 @@ namespace Server
         {
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
-            foreach (ServerClient client in clients)
+            foreach (ServerClient client in Clients)
             {
                 if (client.user.getRole() == Role.Doctor && client != serverClient)
                     client.sendResistanceToDoctor(resistance, username);
@@ -231,7 +231,7 @@ namespace Server
         {
             string message = (string)data["Message"];
             string username = (string)data["Username"];
-            foreach (ServerClient client in clients)
+            foreach (ServerClient client in Clients)
             {
 
                 if (client.user.getRole() == Role.Patient && client.user.getUsername() == username)
@@ -245,7 +245,7 @@ namespace Server
         {
             string message = (string)data["Message"];
             string username = (string)data["Username"];
-            foreach (ServerClient client in clients)
+            foreach (ServerClient client in Clients)
             {
 
                 if (client.user.getRole() == Role.Doctor)

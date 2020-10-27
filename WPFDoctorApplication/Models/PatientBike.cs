@@ -89,5 +89,10 @@ namespace WPFDoctorApplication.Models
             IsInSession = !IsInSession;
             this.DoctorClient.sendInSession(IsInSession, this.Username);
         }
+
+        public void AskUserDataFromServer()
+        {
+            this.DoctorClient.askUserData(this.Username);
+        }
     }
 }

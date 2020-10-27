@@ -87,12 +87,22 @@ namespace WPFDoctorApplication.Models
         public void StartSession()
         {
             IsInSession = !IsInSession;
-            this.DoctorClient.sendInSession(IsInSession, this.Username);
+            this.DoctorClient.sendInSession(IsInSession, Username);
         }
 
         public void AskUserDataFromServer()
         {
-            this.DoctorClient.askUserData(this.Username);
+            this.DoctorClient.AskUserData(Username);
+        }
+        public void SendResistance()
+        {
+            DoctorClient.sendResistance(ResistanceValue + "", Username);
+        }
+
+        public void EmergencyStop()
+        {
+            ResistanceValue = 100;
+            DoctorClient.sendResistance(ResistanceValue + "", Username);
         }
     }
 }

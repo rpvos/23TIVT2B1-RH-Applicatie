@@ -84,7 +84,7 @@ namespace WPFDoctorApplication
             WriteTextMessage(getInSessionString(inSession, username));
         }
         
-        public void askUserData(string username)
+        public void AskUserData(string username)
         {
             WriteTextMessage(getUserDataRequestString(username));
         }

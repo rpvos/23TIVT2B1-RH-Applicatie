@@ -22,6 +22,7 @@ namespace WPFDoctorApplication.ViewModels
         public ICommand StopCommand{ get; set; }
         public ICommand PrivateChatKeyDownCommand { get; set; }
         public ICommand StartSessionCommand { get; set; }
+        public ICommand GetHistoricalDataCommand { get; set; }
         public string[] SpeedLabels { get; set; }
         public SeriesCollection SpeedCollection { get; set; }
 
@@ -31,35 +32,26 @@ namespace WPFDoctorApplication.ViewModels
             this.doctorClient = doctorClient;
             Username = patientBike.Username;
             PrivateChatKeyDownCommand = new RelayCommand(PatientBike.SendMessage);
-            StopCommand = new RelayCommand(EmergencyStop);
+            StopCommand = new RelayCommand(PatientBike.EmergencyStop);
             StartSessionCommand = new RelayCommand(PatientBike.StartSession);
+            GetHistoricalDataCommand = new RelayCommand(PatientBike.AskUserDataFromServer);
 
             InitializeGraphs();
         }
 
-        public void SendResistance()
-        {
-            doctorClient.sendResistance(PatientBike.ResistanceValue + "", PatientBike.Username);
-        }
-
-        private void EmergencyStop()
-        {
-            PatientBike.ResistanceValue = 100;
-            doctorClient.sendResistance(PatientBike.ResistanceValue + "", PatientBike.Username);
-        }
-
         private void Read()
         {
-
             while (IsReading)
             {
                 Thread.Sleep(250);
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    PatientBike.SpeedValues.Add(PatientBike.Speed);
 
-                PatientBike.SpeedValues.Add(PatientBike.Speed);
-
-                // Use the last 30 values
-                if (PatientBike.SpeedValues.Count > 30)
-                    PatientBike.SpeedValues.RemoveAt(0);
+                    // Use the last 30 values
+                    if (PatientBike.SpeedValues.Count > 30)
+                        PatientBike.SpeedValues.RemoveAt(0);
+                });
             }
         }
 

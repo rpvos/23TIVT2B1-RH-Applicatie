@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SharedItems;
 using System;
 using System.Collections.Generic;
@@ -10,13 +11,14 @@ using System.Threading;
 
 namespace Server
 {
-    class Server
+    public class Server
     {
         #region private atributes
 
         private List<ServerClient> clients;
         private TcpListener listener;
         private Dictionary<string, User> dataBase;
+        private CryptoFileSaver cryptoFileSaver;
 
         #endregion
 
@@ -32,7 +34,12 @@ namespace Server
             this.clients = new List<ServerClient>();
 
             this.dataBase = new Dictionary<string, User>();
-            fillUsers();
+            this.cryptoFileSaver = new CryptoFileSaver("data_saves");
+            loadUsers();
+
+            if (dataBase.Keys.Count == 0)
+                fillUsers();
+
 
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
             this.listener = new TcpListener(localhost, 8080);
@@ -42,9 +49,39 @@ namespace Server
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
 
-            Console.ReadKey();
+
+            Console.Read();
+            saveAllUsers();
         }
 
+        private void loadUsers()
+        {
+            string[] users = this.cryptoFileSaver.GetSavedUsers();
+
+            foreach (string serializedUser in users)
+            {
+                JObject jObject = (JObject)JsonConvert.DeserializeObject(serializedUser);
+                User user = new User()
+                {
+                    loggedIn = (bool)jObject["loggedIn"],
+                    name = (string)jObject["name"],
+                    username = (string)jObject["username"],
+                    password = (string)jObject["password"],
+                    role = (Role)Enum.Parse(typeof(Role), (string)jObject["role"]),
+                    userDataStorage = new UserDataStorage()
+                };
+
+                JObject userDataInObject = (JObject)jObject["userDataStorage"];
+                JArray jArray = (JArray)userDataInObject["dataSets"];
+
+                foreach (JObject dataSet in jArray)
+                {
+                    user.userDataStorage.dataSets.Add(new DataSet((UpdateType)Enum.Parse(typeof(UpdateType), (string)dataSet["ValueType"]), (double)dataSet["Value"],(DateTime)dataSet["DateStamp"]));
+                }
+
+                this.dataBase.Add(user.username, user);
+            }
+        }
 
         private void fillUsers()
         {
@@ -52,6 +89,20 @@ namespace Server
             dataBase.Add("aardappel", new User("Piet", "aardappel", "321", Role.Patient));
 
             dataBase.Add("dokter", new User("dokter", "dokter", "123", Role.Doctor));
+        }
+
+        public void saveUser(User user)
+        {
+            this.cryptoFileSaver.WriteUserData(user.GetSaveFormat(), user.username);
+        }
+
+        public void saveAllUsers()
+        {
+            foreach (string userName in dataBase.Keys)
+            {
+                this.cryptoFileSaver.WriteUserData(dataBase[userName].GetSaveFormat(), userName);
+            }
+            Console.WriteLine("SAVED USERS :)");
         }
 
         #endregion
@@ -125,10 +176,10 @@ namespace Server
         {
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
-            foreach(ServerClient client in clients)
+            foreach (ServerClient client in clients)
             {
 
-                if(client.user.getRole() == Role.Patient && client.user.getUsername() == username)
+                if (client.user.getRole() == Role.Patient && client.user.getUsername() == username)
                 {
                     client.sendResistance(resistance);
                 }

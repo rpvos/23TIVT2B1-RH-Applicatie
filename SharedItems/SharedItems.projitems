@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Crypto.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EncyptionService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
   </ItemGroup>
 </Project>

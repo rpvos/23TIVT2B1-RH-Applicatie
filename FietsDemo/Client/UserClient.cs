@@ -16,18 +16,24 @@ namespace FietsDemo
         private TcpClient server;
         private NetworkStream stream;
         private BluetoothBike bluetoothBike;
+        public bool connected { get; set; }
 
         private Crypto crypto;
         private string username;
 
-        public UserClient(string username, string password, BluetoothBike bluetoothBike)
+        public UserClient(BluetoothBike bluetoothBike)
         {
             this.username = username;
             this.bluetoothBike = bluetoothBike;
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.crypto = new Crypto(server.GetStream(),handleData);
+            //WriteTextMessage(getUserDetailsMessageString(username, password));
 
+        }
+
+        public void sendUserCredentials(string username, string password)
+        {
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 
@@ -41,6 +47,7 @@ namespace FietsDemo
         {
             try
             {
+
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
                     return;
@@ -67,7 +74,7 @@ namespace FietsDemo
                         {
                             Console.WriteLine("Login failed");
                             this.bluetoothBike.loginFailed();
-                            disconnect();
+                            
                         }
                         break;
 
@@ -75,7 +82,7 @@ namespace FietsDemo
                         AddChatMessage(data);
                             break;
 
-                    case "Resistance":
+                    case "resistance":
                         setResistance(data);
                         break;
                     case "message":
@@ -130,8 +137,8 @@ namespace FietsDemo
 
         public void disconnect()
         {
-            this.server.Close();
-            this.stream.Close();
+            WriteTextMessage(getDisconnectString(this.username));
+            this.crypto.disconnect();
         }
         #endregion
 
@@ -143,6 +150,21 @@ namespace FietsDemo
 
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
+        public void sendPrivateMessage(string message)
+        {
+            WriteTextMessage(getPrivateMessageString(this.username, message));
+        }
+
+        private string getPrivateMessageString(string username, string message)
+        {
+            dynamic data = new
+            {
+                Username = username,
+                Message = message
+            };
+
+            return getJsonObject("privateMessageToDoctor", data);
+        }
 
         internal Task sendUpdatedValues(SharedItems.UpdateType valueType, double value)
         {
@@ -151,10 +173,20 @@ namespace FietsDemo
         }
 
 
+
+
         #endregion
 
         #region message construction
+        private string getDisconnectString(string username)
+        {
+            dynamic data = new
+            {
+                Username = username
+            };
 
+            return getJsonObject("disconnect", data);
+        }
         private string getJsonObject(string type, dynamic data)
         {
             dynamic json = new

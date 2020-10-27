@@ -15,8 +15,9 @@ namespace Server
     {
         #region private atributes
 
-        private List<ServerClient> clients;
+        public List<ServerClient> clients { get; set; }
         private TcpListener listener;
+        public Dictionary<string, string> usernameAndResistance { get; set; }
         private Dictionary<string, User> dataBase;
         private CryptoFileSaver cryptoFileSaver;
 
@@ -31,6 +32,7 @@ namespace Server
 
         public Server()
         {
+            this.usernameAndResistance = new Dictionary<string, string>();
             this.clients = new List<ServerClient>();
 
             this.dataBase = new Dictionary<string, User>();
@@ -89,6 +91,8 @@ namespace Server
             dataBase.Add("aardappel", new User("Piet", "aardappel", "321", Role.Patient));
 
             dataBase.Add("dokter", new User("dokter", "dokter", "123", Role.Doctor));
+            dataBase.Add("dokter2", new User("dokter2", "dokter2", "321", Role.Doctor));
+
         }
 
         public void saveUser(User user)
@@ -120,6 +124,11 @@ namespace Server
             listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
         }
 
+        public void RemoveThisClient(ServerClient client)
+        {
+            this.clients.Remove(client);
+        }
+
         internal void Disconnect(ServerClient client)
         {
             lock (clients)
@@ -128,6 +137,7 @@ namespace Server
             }
             Console.WriteLine("Client disconnected");
         }
+
 
         internal User checkUser(string username, string password)
         {
@@ -144,6 +154,26 @@ namespace Server
 
         #region message methods
 
+        public void addUsersToThisDoctorClient(ServerClient doctorClient)
+        {
+            foreach (ServerClient client in this.clients)
+            {
+                if (client.user.getRole() == Role.Patient)
+                {
+                    string username = client.user.getUsername();
+                    doctorClient.sendAddUserMessage(username);
+                    doctorClient.sendResistanceToDoctor(this.usernameAndResistance[username], username);
+                }
+            }
+
+        }
+
+        public void setResistancePerClient(JObject data)
+        {
+            string resistance = (string)data["Resistance"];
+            string username = (string)data["Username"];
+            this.usernameAndResistance[username] = resistance;
+        }
         internal void broadcast(string message)
         {
             foreach (ServerClient client in clients)
@@ -186,6 +216,17 @@ namespace Server
             }
         }
 
+        public void sendResistanceToAllDoctors(JObject data, ServerClient serverClient)
+        {
+            string resistance = (string)data["Resistance"];
+            string username = (string)data["Username"];
+            foreach (ServerClient client in clients)
+            {
+                if (client.user.getRole() == Role.Doctor && client != serverClient)
+                    client.sendResistanceToDoctor(resistance, username);
+            }
+        }
+
         public void sendPrivMessage(JObject data)
         {
             string message = (string)data["Message"];
@@ -196,6 +237,20 @@ namespace Server
                 if (client.user.getRole() == Role.Patient && client.user.getUsername() == username)
                 {
                     client.sendPrivMessage(message);
+                }
+            }
+        }
+
+        public void sendPrivateMessageToDoctors(JObject data)
+        {
+            string message = (string)data["Message"];
+            string username = (string)data["Username"];
+            foreach (ServerClient client in clients)
+            {
+
+                if (client.user.getRole() == Role.Doctor)
+                {
+                    client.sendPrivateMessageToDoctor(username, message);
                 }
             }
         }

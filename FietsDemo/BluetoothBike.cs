@@ -40,7 +40,7 @@ namespace FietsDemo
 
         private double resistance = 0;
 
-        private UserClient client;
+        public UserClient client { get; set; }
 
         private TcpClientVR tcpClientVR;
 
@@ -84,11 +84,11 @@ namespace FietsDemo
             initialize();
         }
 
-        public void startClient(string username, string password)
+        public void startClient()
         {
             Thread clientThread = new Thread(() =>
             {
-                this.client = new UserClient(username, password,this);
+                this.client = new UserClient(this);
             });
             clientThread.Start();
         }
@@ -103,9 +103,10 @@ namespace FietsDemo
             this.login.loginSucceeded();
         }
 
-     
-        
-
+        public void sendPrivateMessage(string message)
+        {
+            this.client.sendPrivateMessage(message);
+        }        
 
         public void startVR()
         {

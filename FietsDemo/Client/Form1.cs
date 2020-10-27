@@ -28,6 +28,8 @@ namespace FietsDemo
 
         private void exitButton_Click(object sender, EventArgs e)
         {
+            this.gui.bluetoothBike.client.disconnect();
+            System.Environment.Exit(0);
             Application.Exit();
         }
 
@@ -109,7 +111,13 @@ namespace FietsDemo
 
         private void sendDocButton_Click(object sender, EventArgs e)
         {
+            if (chatTextBox.Text != "")
+            {
+                doctorChat.Items.Add(chatTextBox.Text);
+                this.gui.bluetoothBike.sendPrivateMessage(chatTextBox.Text);
+                chatTextBox.Text = "";
 
+            }
         }
     }
 

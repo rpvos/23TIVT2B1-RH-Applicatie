@@ -55,12 +55,20 @@ namespace SharedItems
 
             byte[] fullMessage = new byte[dataAsBytes.Length + lengthMessage.Length];
             Array.Copy(lengthMessage, fullMessage, lengthMessage.Length);
-            Array.Copy(dataAsBytes,0, fullMessage,lengthMessage.Length, dataAsBytes.Length);
-
-       
-            //send the message
-            networkStream.Write(fullMessage, 0, fullMessage.Length);
-            networkStream.Flush();
+            Array.Copy(dataAsBytes,0, fullMessage,lengthMessage.Length, dataAsBytes.Length);
+
+
+            //send the message
+            try
+            {
+                networkStream.Write(fullMessage, 0, fullMessage.Length);
+                networkStream.Flush();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("A client disconnected");
+
+            }
         }
 
         /// <summary>
@@ -116,14 +124,23 @@ namespace SharedItems
                         totalLength = calculateTotalLength(out length);
                 }
             }
-            catch (IOException)
-            {
-                Console.WriteLine("Disconnected");
-                return;
-            }
+            catch (Exception e)
+            {
+                Console.WriteLine("A client disconnected");
 
-            // Listen for more messages 
-            networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+                return;
+            }
+
+            // Listen for more messages 
+
+            try {   
+                networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("A client disconnected");
+            }
+
         }
 
         /// <summary>
@@ -142,6 +159,11 @@ namespace SharedItems
         }
 
         #endregion
+
+        public void disconnect()
+        {
+            this.networkStream.Close();
+        }
 
 
 

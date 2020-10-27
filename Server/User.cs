@@ -1,26 +1,18 @@
-﻿using Newtonsoft.Json;
-using SharedItems;
+﻿using SharedItems;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Text;
 
 namespace Server
 {
-    public class User
+       public class User
     {
-        public string name { get; set; }
+        private string name;
         //private birthdate
-        public string username { get; set; }
-        public string password { get; set; }
-        public Role role { get; set; }
+        private string username;
+        private string password;
+        private Role role;
         public bool loggedIn { get; set; }
-        public UserDataStorage userDataStorage { get; set; }
-
-        public User()
-        {
-
-        }
 
         public User(string name, string username, string password, Role role)
         {
@@ -29,7 +21,6 @@ namespace Server
             this.username = username;
             this.password = password;
             this.role = role;
-            this.userDataStorage = new UserDataStorage();
         }
 
         public bool checkPassword(string password)
@@ -45,10 +36,6 @@ namespace Server
         internal string getUsername()
         {
             return this.username;
-        }
-        public string GetSaveFormat()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
     }
 }

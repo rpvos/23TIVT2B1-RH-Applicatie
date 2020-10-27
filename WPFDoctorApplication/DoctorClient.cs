@@ -28,20 +28,16 @@ namespace WPFDoctorApplication
         private string totalBuffer;
         private int testCounter;
 
-        public Dictionary<string, List<DataSet>> dataPerUser { get; set; }
-
         private Login login;
         public string SelectedUsername { get; set; }
         public ObservableCollection<PatientBike> PatientBikeList;
 
         public DoctorClient(ShellViewModel shellViewModel)
         {
-            this.dataPerUser = new Dictionary<string, List<DataSet>>();
             this.SelectedUsername = "-1";
             this.shellViewModel = shellViewModel;
             PatientBikeList = new ObservableCollection<PatientBike>();
             this.shellViewModel.PatientBikeList = PatientBikeList;
-            //this.PatientBikeList = shellViewModel.PatientBikeList;
         }
 
         public void StartClient()
@@ -52,8 +48,6 @@ namespace WPFDoctorApplication
             this.crypto = new Crypto(server.GetStream(), handleData);
 
             this.usernames = new List<string>();
-
-            //stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
 
         }
 
@@ -164,7 +158,6 @@ namespace WPFDoctorApplication
                 if (!contains)
                 {
                     this.PatientBikeList.Add(new PatientBike(this, username));
-                    this.dataPerUser.Add(username, new List<DataSet>());
                 }
             }
              );
@@ -194,8 +187,13 @@ namespace WPFDoctorApplication
             DateTime dateStamp = (DateTime)data["DateStamp"];
             string username = (string)data["Username"];
 
-            this.dataPerUser[username].Add(new DataSet(type, value, dateStamp));
-
+            foreach (PatientBike patientBike in this.PatientBikeList)
+            {
+                if (patientBike.Username == username)
+                {
+                    patientBike.HistoricalData.Add(new DataSet(type, value, dateStamp));
+                }
+            }
         }
 
         public void setResistance(JObject data)

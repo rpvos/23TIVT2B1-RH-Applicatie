@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using LiveCharts;
 using LiveCharts.Wpf;
+using SharedItems;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,6 +24,7 @@ namespace WPFDoctorApplication.Models
         private bool _isInSession = false;
         //This has to change for performance
         public DoctorClient DoctorClient;
+        public List<DataSet> HistoricalData{ get; set; }
 
         public double Speed
         {
@@ -76,6 +78,7 @@ namespace WPFDoctorApplication.Models
             PrivateChatList = new ObservableCollection<string>();
             this.DoctorClient = doctorClient;
             SpeedValues = new ChartValues<double> { 0, 0, 0, 0, 0 };
+            HistoricalData = new List<DataSet>();
         }
         public void SendMessage()
         {

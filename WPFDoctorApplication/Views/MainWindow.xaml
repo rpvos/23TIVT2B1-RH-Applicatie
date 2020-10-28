@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFDoctorApplication"
         mc:Ignorable="d"
-        Title="MainWindow" Height="868" Width="1610" WindowStartupLocation="CenterScreen">
+        Name="DoctorClientWindow"
+        Title="DoctorClient" Height="868" Width="1610" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
@@ -26,13 +27,8 @@
         </Grid.RowDefinitions>
         <!--Row 1-->
         <TextBlock Grid.Row="1" Grid.Column="1" Text="DoctorClient" FontSize="48" FontFamily="Segoe UI Light" />
-        <Button Grid.Column="3" Grid.Row="1" Grid.ColumnSpan="2" Content="Quit" FontSize="30" HorizontalAlignment="Right" Margin="0 0 0 20" Width="70" Command="{Binding QuitCommand}" Visibility="{Binding QuitVisibility}"/>
+        <Button Grid.Column="3" Grid.Row="1" Grid.ColumnSpan="2" Content="Quit" FontSize="30" HorizontalAlignment="Right" Margin="0 0 0 20" Width="70" Command="{Binding QuitCommand}" CommandParameter="{Binding ElementName=DoctorClientWindow}" Visibility="{Binding QuitVisibility}"/>
         <!--Row 2-->
         <UserControl Grid.Row="2" Grid.Column="1" Grid.RowSpan="4" Grid.ColumnSpan="4" Content="{Binding SelectedViewModel}"/>
-        
-        <!--<ScrollViewer Grid.Row="2" Grid.Column="1" Grid.RowSpan="4">
-            <ListBox x:Name="patientList"/>
-        </ScrollViewer>
-        <ContentControl Content="{Binding SelectedPatientViewModel}" x:Name="contentControl" Grid.Row="2" Grid.Column="2" Grid.RowSpan="4" Grid.ColumnSpan="3"/>-->
     </Grid>
 </Window>

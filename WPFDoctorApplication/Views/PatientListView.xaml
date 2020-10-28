@@ -7,10 +7,7 @@
              xmlns:utils="clr-namespace:WPFDoctorApplication.Utils"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1570" Background="White">
-    <UserControl.Resources>
-        <utils:ModelToViewModelConverter x:Key="ModelToViewModelConverter"/>
-    </UserControl.Resources>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -27,7 +24,6 @@
         </Grid.RowDefinitions>
         
         <!--Row 1-->
-        <!--ItemsSource="{Binding PatientBikeList, Converter={StaticResource ModelToViewModelConverter}, UpdateSourceTrigger=PropertyChanged}"-->
         <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" Width="250" ItemsSource="{Binding PatientBikeList, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPatientBike}">
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -55,7 +51,5 @@
                 </TextBox.ToolTip>
             </TextBox>
         </StackPanel>
-        <!--Row 2-->
-        
     </Grid>
 </UserControl>

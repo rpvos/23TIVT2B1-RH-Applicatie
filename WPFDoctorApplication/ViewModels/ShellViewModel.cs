@@ -49,6 +49,7 @@ namespace WPFDoctorApplication.ViewModels
         private void Quit(ICloseable window)
         {
             DoctorClient.disconnect();
+            window.Close();
         }
     }
 }

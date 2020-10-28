@@ -215,6 +215,9 @@ namespace FietsDemo
 
         public void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
+            if (e == null)
+                return;
+
             string name = e.ServiceName;
 
             if (name == "00002a37-0000-1000-8000-00805f9b34fb" || name == "SimulatorHeartRate")

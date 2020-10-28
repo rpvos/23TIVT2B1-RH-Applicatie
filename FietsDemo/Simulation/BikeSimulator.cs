@@ -100,6 +100,7 @@ namespace FietsDemo
             // The speed that was send last
             byte speed = SendingPage0x10Message.Speed;
 
+            // If the outerbounds haven't been reached and the target has been reached we fluxuate the heartrate
             if (targetSpeed == speed && targetSpeed != 0 && targetSpeed != 40)
             {
                 // Fluxuate the speed
@@ -108,10 +109,12 @@ namespace FietsDemo
             }
             else
             {
+                // If the target is smaller then the actual we come closer to the actual by 1
                 if (targetSpeed < speed)
                 {
                     SendingPage0x10Message.Speed = (byte)(speed - 1);
                 }
+                // Else we check if the target is bigger then the actual comes closer to the target
                 else if (targetSpeed > speed)
                 {
                     SendingPage0x10Message.Speed = (byte)(speed + 1);
@@ -128,7 +131,8 @@ namespace FietsDemo
             // The heart rate that was known
             byte heartRate = SendingHeartRateMessage.HeartRate;
 
-            if (targetHeartRate == heartRate && targetHeartRate != 50 && targetHeartRate != 220)
+            // If the outerbounds haven't been reached and the target has been reached we fluxuate the heartrate
+            if (targetHeartRate == heartRate && targetHeartRate != 0 && targetHeartRate != 220)
             {
                 // Fluxuate the heartrate
                 int fluxuation = random.Next(0, 3) - 1;
@@ -136,10 +140,12 @@ namespace FietsDemo
             }
             else
             {
+                // If the target is smaller then the actual we come closer to the actual by 1
                 if (targetHeartRate < heartRate)
                 {
                     SendingHeartRateMessage.HeartRate = (byte)(heartRate - 1);
                 }
+                // Else we check if the target is bigger then the actual comes closer to the target
                 else if (targetHeartRate > heartRate)
                 {
                     SendingHeartRateMessage.HeartRate = (byte)(heartRate + 1);

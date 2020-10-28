@@ -10,6 +10,7 @@ using WPFDoctorApplication.Models;
 using WPFDoctorApplication.ViewModels;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace WPFDoctorApplication.ViewModels
 {
@@ -22,30 +23,33 @@ namespace WPFDoctorApplication.ViewModels
         public LoginViewModel LoginViewModel { get; set; }
         public CustomObservableObject PatientListViewModel { get; set; }
         public string DebugMessage { get; set; }
-
+        public ICommand QuitCommand { get; set; }
+        public Visibility QuitVisibility { get; set; } = Visibility.Hidden;
 
         public ShellViewModel()
         {
             Initialize();
-
-            //TEST
-            PatientBikeList.Add(new PatientBike(DoctorClient, "TEST"));
         }
         public void Initialize()
         {
             this.PatientBikeList = new ObservableCollection<PatientBike>();
             this.DoctorClient = new DoctorClient(this);
             this.LoginViewModel = new LoginViewModel(this, DoctorClient);
+            QuitCommand = new RelayCommand<ICloseable>(Quit);
 
             this.SelectedViewModel = LoginViewModel;
-            //var uiContext = SynchronizationContext.Current;
-
         }
 
         public void OnLoginSucces()
         {
             this.PatientListViewModel = new PatientListViewModel(this);
             this.SelectedViewModel = this.PatientListViewModel;
+            QuitVisibility = Visibility.Visible;
+        }
+        private void Quit(ICloseable window)
+        {
+            DoctorClient.disconnect();
+            window.Close();
         }
     }
 }

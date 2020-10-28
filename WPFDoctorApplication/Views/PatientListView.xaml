@@ -7,10 +7,7 @@
              xmlns:utils="clr-namespace:WPFDoctorApplication.Utils"
              mc:Ignorable="d" 
              d:DesignHeight="800" d:DesignWidth="1570" Background="White">
-    <UserControl.Resources>
-        <utils:ModelToViewModelConverter x:Key="ModelToViewModelConverter"/>
-    </UserControl.Resources>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -27,7 +24,6 @@
         </Grid.RowDefinitions>
         
         <!--Row 1-->
-        <!--ItemsSource="{Binding PatientBikeList, Converter={StaticResource ModelToViewModelConverter}, UpdateSourceTrigger=PropertyChanged}"-->
         <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" Width="250" ItemsSource="{Binding PatientBikeList, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPatientBike}">
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -46,15 +42,14 @@
                     <ItemsControl ItemsSource="{Binding GlobalChatList}" FontSize="12"/>
                 </ScrollViewer>
             </Border>
-            <TextBox Width="auto" MinHeight="35" AcceptsReturn="False" Text="{Binding GlobalChatMessage, UpdateSourceTrigger=PropertyChanged}" FontFamily="22">
+            <TextBox Width="auto" MinHeight="35" AcceptsReturn="False" Text="{Binding GlobalChatMessage, UpdateSourceTrigger=PropertyChanged}" FontSize="22">
                 <TextBox.InputBindings>
                     <KeyBinding Key="Enter" Command="{Binding GlobalChatKeyDownCommand}"/>
                 </TextBox.InputBindings>
+                <TextBox.ToolTip>
+                    <ToolTip Content="This message is public."/>
+                </TextBox.ToolTip>
             </TextBox>
         </StackPanel>
-
-        <Button Grid.Column="3" Grid.Row="1" Content="Quit" FontSize="30" HorizontalAlignment="Right" Margin="20" Width="70" Command="{Binding QuitCommand}"/>
-        <!--Row 2-->
-        
     </Grid>
 </UserControl>

@@ -462,10 +462,13 @@ namespace FietsDemo
             }
         }
 
+        //This method sets the values in the GUI and sends them to the server.
         public void setValuesInGui(UpdateType updateType, double value)
         {
+            //Send values to server.
             this.client.sendUpdatedValues(updateType,value);
 
+            //Set values in GUI.
             switch (updateType)
             {
                 case UpdateType.Speed:
@@ -501,6 +504,7 @@ namespace FietsDemo
         public double setResistance(double percentage)
         {
 
+            //Check if simulator is turned on, if so set resistance in simulator as well.
             if(this.simulator != null)
             {
                 this.simulator.setResistance((int)percentage);

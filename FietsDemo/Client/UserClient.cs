@@ -28,8 +28,6 @@ namespace FietsDemo
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.crypto = new Crypto(server.GetStream(),handleData);
-            //WriteTextMessage(getUserDetailsMessageString(username, password));
-
         }
 
         public void sendUserCredentials(string username, string password)
@@ -43,6 +41,8 @@ namespace FietsDemo
         }
 
         #region handle recieved data
+
+        //This method receives packets and uses a switch case to handle different kind of types of packets.
         private void handleData(string packet)
         {
             try

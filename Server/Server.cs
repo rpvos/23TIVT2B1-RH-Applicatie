@@ -170,6 +170,7 @@ namespace Server
 
         public void setResistancePerClient(JObject data)
         {
+            //This part makes sure the resistance that is sent stays synchronized with the server.
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
             this.usernameAndResistance[username] = resistance;

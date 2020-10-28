@@ -170,7 +170,7 @@ namespace FietsDemo
             Thread.Sleep(1000);
 
             // List available devices
-            List<String> bleBikeList = BleBike.ListDevices();
+            List<string> bleBikeList = BleBike.ListDevices();
             Console.WriteLine("Devices found: ");
             foreach (var name in bleBikeList)
             {
@@ -215,6 +215,9 @@ namespace FietsDemo
 
         public void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
+            if (sender == null || e == null)
+                return;
+
             string name = e.ServiceName;
 
             if (name == "00002a37-0000-1000-8000-00805f9b34fb" || name == "SimulatorHeartRate")
@@ -513,7 +516,7 @@ namespace FietsDemo
             
             if (percentage <= 100.0 && percentage >= 0.0)
             {
-                Byte[] byteArray = new byte[13];
+                byte[] byteArray = new byte[13];
                 byteArray[0] = 0x4A;
                 byteArray[1] = 0x09;
                 byteArray[2] = 0x4E;
@@ -540,7 +543,7 @@ namespace FietsDemo
             }
             else
             {
-                throw new System.InvalidOperationException("Parameter outside of acceptable bounds (0-200)");
+                throw new System.InvalidOperationException("Parameter outside of acceptable bounds (0-100)");
             }
 
         }

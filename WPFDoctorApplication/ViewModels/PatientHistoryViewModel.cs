@@ -21,14 +21,21 @@ namespace WPFDoctorApplication.ViewModels
         public PatientHistoryViewModel(PatientBike patientBike)
         {
             History = new ObservableCollection<string>();
-            SpeedCollection = new SeriesCollection();
             speedChartValues = new ChartValues<double>();
 
             PatientBike = patientBike;
             Title = "History of " + patientBike.Username;
 
             InitializeLog();
-            SpeedCollection.Add(new LineSeries(speedChartValues));
+
+            SpeedCollection = new SeriesCollection
+            {
+                new LineSeries
+                {
+                    Title = "Speed",
+                    Values = speedChartValues
+                }
+            };
         }
 
         private void InitializeLog()

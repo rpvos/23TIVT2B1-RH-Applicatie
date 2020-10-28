@@ -15,8 +15,13 @@
             </ScrollViewer>
         </TabItem>
         <TabItem Header="Speed" >
-            <wpf:CartesianChart Series="{Binding SpeedCollection}">
-                
+            <wpf:CartesianChart Series="{Binding SpeedCollection}" LegendLocation="None"  DisableAnimations="True" DataTooltip="{x:Null}">
+                <wpf:CartesianChart.AxisY>
+                    <wpf:Axis Title="Speed" MinValue="0" MaxValue="144"/>
+                </wpf:CartesianChart.AxisY>
+                <wpf:CartesianChart.AxisX>
+                    <wpf:Axis Title="Time"/>
+                </wpf:CartesianChart.AxisX>
             </wpf:CartesianChart>
         </TabItem>
         <TabItem Header="Heart rate" >

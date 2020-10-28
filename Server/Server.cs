@@ -249,7 +249,7 @@ namespace Server
             foreach (ServerClient client in Clients)
             {
 
-                if (client.user.getRole() == Role.Doctor)
+                if (client.user?.getRole() == Role.Doctor)
                 {
                     client.sendPrivateMessageToDoctor(username, message);
                 }

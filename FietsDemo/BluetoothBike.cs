@@ -188,9 +188,9 @@ namespace FietsDemo
             }
 
             //Console.WriteLine("starting sim");
-            //bikeSimulator = new BikeSimulator(this);
-            //Thread thread = new Thread(startSimulator);
-           // thread.Start();
+            bikeSimulator = new BikeSimulator(this);
+            Thread thread = new Thread(startSimulator);
+            thread.Start();
 
             // Set service
             errorCode = await BleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");

@@ -50,7 +50,11 @@
                 <wpf:Axis Title="Speed" MinValue="0" MaxValue="144"/>
             </wpf:CartesianChart.AxisY>
             <wpf:CartesianChart.AxisX>
-                <wpf:Axis Title="Time" Labels="{Binding SpeedLabels}"/>
+                <wpf:Axis Title="Time" Labels="{Binding TimeLabels}">
+                    <wpf:Axis.Separator>
+                        <wpf:Separator Step="39" />
+                    </wpf:Axis.Separator>
+                </wpf:Axis>
             </wpf:CartesianChart.AxisX>
         </wpf:CartesianChart>
         

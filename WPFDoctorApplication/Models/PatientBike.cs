@@ -76,7 +76,7 @@ namespace WPFDoctorApplication.Models
             this.Username = username;
             PrivateChatList = new ObservableCollection<string>();
             this.DoctorClient = doctorClient;
-            SpeedValues = new ChartValues<double> { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            SpeedValues = new ChartValues<double>();
             HistoricalData = new List<DataSet>();
         }
         public void SendMessage()

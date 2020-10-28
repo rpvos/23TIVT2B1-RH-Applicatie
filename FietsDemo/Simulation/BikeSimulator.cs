@@ -8,6 +8,7 @@ namespace FietsDemo
     {
         public bool running = false;
 
+        private Random random;
         private float Resistance;
 
         private IBLEcallBack IBLEcallBack;
@@ -16,6 +17,9 @@ namespace FietsDemo
         private HeartRateMessage SendingHeartRateMessage;
         public BikeSimulator(IBLEcallBack bLEcallBack)
         {
+            // Random is needed to fluxuate the speed and heart rate
+            this.random = new Random();
+
             IBLEcallBack = bLEcallBack;
             SendingPage0x10Message = new Page0x10Message();
             SendingPage0x19Message = new Page0x19Message();
@@ -27,7 +31,7 @@ namespace FietsDemo
 
         public void setSpeed(byte speed)
         {
-            SendingPage0x10Message.Speed = speed;
+            SendingPage0x10Message.TargetSpeed = speed;
         }
 
         public void setInstantaneousPower(byte power)
@@ -37,7 +41,7 @@ namespace FietsDemo
 
         public void setHeartRate(byte heartrate)
         {
-            SendingHeartRateMessage.HeartRate = heartrate;
+            SendingHeartRateMessage.TargetHeartRate = heartrate;
         }
 
         private void update()
@@ -54,9 +58,7 @@ namespace FietsDemo
                         Data = SendingPage0x10Message.getData(),
                         ServiceName = "Simulator"
                     };
-                    updateTimeAndDistance();
-
-                    page = false;
+                    updateMessage();
                 }
                 else
                 {
@@ -66,9 +68,10 @@ namespace FietsDemo
                         ServiceName = "Simulator"
                     };
                     updateEventCount();
-
-                    page = true;
                 }
+
+                page = !page;
+
                 BLESubscriptionValueChangedEventArgs argsHRSensor = new BLESubscriptionValueChangedEventArgs
                 {
                     Data = SendingHeartRateMessage.getData(),
@@ -81,7 +84,70 @@ namespace FietsDemo
             }
         }
 
-        private void updateTimeAndDistance()
+        private void updateMessage()
+        {
+            updateTime();
+            updateDistance();
+            updateHeartRate();
+            updateSpeed();
+        }
+
+        private void updateSpeed()
+        {
+            // Speed that we want to fluxate around
+            byte targetSpeed = SendingPage0x10Message.TargetSpeed;
+
+            // The speed that was send last
+            byte speed = SendingPage0x10Message.Speed;
+
+            if (targetSpeed == speed && targetSpeed != 0 && targetSpeed != 40)
+            {
+                // Fluxuate the speed
+                int fluxuation = random.Next(0, 3) - 1;
+                SendingPage0x10Message.Speed = (byte)(speed + fluxuation);
+            }
+            else
+            {
+                if (targetSpeed < speed)
+                {
+                    SendingPage0x10Message.Speed = (byte)(speed - 1);
+                }
+                else
+                {
+                    SendingPage0x10Message.Speed = (byte)(speed + 1);
+                }
+            }
+
+        }
+
+        private void updateHeartRate()
+        {
+            // heart rate that we want to fluxate around
+            byte targetHeartRate = SendingHeartRateMessage.TargetHeartRate;
+
+            // The heart rate that was known
+            byte heartRate = SendingHeartRateMessage.HeartRate;
+
+            if (targetHeartRate == heartRate && targetHeartRate != 50 && targetHeartRate != 220)
+            {
+                // Fluxuate the heartrate
+                int fluxuation = random.Next(0, 3) - 1;
+                SendingHeartRateMessage.HeartRate = (byte)(heartRate + fluxuation);
+            }
+            else
+            {
+                if (targetHeartRate < heartRate)
+                {
+                    SendingHeartRateMessage.HeartRate = (byte)(heartRate - 1);
+                }
+                else if (targetHeartRate < heartRate)
+                {
+                    SendingHeartRateMessage.HeartRate = (byte)(heartRate + 1);
+                }
+            }
+        }
+
+        private void updateTime()
         {
             if (SendingPage0x10Message.Time != 255)
             {
@@ -91,8 +157,6 @@ namespace FietsDemo
             {
                 SendingPage0x10Message.Time = 0;
             }
-
-            updateDistance();
         }
 
         private void updateDistance()
@@ -130,7 +194,7 @@ namespace FietsDemo
                 checksumCalculated = byteArray[i] ^ checksumCalculated;
             }
 
-            if(checksumCalculated != byteArray[byteArray.Length - 1])
+            if (checksumCalculated != byteArray[byteArray.Length - 1])
             {
                 Console.WriteLine("Simulator: message received is corrupted\nAddress: {0}", address);
                 return;
@@ -141,22 +205,31 @@ namespace FietsDemo
     }
     class Page0x10Message
     {
-        // value represents the speed in m/s.
-        public byte Speed;
-        // value represents the heartrate in BPM.
-        public byte Heartrate;
-        // value represents the time in 0.25s, rollover at 255.
-        public byte Time;
-        // value represents distance in meters, rollover at 255.
-        public double Distance;
-        // if a lap is completed this value turns true.
-        public bool LAP;
-        // value represents the state of the device. 2 = READY.
-        public byte FEState;
-        
+        // Value represents the speed in m/s.
+        public byte Speed { get; set; }
+
+        // Value that is used to fluxuate the speed
+        public byte TargetSpeed { get; set; }
+
+        // Value represents the heartrate in BPM.
+        public byte Heartrate { get; set; }
+
+        // Value represents the time in 0.25s, rollover at 255.
+        public byte Time { get; set; }
+
+        // Value represents distance in meters, rollover at 255.
+        public double Distance { get; set; }
+
+        // If a lap is completed this value turns true.
+        public bool LAP { get; set; }
+
+        // Value represents the state of the device. 2 = READY.
+        public byte FEState { get; set; }
+
         public Page0x10Message()
         {
             Speed = 0;
+            TargetSpeed = 0;
             Heartrate = 0;
             Time = 0;
             Distance = 0;
@@ -248,11 +321,19 @@ namespace FietsDemo
 
     class HeartRateMessage
     {
-        public byte HeartRate;
+        public byte TargetHeartRate { get; set; }
+        public byte HeartRate { get; set; }
+        public byte stepsize { get; set; }
+
+        public HeartRateMessage()
+        {
+            HeartRate = 50;
+            TargetHeartRate = 50;
+        }
 
         public byte[] getData()
         {
-            return new byte[] {0, HeartRate};
+            return new byte[] { 0, HeartRate };
         }
     }
 }

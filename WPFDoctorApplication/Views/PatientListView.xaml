@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WPFDoctorApplication.Views"
              xmlns:utils="clr-namespace:WPFDoctorApplication.Utils"
              mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="1570" Background="White">
+             d:DesignHeight="750" d:DesignWidth="1570" Background="White">
 
     <Grid>
         <Grid.ColumnDefinitions>

@@ -21,6 +21,7 @@ namespace WPFDoctorApplication.Models
     /// </summary>
     public class PatientBike : CustomObservableObject
     {
+        private bool isReading = true;
         private double _speed;
         private string _sessionText = "Start session";
         private bool _isInSession = false;
@@ -71,13 +72,16 @@ namespace WPFDoctorApplication.Models
         public string PrivateChatMessage { get; set; }
         public Func<double, string> SpeedYFormatter { get; set; }
         public ChartValues<double> SpeedValues { get; set; }
+        public ObservableCollection<string> TimeLabels { get; set; }
         public PatientBike(DoctorClient doctorClient, string username)
         {
             this.Username = username;
-            PrivateChatList = new ObservableCollection<string>();
             this.DoctorClient = doctorClient;
+            PrivateChatList = new ObservableCollection<string>();
             SpeedValues = new ChartValues<double>();
             HistoricalData = new List<DataSet>();
+
+            InitializeGraphs();
         }
         public void SendMessage()
         {
@@ -118,6 +122,45 @@ namespace WPFDoctorApplication.Models
             PatientHistoryWindow patientHistoryWindow = new PatientHistoryWindow();
             patientHistoryWindow.DataContext = new PatientHistoryViewModel(this);
             patientHistoryWindow.Show();
+        }
+
+        private void InitializeGraphs()
+        {
+            for (int i = 0; i < 40; i++)
+            {
+                SpeedValues.Add(0);
+            }
+
+            TimeLabels = new ObservableCollection<string>();
+            for (int i = 0; i < 40; i++)
+            {
+                TimeLabels.Add("00:00:00");
+            }
+            //SpeedYFormatter = value => value.ToString();
+
+            Task.Run(Read);
+        }
+
+        private void Read()
+        {
+            while (isReading)
+            {
+                Thread.Sleep(250);
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    SpeedValues.Add(Speed);
+
+                    // Use the last 40 values
+                    if (SpeedValues.Count > 40)
+                        SpeedValues.RemoveAt(0);
+
+                    TimeLabels.Add(TimeSpan.FromSeconds((double)ElapsedTime).ToString(@"hh\:mm\:ss"));
+                    if (TimeLabels.Count > 20)
+                    {
+                        TimeLabels.RemoveAt(0);
+                    }
+                });
+            }
         }
     }
 }

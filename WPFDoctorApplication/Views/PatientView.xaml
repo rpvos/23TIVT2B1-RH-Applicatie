@@ -7,7 +7,7 @@
              xmlns:utils="clr-namespace:WPFDoctorApplication.Utils"
              xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="1050" Background="White" FontSize="28">
+             d:DesignHeight="750" d:DesignWidth="1050" Background="White" FontSize="28">
     <UserControl.Resources>
         <utils:PatientValueConverter x:Key="PatientValueConverter"/>
     </UserControl.Resources>
@@ -50,7 +50,7 @@
                 <wpf:Axis Title="Speed" MinValue="0" MaxValue="144"/>
             </wpf:CartesianChart.AxisY>
             <wpf:CartesianChart.AxisX>
-                <wpf:Axis Title="Time" Labels="{Binding TimeLabels}">
+                <wpf:Axis Title="Time" Labels="{Binding PatientBike.TimeLabels}">
                     <wpf:Axis.Separator>
                         <wpf:Separator Step="39" />
                     </wpf:Axis.Separator>

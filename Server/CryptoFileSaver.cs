@@ -41,8 +41,9 @@ namespace Server
                     {
                         int length = json.Length;
                         int amountOfCharactersNeeded = 16 - length % 16;
-                        for (int i = 0; i < amountOfCharactersNeeded-1; i++)
+                        for (int i = 0; i < amountOfCharactersNeeded; i++)
                             json += '^';
+
                         byte[] cypher = encyptionService.EncryptStringToBytes(json);
                         string base64cypher = Convert.ToBase64String(cypher);
                         streamWriter.Write(base64cypher);

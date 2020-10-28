@@ -37,7 +37,7 @@ namespace Server
 
             this.dataBase = new Dictionary<string, User>();
             this.cryptoFileSaver = new CryptoFileSaver("data_saves");
-            //loadUsers();
+            loadUsers();
 
             if (dataBase.Keys.Count == 0)
                 fillUsers();
@@ -65,7 +65,7 @@ namespace Server
                 JObject jObject = (JObject)JsonConvert.DeserializeObject(serializedUser);
                 User user = new User()
                 {
-                    loggedIn = (bool)jObject["loggedIn"],
+                    loggedIn = false,
                     name = (string)jObject["name"],
                     username = (string)jObject["username"],
                     password = (string)jObject["password"],

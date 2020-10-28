@@ -112,7 +112,7 @@ namespace FietsDemo
                 {
                     SendingPage0x10Message.Speed = (byte)(speed - 1);
                 }
-                else
+                else if (targetSpeed > speed)
                 {
                     SendingPage0x10Message.Speed = (byte)(speed + 1);
                 }
@@ -140,7 +140,7 @@ namespace FietsDemo
                 {
                     SendingHeartRateMessage.HeartRate = (byte)(heartRate - 1);
                 }
-                else if (targetHeartRate < heartRate)
+                else if (targetHeartRate > heartRate)
                 {
                     SendingHeartRateMessage.HeartRate = (byte)(heartRate + 1);
                 }

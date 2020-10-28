@@ -23,7 +23,6 @@ namespace FietsDemo
 
         public UserClient(BluetoothBike bluetoothBike)
         {
-            this.username = username;
             this.bluetoothBike = bluetoothBike;
             this.server = new TcpClient("127.0.0.1", 8080);
 
@@ -32,6 +31,7 @@ namespace FietsDemo
 
         public void sendUserCredentials(string username, string password)
         {
+            this.username = username;
             WriteTextMessage(getUserDetailsMessageString(username, password));
         }
 

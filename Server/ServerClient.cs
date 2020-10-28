@@ -48,6 +48,7 @@ namespace Server
             crypto.WriteTextMessage(message);
         }
 
+        //This method writes logs to a text file.
         private void log()
         {
             string location = Environment.CurrentDirectory;
@@ -72,6 +73,8 @@ namespace Server
         #endregion
 
         #region handle received data
+
+        //This method receives packets and uses a switch case to handle different kind of types of packets.
         private void handleData(string packet)
         {
             try
@@ -133,6 +136,7 @@ namespace Server
             string username = (string)data["Username"];
             bool inSession = (bool)data["InSession"];
 
+            //Check which user's session is stopped or started.
             foreach (ServerClient client in this.server.Clients)
                 if (client.user.getUsername() == username)
                 {
@@ -148,6 +152,8 @@ namespace Server
         public void requestData(JObject data)
         {
             string username = (string)data["Username"];
+
+            //Check from which user the data is requested.
             foreach(ServerClient client in this.server.Clients)
                 if(client.user.getUsername() == username)
                 {
@@ -157,13 +163,12 @@ namespace Server
 
         public void sendDataToDoctor(ServerClient client)
         {
+            //Send each packet of data to the doctor.
             foreach (DataSet set in client.user.userDataStorage.dataSets)
             {
                 sendDataSet(set.UpdateType, set.Value, set.DateStamp,client.user.getUsername());
-                Console.WriteLine("Send!");
             }
             WriteTextMessage(getFinishedUserString(client.user.getUsername()));
-            Console.WriteLine("3");
         }
 
 
@@ -197,6 +202,8 @@ namespace Server
                 if (this.user.getRole() == Role.Patient)
                 {
                     sendAddUserMessage(username);
+
+                    //Adds a spot in the resistance list when connected.
                     this.server.usernameAndResistance.Add(username, "0");
                 }
 
@@ -405,6 +412,7 @@ namespace Server
         #region disconnecting
         public void Disconnect()
         {
+            //This part makes sure the client is disconnected safely.
             this.server.Clients.Remove(this);
             this.server.usernameAndResistance.Remove(this.user.getUsername());
             this.user.loggedIn = false;

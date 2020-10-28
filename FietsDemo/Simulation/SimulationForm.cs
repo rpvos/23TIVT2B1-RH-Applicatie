@@ -29,12 +29,8 @@ namespace FietsDemo
             this.gui.stopSimulator();
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
+        //Increases speed with 5 when clicked on plus button.
+        private void plusSpeed_click(object sender, EventArgs e)
         {
            int i = Int32.Parse(SpeedTextBox.Text);
            i+=5;
@@ -46,7 +42,8 @@ namespace FietsDemo
            this.BikeSimulator.setSpeed((byte)i);
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        //Decreases speed with 5 when clicked on minus button.
+        private void minusSpeed_click(object sender, EventArgs e)
         {
             int i = Int32.Parse(SpeedTextBox.Text);
             i-=5;
@@ -58,7 +55,7 @@ namespace FietsDemo
             this.BikeSimulator.setSpeed((byte)i);
         }
 
-
+        //Increases heartrate with 5 when clicked on plus button.
         private void plusHeartrate_Click(object sender, EventArgs e)
         {
             int i = Int32.Parse(HeartrateTextBox.Text);
@@ -71,6 +68,7 @@ namespace FietsDemo
             this.BikeSimulator.setHeartRate((byte)i);
         }
 
+        //Decreases heartrate with 5 when clicked on minus button.
         private void minHeartrate_Click(object sender, EventArgs e)
         {
             int i = Int32.Parse(HeartrateTextBox.Text);
@@ -83,8 +81,10 @@ namespace FietsDemo
             this.BikeSimulator.setHeartRate((byte)i);
         }
 
+        //This method handles the scrollwheel when scrolled of the heartrate textbox.
         void changeHeartrate(object sender, MouseEventArgs e)
         {
+            //Handles scrollwheel up.
             if (e.Delta > 0)
             {
                 int i = Int32.Parse(HeartrateTextBox.Text);
@@ -96,7 +96,9 @@ namespace FietsDemo
                 HeartrateTextBox.Text = i + "";
                 this.BikeSimulator.setHeartRate((byte)i);
             }
-            else if(e.Delta < 0)
+
+            //Handles scrollwheel down.
+            else if (e.Delta < 0)
             {
                 int i = Int32.Parse(HeartrateTextBox.Text);
                 i--;
@@ -107,11 +109,12 @@ namespace FietsDemo
                 HeartrateTextBox.Text = i + "";
                 this.BikeSimulator.setHeartRate((byte)i);
             }
-
         }
 
+        //This method handles the scrollwheel when scrolled of the speed textbox.
         void changeSpeed(object sender, MouseEventArgs e)
         {
+            //Handles scrollwheel up.
             if (e.Delta > 0)
             {
                 int i = Int32.Parse(SpeedTextBox.Text);
@@ -124,6 +127,8 @@ namespace FietsDemo
                 this.BikeSimulator.setSpeed((byte)i);
 
             }
+
+            //Handles scrollwheel down.
             else if (e.Delta < 0)
             {
                 int i = Int32.Parse(SpeedTextBox.Text);
@@ -134,10 +139,7 @@ namespace FietsDemo
                 }
                 SpeedTextBox.Text = i + "";
                 this.BikeSimulator.setSpeed((byte)i);
-
-
             }
-
         }
 
         public void setResistance(int resistance)

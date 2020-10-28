@@ -83,6 +83,7 @@ namespace FietsDemo
 
         private void ESPSimulatorButton_Click(object sender, EventArgs e)
         {
+            //Changes colors of the selected and non-selected option.
             SoftwareSimulatorButton.BackColor = Color.White;
             ESPSimulatorButton.BackColor = Color.LightBlue;
             this.gui.stopSimulator();
@@ -90,14 +91,10 @@ namespace FietsDemo
 
         private void SoftwareSimulatorButton_Click(object sender, EventArgs e)
         {
+            //Changes colors of the selected and non-selected option.
             SoftwareSimulatorButton.BackColor = Color.LightBlue;
             ESPSimulatorButton.BackColor = Color.White;
             this.gui.startSimulator();
-        }
-
-        private void Speed_Click(object sender, EventArgs e)
-        {
-
         }
 
         public void addMessage(string message)
@@ -111,6 +108,7 @@ namespace FietsDemo
 
         private void sendDocButton_Click(object sender, EventArgs e)
         {
+            //Checks if text box isn't empty and sends a chatmessage.
             if (chatTextBox.Text != "")
             {
                 doctorChat.Items.Add(chatTextBox.Text);

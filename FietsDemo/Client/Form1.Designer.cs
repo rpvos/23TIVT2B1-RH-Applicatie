@@ -60,7 +60,6 @@
             this.Speed.Size = new System.Drawing.Size(177, 55);
             this.Speed.TabIndex = 0;
             this.Speed.Text = "Speed:";
-            this.Speed.Click += new System.EventHandler(this.Speed_Click);
             // 
             // SpeedValue
             // 

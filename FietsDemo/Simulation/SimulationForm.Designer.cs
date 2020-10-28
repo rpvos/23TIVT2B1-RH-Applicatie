@@ -60,7 +60,6 @@
             this.SpeedTextBox.Size = new System.Drawing.Size(83, 38);
             this.SpeedTextBox.TabIndex = 1;
             this.SpeedTextBox.Text = "0";
-            this.SpeedTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // plusSpeed
             // 
@@ -72,7 +71,7 @@
             this.plusSpeed.Text = "+";
             this.plusSpeed.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.plusSpeed.UseVisualStyleBackColor = true;
-            this.plusSpeed.Click += new System.EventHandler(this.button1_Click);
+            this.plusSpeed.Click += new System.EventHandler(this.plusSpeed_click);
             // 
             // minSpeed
             // 
@@ -83,7 +82,7 @@
             this.minSpeed.TabIndex = 3;
             this.minSpeed.Text = "-";
             this.minSpeed.UseVisualStyleBackColor = true;
-            this.minSpeed.Click += new System.EventHandler(this.button2_Click);
+            this.minSpeed.Click += new System.EventHandler(this.minusSpeed_click);
             // 
             // label2
             // 

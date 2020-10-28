@@ -1,4 +1,6 @@
-﻿using SharedItems;
+﻿using LiveCharts;
+using LiveCharts.Wpf;
+using SharedItems;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,13 +15,20 @@ namespace WPFDoctorApplication.ViewModels
         public PatientBike PatientBike { get; }
         public string Title { get; set; }
         public ObservableCollection<string> History { get; set; }
+        public SeriesCollection SpeedCollection { get; set; }
+        private ChartValues<double> speedChartValues;
+
         public PatientHistoryViewModel(PatientBike patientBike)
         {
             History = new ObservableCollection<string>();
+            SpeedCollection = new SeriesCollection();
+            speedChartValues = new ChartValues<double>();
+
             PatientBike = patientBike;
             Title = "History of " + patientBike.Username;
 
-            InitializeLog();            
+            InitializeLog();
+            SpeedCollection.Add(new LineSeries(speedChartValues));
         }
 
         private void InitializeLog()
@@ -36,6 +45,8 @@ namespace WPFDoctorApplication.ViewModels
                         break;
                     case UpdateType.Speed:
                         result += "Speed: " + dataSet.Value + " km/u";
+                        // Fill the speed collection
+                        speedChartValues.Add((double)dataSet.Value);
                         break;
                     case UpdateType.AccumulatedDistance:
                         result += "Distance: " + dataSet.Value + " km";

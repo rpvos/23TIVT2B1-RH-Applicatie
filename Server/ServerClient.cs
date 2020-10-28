@@ -141,7 +141,7 @@ namespace Server
                 if (client.user.getUsername() == username)
                 {
                     client.inSession = inSession;
-                    if (!this.inSession)
+                    if (!client.inSession)
                         this.server.saveUser(client.user);
                     break;
                 }

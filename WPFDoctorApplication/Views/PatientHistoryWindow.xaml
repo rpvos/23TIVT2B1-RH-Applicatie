@@ -19,9 +19,9 @@
                 
             </wpf:CartesianChart>
         </TabItem>
-        <TabItem Header="Heart rate" >
-            <wpf:CartesianChart>
-
+        <TabItem Header="Heart rate"  >
+            <wpf:CartesianChart Series="{Binding HeartRateCollection}">
+                
             </wpf:CartesianChart>
         </TabItem>
 

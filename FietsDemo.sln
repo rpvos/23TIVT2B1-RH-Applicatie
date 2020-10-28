@@ -7,15 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientApplication", "FietsD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{A9D7F8F6-4386-425E-844B-4F4CBCB4FF7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoctorApplication", "DoctorServer\DoctorApplication.csproj", "{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedItems", "SharedItems\SharedItems.shproj", "{A7508E68-1F8F-403F-866E-CBB0D8639D33}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFDoctorApplication", "WPFDoctorApplication\WPFDoctorApplication.csproj", "{D65FDDE3-82F5-41F7-A004-2129156EDF06}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		SharedItems\SharedItems.projitems*{5099da36-fa39-4a74-b49c-0ef3bbb1bdd5}*SharedItemsImports = 5
 		SharedItems\SharedItems.projitems*{a7508e68-1f8f-403f-866e-cbb0d8639d33}*SharedItemsImports = 13
 		SharedItems\SharedItems.projitems*{a9d7f8f6-4386-425e-844b-4f4cbcb4ff7b}*SharedItemsImports = 5
 		SharedItems\SharedItems.projitems*{d65fdde3-82f5-41f7-a004-2129156edf06}*SharedItemsImports = 5
@@ -34,10 +31,6 @@ Global
 		{A9D7F8F6-4386-425E-844B-4F4CBCB4FF7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9D7F8F6-4386-425E-844B-4F4CBCB4FF7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9D7F8F6-4386-425E-844B-4F4CBCB4FF7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Release|Any CPU.ActiveCfg = Release|Any CPU

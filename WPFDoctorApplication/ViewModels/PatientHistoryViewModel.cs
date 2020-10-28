@@ -17,18 +17,37 @@ namespace WPFDoctorApplication.ViewModels
         public ObservableCollection<string> History { get; set; }
         public SeriesCollection SpeedCollection { get; set; }
         private ChartValues<double> speedChartValues;
+        public SeriesCollection HeartRateCollection { get; set; }
+        private ChartValues<int> heartRateChartValues;
 
         public PatientHistoryViewModel(PatientBike patientBike)
         {
             History = new ObservableCollection<string>();
-            SpeedCollection = new SeriesCollection();
             speedChartValues = new ChartValues<double>();
+            heartRateChartValues = new ChartValues<int>();
 
             PatientBike = patientBike;
             Title = "History of " + patientBike.Username;
 
             InitializeLog();
-            SpeedCollection.Add(new LineSeries(speedChartValues));
+
+            SpeedCollection = new SeriesCollection
+            {
+                new LineSeries
+                {
+                    Title = "Speed",
+                    Values = speedChartValues
+                }
+            };
+
+            HeartRateCollection = new SeriesCollection
+            {
+                new LineSeries
+                {
+                    Title = "Heart rate",
+                    Values = heartRateChartValues
+                }
+            };
         }
 
         private void InitializeLog()
@@ -42,28 +61,36 @@ namespace WPFDoctorApplication.ViewModels
                 {
                     case UpdateType.Heartrate:
                         result += "HeartRate: " + dataSet.Value + " BPM";
+                        heartRateChartValues.Add((int)dataSet.Value);
                         break;
+
                     case UpdateType.Speed:
                         result += "Speed: " + dataSet.Value + " km/u";
                         // Fill the speed collection
                         speedChartValues.Add((double)dataSet.Value);
                         break;
+
                     case UpdateType.AccumulatedDistance:
                         result += "Distance: " + dataSet.Value + " km";
                         break;
+
                     case UpdateType.ElapsedTime:
                         var timeSpan = TimeSpan.FromSeconds((double)dataSet.Value);
                         result += "ElapsedTime: " + timeSpan.ToString(@"hh\:mm\:ss");
                         break;
+
                     case UpdateType.Resistance:
                         result += "Resistance: " + dataSet.Value + " %";
                         break;
+
                     case UpdateType.AccumulatedPower:
                         result += "AccumulatedPower: " + dataSet.Value;
                         break;
+
                     case UpdateType.InstantaniousPower:
                         result += "InstantaniousPower: " + dataSet.Value;
                         break;
+
                     default:
                         break;
                 }

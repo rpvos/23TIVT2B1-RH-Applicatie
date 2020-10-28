@@ -179,7 +179,8 @@ namespace FietsDemo
 
             // Connecting
             errorCode = await BleBike.OpenDevice("Avans Bike");
-            // __TODO__ Error check
+            if (errorCode == 0)
+                return;
 
             var services = BleBike.GetServices;
             foreach (var service in services)
@@ -207,7 +208,6 @@ namespace FietsDemo
 
             HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
             await HeartRateSensor.SubscribeToCharacteristic("HeartRateMeasurement");
-
 
 
             Console.Read();

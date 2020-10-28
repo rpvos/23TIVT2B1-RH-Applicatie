@@ -18,6 +18,14 @@ namespace Server
             this.encyptionService = new EncyptionService();
 
             string location = Environment.CurrentDirectory;
+            char[] BLACKLIST = new char[] { '/', '\\', '<', '>', ':', '"', '|', '?', '*' };
+            foreach(char c in BLACKLIST)
+            {
+                if (folderName.Contains(c))
+                {
+                    throw new ArgumentException($"foldername contains invallid character: {c}");
+                }
+            }
             this.path = $"{location}/{folderName}";
             if (!Directory.Exists(path))
             {

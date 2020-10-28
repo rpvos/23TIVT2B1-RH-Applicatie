@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientApplication", "FietsDemo\ClientApplication.csproj", "{DEC0782D-D22F-4F80-A2EF-77C887BF1D19}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "simulatie", "simulatie\simulatie.csproj", "{91436C90-6693-4D41-B5E9-91C199B0F9C1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{A9D7F8F6-4386-425E-844B-4F4CBCB4FF7B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoctorApplication", "DoctorServer\DoctorApplication.csproj", "{5099DA36-FA39-4A74-B49C-0EF3BBB1BDD5}"
@@ -15,11 +13,14 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedItems", "SharedItems\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFDoctorApplication", "WPFDoctorApplication\WPFDoctorApplication.csproj", "{D65FDDE3-82F5-41F7-A004-2129156EDF06}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{CA700A12-8BD2-40DB-9052-8D59DC0F40BB}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedItems\SharedItems.projitems*{5099da36-fa39-4a74-b49c-0ef3bbb1bdd5}*SharedItemsImports = 5
 		SharedItems\SharedItems.projitems*{a7508e68-1f8f-403f-866e-cbb0d8639d33}*SharedItemsImports = 13
 		SharedItems\SharedItems.projitems*{a9d7f8f6-4386-425e-844b-4f4cbcb4ff7b}*SharedItemsImports = 5
+		SharedItems\SharedItems.projitems*{ca700a12-8bd2-40db-9052-8d59dc0f40bb}*SharedItemsImports = 5
 		SharedItems\SharedItems.projitems*{d65fdde3-82f5-41f7-a004-2129156edf06}*SharedItemsImports = 5
 		SharedItems\SharedItems.projitems*{dec0782d-d22f-4f80-a2ef-77c887bf1d19}*SharedItemsImports = 4
 	EndGlobalSection
@@ -32,10 +33,6 @@ Global
 		{DEC0782D-D22F-4F80-A2EF-77C887BF1D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEC0782D-D22F-4F80-A2EF-77C887BF1D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEC0782D-D22F-4F80-A2EF-77C887BF1D19}.Release|Any CPU.Build.0 = Release|Any CPU
-		{91436C90-6693-4D41-B5E9-91C199B0F9C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91436C90-6693-4D41-B5E9-91C199B0F9C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91436C90-6693-4D41-B5E9-91C199B0F9C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91436C90-6693-4D41-B5E9-91C199B0F9C1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A9D7F8F6-4386-425E-844B-4F4CBCB4FF7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A9D7F8F6-4386-425E-844B-4F4CBCB4FF7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9D7F8F6-4386-425E-844B-4F4CBCB4FF7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -48,6 +45,10 @@ Global
 		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D65FDDE3-82F5-41F7-A004-2129156EDF06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA700A12-8BD2-40DB-9052-8D59DC0F40BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA700A12-8BD2-40DB-9052-8D59DC0F40BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA700A12-8BD2-40DB-9052-8D59DC0F40BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA700A12-8BD2-40DB-9052-8D59DC0F40BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

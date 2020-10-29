@@ -80,8 +80,12 @@ namespace FietsDemo
 
             Thread VRThread = new Thread(startVR);
             VRThread.Start();
-            
-            initialize();
+
+            try
+            {
+                initialize();
+            }
+            catch (NullReferenceException e){ }
         }
 
         public void startClient()

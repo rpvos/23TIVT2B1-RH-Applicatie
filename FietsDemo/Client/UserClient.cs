@@ -26,7 +26,7 @@ namespace FietsDemo
             this.bluetoothBike = bluetoothBike;
             this.server = new TcpClient("127.0.0.1", 8080);
 
-            this.crypto = new Crypto(server.GetStream(),handleData);
+            this.crypto = new Crypto(server.GetStream(), handleData, disconnect);
         }
 
         public void sendUserCredentials(string username, string password)
@@ -68,25 +68,25 @@ namespace FietsDemo
                             Thread startThread = new Thread(start);
                             startThread.Start();
                             this.bluetoothBike.loginSucceeded();
-                            
+
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
                             this.bluetoothBike.loginFailed();
-                            
+
                         }
                         break;
 
                     case "globalmessage":
                         AddChatMessage(data);
-                            break;
+                        break;
 
                     case "resistance":
                         setResistance(data);
                         break;
                     case "message":
-                            AddChatMessage(data);
+                        AddChatMessage(data);
                         break;
                     default:
                         Console.WriteLine("Invalid type");
@@ -108,7 +108,7 @@ namespace FietsDemo
         private void AddChatMessage(JObject data)
         {
             string message = (string)data["Message"];
-            this.bluetoothBike.gui.addTextMessage("Doctor: "+message);
+            this.bluetoothBike.gui.addTextMessage("Doctor: " + message);
 
         }
 
@@ -140,6 +140,7 @@ namespace FietsDemo
             WriteTextMessage(getDisconnectString(this.username));
             this.crypto.disconnect();
         }
+
         #endregion
 
         #region send handlers

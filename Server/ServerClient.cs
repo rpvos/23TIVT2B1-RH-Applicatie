@@ -34,7 +34,7 @@ namespace Server
             this.inSession = false; 
 
             this.buffer = new byte[1024];
-            this.crypto = new Crypto(client.GetStream(), handleData);
+            this.crypto = new Crypto(client.GetStream(), handleData, Disconnect);
 
             this.logger = new StringBuilder();
         }
@@ -417,8 +417,15 @@ namespace Server
             this.server.usernameAndResistance.Remove(this.user.getUsername());
             this.user.loggedIn = false;
             this.server.Disconnect(this);
-            this.client.GetStream().Close();
-            this.client.Close();
+
+            // Try to close the stream
+            try
+            {
+                this.client.GetStream().Close();
+                this.client.Close();
+            }
+            catch { }
+
             Console.WriteLine(this.user.getUsername() + " disconnected");
         }
         #endregion

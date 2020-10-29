@@ -16,6 +16,7 @@ namespace SharedItems
         private List<byte> totalBuffer;
 
         private Action<string> handleMethod;
+        private Action handleDisconnect;
 
         private EncyptionService encyptionService;
 
@@ -24,18 +25,19 @@ namespace SharedItems
         /// </summary>
         /// <param name="networkStream">the stream from a TcpClient</param>
         /// <param name="handleMethod">method where the data is being handled</param>
-        public Crypto(NetworkStream networkStream, Action<string> handleMethod)
+        public Crypto(NetworkStream networkStream, Action<string> handleMethod, Action handleDisconnect)
         {
             this.buffer = new byte[1024];
             this.encyptionService = new EncyptionService();
             this.networkStream = networkStream;
             this.handleMethod = handleMethod;
+            this.handleDisconnect = handleDisconnect;
             this.totalBuffer = new List<byte>();
 
             networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        
+
 
 
         #region stream dynamics
@@ -55,19 +57,16 @@ namespace SharedItems
 
             byte[] fullMessage = new byte[dataAsBytes.Length + lengthMessage.Length];
             Array.Copy(lengthMessage, fullMessage, lengthMessage.Length);
-            Array.Copy(dataAsBytes,0, fullMessage,lengthMessage.Length, dataAsBytes.Length);
-
-
-            //send the message
-            try
-            {
-                networkStream.Write(fullMessage, 0, fullMessage.Length);
-                networkStream.Flush();
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("A client disconnected");
-
+            Array.Copy(dataAsBytes, 0, fullMessage, lengthMessage.Length, dataAsBytes.Length);
+            //send the message
+            try
+            {
+                networkStream.Write(fullMessage, 0, fullMessage.Length);
+                networkStream.Flush();
+            }
+            catch (Exception e)
+            {
+                handleDisconnect();
             }
         }
 
@@ -107,9 +106,9 @@ namespace SharedItems
                     string message = encyptionService.DecryptStringFromBytes(messageInBytes);
 
                     // cut out the encoded extra characters                  
-                        if (length != totalLength)
-                            message = message.Substring(0, length);
-                   
+                    if (length != totalLength)
+                        message = message.Substring(0, length);
+
 
                     // Handle the message
                     handleMethod(message);
@@ -123,24 +122,14 @@ namespace SharedItems
                     if (totalBuffer.Count > 4)
                         totalLength = calculateTotalLength(out length);
                 }
+
+                // Listen for more messages 
+                networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             }
             catch (Exception e)
-            {
-                Console.WriteLine("A client disconnected");
-
-                return;
+            {
+                handleDisconnect();
             }
-
-            // Listen for more messages 
-
-            try {   
-                networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("A client disconnected");
-            }
-
         }
 
         /// <summary>
@@ -151,7 +140,7 @@ namespace SharedItems
         private int calculateTotalLength(out int length)
         {
             // Get the length that the message should be
-     
+
             byte[] lengthArray = totalBuffer.GetRange(0, 4).ToArray();
             length = BitConverter.ToInt32(lengthArray, 0);
             // Make it a multiple of 16
@@ -160,9 +149,9 @@ namespace SharedItems
 
         #endregion
 
-        public void disconnect()
-        {
-            this.networkStream.Close();
+        public void disconnect()
+        {
+            this.networkStream.Close();
         }
 
 

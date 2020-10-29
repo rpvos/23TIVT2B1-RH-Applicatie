@@ -45,7 +45,7 @@ namespace WPFDoctorApplication
             this.server = new TcpClient("127.0.0.1", 8080);
 
             this.buffer = new byte[1024];
-            this.crypto = new Crypto(server.GetStream(), handleData);
+            this.crypto = new Crypto(server.GetStream(), handleData, disconnect);
 
             this.usernames = new List<string>();
 

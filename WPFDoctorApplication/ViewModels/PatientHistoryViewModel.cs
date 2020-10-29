@@ -17,11 +17,14 @@ namespace WPFDoctorApplication.ViewModels
         public ObservableCollection<string> History { get; set; }
         public SeriesCollection SpeedCollection { get; set; }
         private ChartValues<double> speedChartValues;
+        public SeriesCollection HeartRateCollection { get; set; }
+        private ChartValues<int> heartRateChartValues;
 
         public PatientHistoryViewModel(PatientBike patientBike)
         {
             History = new ObservableCollection<string>();
             speedChartValues = new ChartValues<double>();
+            heartRateChartValues = new ChartValues<int>();
 
             PatientBike = patientBike;
             Title = "History of " + patientBike.Username;
@@ -34,6 +37,15 @@ namespace WPFDoctorApplication.ViewModels
                 {
                     Title = "Speed",
                     Values = speedChartValues
+                }
+            };
+
+            HeartRateCollection = new SeriesCollection
+            {
+                new LineSeries
+                {
+                    Title = "Heart rate",
+                    Values = heartRateChartValues
                 }
             };
         }
@@ -49,6 +61,8 @@ namespace WPFDoctorApplication.ViewModels
                 {
                     case UpdateType.Heartrate:
                         result += "HeartRate: " + dataSet.Value + " BPM";
+                        // Fill the speed collection
+                        heartRateChartValues.Add((int)dataSet.Value);
                         break;
                     case UpdateType.Speed:
                         result += "Speed: " + dataSet.Value + " km/u";

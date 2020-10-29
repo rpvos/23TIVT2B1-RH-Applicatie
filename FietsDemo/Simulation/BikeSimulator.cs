@@ -211,8 +211,19 @@ namespace FietsDemo
     }
     class Page0x10Message
     {
+        private byte speed;
         // Value represents the speed in m/s.
-        public byte Speed { get; set; }
+        public byte Speed
+        {
+            get
+            {
+                return speed;
+            }
+            set
+            {
+                speed = value;
+            }
+        }
 
         // Value that is used to fluxuate the speed
         public byte TargetSpeed { get; set; }

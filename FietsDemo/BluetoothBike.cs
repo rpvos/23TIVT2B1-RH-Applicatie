@@ -187,10 +187,6 @@ namespace FietsDemo
                 Console.WriteLine($"Service: {service}");
             }
 
-            //Console.WriteLine("starting sim");
-            bikeSimulator = new BikeSimulator(this);
-            Thread thread = new Thread(startSimulator);
-            thread.Start();
 
             // Set service
             errorCode = await BleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
@@ -215,8 +211,8 @@ namespace FietsDemo
 
         public void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            if (sender == null || e == null)
-                return;
+            //if (e == null)
+            //    return;
 
             string name = e.ServiceName;
 

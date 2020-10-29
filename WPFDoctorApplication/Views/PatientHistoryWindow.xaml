@@ -25,8 +25,13 @@
             </wpf:CartesianChart>
         </TabItem>
         <TabItem Header="Heart rate" >
-            <wpf:CartesianChart>
-
+            <wpf:CartesianChart Series="{Binding HeartRateCollection}" LegendLocation="None"  DisableAnimations="True" DataTooltip="{x:Null}">
+                <wpf:CartesianChart.AxisY>
+                    <wpf:Axis Title="Speed" MinValue="40" MaxValue="230"/>
+                </wpf:CartesianChart.AxisY>
+                <wpf:CartesianChart.AxisX>
+                    <wpf:Axis Title="Time"/>
+                </wpf:CartesianChart.AxisX>
             </wpf:CartesianChart>
         </TabItem>
 

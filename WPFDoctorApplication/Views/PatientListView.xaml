@@ -27,11 +27,11 @@
         <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="3" Width="250" ItemsSource="{Binding PatientBikeList, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedPatientBike}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border BorderBrush="Black" BorderThickness="1">
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Username}"/>
-                        </StackPanel>
-                    </Border>
+                  <StackPanel VerticalAlignment="Center">                            
+                          <Border BorderBrush="Black" BorderThickness="1" Width="230">
+                          <TextBlock Text="{Binding Username}" FontSize="20"/>
+                     </Border>
+                   </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

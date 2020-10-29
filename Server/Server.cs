@@ -133,6 +133,7 @@ namespace Server
         {
             lock (Clients)
             {
+                dataBase[client.user.getUsername()].loggedIn = false;
                 Clients.Remove(client);
             }
             Console.WriteLine("Client disconnected");

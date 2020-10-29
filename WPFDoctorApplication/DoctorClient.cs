@@ -292,7 +292,6 @@ namespace WPFDoctorApplication
                             break;
                         case UpdateType.Resistance:
                             patientBike.ResistanceValue = (int)value;
-                            //Console.WriteLine("Value changed");
                             break;
                     }
                 }

@@ -106,7 +106,6 @@ namespace Server
             {
                 this.cryptoFileSaver.WriteUserData(dataBase[userName].GetSaveFormat(), userName);
             }
-            Console.WriteLine("SAVED USERS :)");
         }
 
         #endregion

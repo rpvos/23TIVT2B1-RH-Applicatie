@@ -454,7 +454,7 @@ namespace FietsDemo
 
 
 
-                        Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, accumulatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
+                        //Console.WriteLine("{0}: \t acumelated power: {1} \t rpm: {2} \t instantaneous power: {3} \t state: {4}", name, accumulatedPower, instantaneousCadence, instantaneousPowerMSN, feState);
                     }
 
                 }

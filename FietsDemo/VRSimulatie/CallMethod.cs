@@ -43,7 +43,6 @@ namespace simulatie
         //Reset the whole VR scene
         internal void ResetScene()
         {
-            Console.WriteLine("RESET SCENE CALLED");
             TunnelMessage resetMessage = this.tcpClient.GetTunnelMessage("SceneReset.json");
 
             dynamic payloadData = new

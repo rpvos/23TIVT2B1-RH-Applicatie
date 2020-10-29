@@ -194,7 +194,6 @@ namespace Server
         {
             string username = (string)data["Username"];
             string password = (string)data["Password"];
-            Console.WriteLine("USERNAME: "+ username+"WW: "+password);
 
             this.user = server.checkUser(username, password);
             if (user != null)

@@ -476,8 +476,7 @@ namespace FietsDemo
                     this.tcpClientVR.speed = value;
                     break;
                 case UpdateType.Heartrate:
-                    this.gui.getForm().setHeartrate(value);
-                    //TODO heartrate is one word
+                    this.gui.getForm().setHeartRate(value);
                     this.tcpClientVR.heartRate = value;
                     break;
                 case UpdateType.AccumulatedPower:

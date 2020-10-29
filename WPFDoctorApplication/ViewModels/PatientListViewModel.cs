@@ -17,16 +17,16 @@ namespace WPFDoctorApplication.ViewModels
         private ShellViewModel shellViewModel;
         private ObservableCollection<PatientBike> _patientBikeList;
         public ObservableCollection<PatientBike> PatientBikeList
-        { 
+        {
             get
             {
                 return _patientBikeList;
             }
-             set 
+            set
             {
                 _patientBikeList = value;
                 //OnPropertyChanged("PatientBikeList");
-            } 
+            }
         }
         public CustomObservableObject SelectedPatientViewModel { get; set; }
         public string GlobalChatMessage { get; set; }
@@ -35,8 +35,11 @@ namespace WPFDoctorApplication.ViewModels
         public PatientBike SelectedPatientBike
         {
             get { return _selectedPatientBike; }
-            set { _selectedPatientBike = value;
-                SelectedPatientViewModel = new PatientViewModel(value, value.DoctorClient);
+            set
+            {
+                _selectedPatientBike = value;
+                if (_selectedPatientBike != null)
+                    SelectedPatientViewModel = new PatientViewModel(value, value.DoctorClient);
             }
         }
 

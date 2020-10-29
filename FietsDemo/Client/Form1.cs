@@ -41,11 +41,11 @@ namespace FietsDemo
             }));
         }
 
-        public void setHeartrate(double heartrate)
+        public void setHeartRate(double heartRate)
         {
             HeartrateValue.Invoke((MethodInvoker)(() =>
             {
-                HeartrateValue.Text = heartrate + " bpm";
+                HeartrateValue.Text = heartRate + " bpm";
             }));
         }
 

@@ -133,11 +133,22 @@ namespace Server
             lock (Clients)
             {
                 dataBase[client.user.getUsername()].loggedIn = false;
+                notifyDoctorClientLeft(client);
                 Clients.Remove(client);
             }
             Console.WriteLine("Client disconnected");
         }
 
+        private void notifyDoctorClientLeft(ServerClient leavingClient)
+        {
+            foreach (ServerClient client in this.Clients)
+            {
+                if (client.user?.getRole() == Role.Doctor)
+                {
+                    client.sendClientLeft(leavingClient);
+                }
+            }
+        }
 
         internal User checkUser(string username, string password)
         {

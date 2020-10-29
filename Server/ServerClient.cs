@@ -149,6 +149,13 @@ namespace Server
            
         }
 
+        internal void sendClientLeft(ServerClient leavingClient)
+        {
+            WriteTextMessage(getLeavingClientString(leavingClient.user.getUsername()));
+        }
+
+        
+
         public void requestData(JObject data)
         {
             string username = (string)data["Username"];
@@ -256,6 +263,17 @@ namespace Server
 
             return getJsonObject("AddUser", data);
         }
+
+        private string getLeavingClientString(string username)
+        {
+            dynamic data = new
+            {
+                Username = username
+            };
+
+            return getJsonObject("LeftClient", data);
+        }
+
         private string getFinishedUserString(string username)
         {
             dynamic data = new

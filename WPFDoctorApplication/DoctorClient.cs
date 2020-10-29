@@ -1,4 +1,4 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
@@ -67,7 +67,7 @@ namespace WPFDoctorApplication
             WriteTextMessage(getPrivMessageString(message, username));
         }
 
-        
+
         public void sendResistance(string resistance, string username)
         {
             WriteTextMessage(getResistanceString(resistance, username));
@@ -77,7 +77,7 @@ namespace WPFDoctorApplication
         {
             WriteTextMessage(getInSessionString(inSession, username));
         }
-        
+
         public void AskUserData(string username)
         {
             WriteTextMessage(getUserDataRequestString(username));
@@ -87,7 +87,7 @@ namespace WPFDoctorApplication
         #region handle received data
         private void handleData(string packet)
         {
-            { 
+            {
 
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
@@ -107,12 +107,12 @@ namespace WPFDoctorApplication
                             //Thread startThread = new Thread(Start);
                             //startThread.Start();
                             this.shellViewModel.LoginViewModel.LoginSucces();
-                            
+
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
-                            this.shellViewModel.LoginViewModel.LoginFailed(); 
+                            this.shellViewModel.LoginViewModel.LoginFailed();
                         }
                         break;
                     case "update":
@@ -133,6 +133,9 @@ namespace WPFDoctorApplication
                     case "SendingDataSetsFinished":
                         OpenHistoryWindow(data);
                         break;
+                    case "LeftClient":
+                        removeLeftClient(data);
+                        break;
                     default:
                         Console.WriteLine("Invalid type");
                         break;
@@ -150,7 +153,8 @@ namespace WPFDoctorApplication
                 bool contains = false;
                 foreach (PatientBike bike in this.PatientBikeList)
                 {
-                    if (bike.Username == username) {
+                    if (bike.Username == username)
+                    {
                         contains = true;
                         break;
                     }
@@ -165,6 +169,24 @@ namespace WPFDoctorApplication
              );
             this.shellViewModel.DebugMessage = "Added Client";
         }
+        private void removeLeftClient(JObject data)
+        {
+            string username = (string)data["Username"];
+
+            //App.Current.Dispatcher in order to avoid threading problems
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                for (int i = PatientBikeList.Count - 1; i >= 0; i--)
+                {
+                    if (PatientBikeList[i].Username == username)
+                    {
+                        lock (PatientBikeList[i])
+                            PatientBikeList.Remove(PatientBikeList[i]);
+                    }
+                }
+            });
+        }
+
         private void OpenHistoryWindow(JObject data)
         {
             string username = (string)data["username"];
@@ -220,48 +242,11 @@ namespace WPFDoctorApplication
 
             string username = (string)data["Username"];
             double value = (double)data["Value"];
-            
-            //Somehow makes the GUI update quicker by invoking UI Main Thread, doesn't feel right
-            App.Current.Dispatcher.Invoke((System.Action)delegate
+
+            App.Current.Dispatcher.Invoke(() =>
             {
                 typeDivider(type, username, value);
             });
-
-        
-
-            //if (username == this.selectedUsername)
-            //{
-            //    switch (type)
-            //    {
-            //        case UpdateType.AccumulatedDistance:
-            //            mainForm.setDT(value.ToString());
-            //            break;
-
-            //        case UpdateType.AccumulatedPower:
-            //            mainForm.setAP(value.ToString());
-            //            break;
-
-            //        case UpdateType.ElapsedTime:
-            //            mainForm.setElapsedTime(value.ToString());
-            //            break;
-
-            //        case UpdateType.Heartrate:
-            //            mainForm.setHeartrate(value.ToString());
-            //            break;
-
-            //        case UpdateType.InstantaniousPower:
-            //            //TODO mainForm.set(value.ToString());
-            //            break;
-
-            //        case UpdateType.Resistance:
-            //            //TODO doctor sends resistance and client doesn't set resitance except vr
-            //            break;
-
-            //        case UpdateType.Speed:
-            //            mainForm.setSpeed(value.ToString());
-            //            break;
-            //    }
-            //}
         }
 
         public void typeDivider(UpdateType type, string username, double value)
@@ -440,7 +425,7 @@ namespace WPFDoctorApplication
         #endregion
 
         #region disconnecting
-      
+
 
         public void disconnect()
         {
@@ -452,4 +437,3 @@ namespace WPFDoctorApplication
 }
 
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                     

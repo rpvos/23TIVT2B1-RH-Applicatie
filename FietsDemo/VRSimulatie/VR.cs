@@ -323,7 +323,6 @@ namespace TCP_naar_VR
                     int treeNumber = random.Next(11);
                     float scale = (float)(0.1 * random.Next(20));
 
-                    //TODO fix height
                     Console.WriteLine(x + " " +  y);
                     this.callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, 0, y }, new int[] { 0, 0, 0 }, false, "no", scale);
                 }

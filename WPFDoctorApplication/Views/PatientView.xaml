@@ -46,7 +46,7 @@
         <!--Row 2-->
         <wpf:CartesianChart Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="450" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20"  Series="{Binding SpeedCollection}" LegendLocation="None"  DisableAnimations="True" DataTooltip="{x:Null}">
             <wpf:CartesianChart.AxisY>
-                <wpf:Axis Title="Speed" MinValue="0" MaxValue="144"/>
+                <wpf:Axis Title="Speed in km/u" MinValue="0" MaxValue="144"/>
             </wpf:CartesianChart.AxisY>
             <wpf:CartesianChart.AxisX>
                 <wpf:Axis Title="Time" Labels="{Binding PatientBike.TimeLabels}">
@@ -56,7 +56,20 @@
                 </wpf:Axis>
             </wpf:CartesianChart.AxisX>
         </wpf:CartesianChart>
-        
+
+        <wpf:CartesianChart Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="490" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20"  Series="{Binding DistanceCollection}" LegendLocation="None"  DisableAnimations="True" DataTooltip="{x:Null}">
+            <wpf:CartesianChart.AxisY>
+                <wpf:Axis Title="Distance in km" LabelFormatter="{Binding DistanceFormatter}"/>
+            </wpf:CartesianChart.AxisY>
+            <wpf:CartesianChart.AxisX>
+                <wpf:Axis Title="Time" Labels="{Binding PatientBike.TimeLabels}">
+                    <wpf:Axis.Separator>
+                        <wpf:Separator Step="39" />
+                    </wpf:Axis.Separator>
+                </wpf:Axis>
+            </wpf:CartesianChart.AxisX>
+        </wpf:CartesianChart>
+
         <!--Row 3-->
         <TextBlock Grid.Column="1" Grid.Row="3" Text="Speed:"/>
         <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding PatientBike.Speed, Converter={StaticResource PatientValueConverter}, ConverterParameter=SPEED}"/>
@@ -77,7 +90,7 @@
             </TextBox>
         </StackPanel>
         
-        <Button Grid.Column="6" Grid.Row="3" Grid.RowSpan="2" VerticalAlignment="Top" Height="40" Margin="0 0 0 2" Content="{Binding PatientBike.SessionText}" Command="{Binding StartSessionCommand}" />
+        <Button Grid.Column="6" Grid.Row="3" Grid.RowSpan="2" VerticalAlignment="Top" Height="40" Margin="0 0 0 3" Content="{Binding PatientBike.SessionText}" Command="{Binding StartSessionCommand}" />
 
         
         <!--Row 4-->
@@ -92,7 +105,17 @@
         <!--Row 5-->
         <TextBlock Grid.Column="1" Grid.Row="5" Text="Active time:"/>
         <TextBlock Grid.Column="2" Grid.Row="5" Text="{Binding PatientBike.ElapsedTime, Converter={StaticResource PatientValueConverter}, ConverterParameter=ELAPSEDTIME }" x:Name="elapsedTimeBlock"/>
-
+        <wpf:AngularGauge Grid.Column="6" Grid.Row="5" Grid.RowSpan="5" Width="200" Value="{Binding PatientBike.HeartRate}" FromValue="50" ToValue="250" 
+                          LabelsStep="50" TicksStep="25" Wedge="180"
+                          TicksForeground="White" Foreground="White" 
+                          FontWeight="Bold" FontSize="16"
+                          SectionsInnerRadius=".5">
+            <wpf:AngularGauge.Sections>
+                <wpf:AngularSection FromValue="50" ToValue="200" Fill="#F8A725"/>
+                <wpf:AngularSection FromValue="200" ToValue="250" Fill="#FF3939"/>
+            </wpf:AngularGauge.Sections>
+        </wpf:AngularGauge>
+        
         <!--Row 6-->
         <TextBlock Grid.Column="1" Grid.Row="6" Text="Distance traveled:"/>
         <TextBlock Grid.Column="2" Grid.Row="6" Text="{Binding PatientBike.DistanceTraveled, Converter={StaticResource PatientValueConverter}, ConverterParameter=DISTANCETRAVELED}" x:Name="distanceTraveledBlock"/>
@@ -104,12 +127,13 @@
 
         <!--Row 8-->
         <TextBlock Grid.Column="1" Grid.Row="8" Text="Resistance:"/>
-
+        <TextBlock Grid.Column="6" Grid.Row="8" Text="Heart rate:"/>
 
         <!--Row 9-->
         <Slider Grid.Column="1" Grid.Row="9" Value="{Binding PatientBike.ResistanceValue}" Minimum="0" Maximum="100" ValueChanged="Slider_ValueChanged" Margin="0 10 0 0" Height="35"/>
         <TextBlock Grid.Column="2" Grid.Row="9" Text="{Binding PatientBike.ResistanceValue}"/>
-        
+        <TextBlock Grid.Column="6" Grid.Row="9" Text="{Binding PatientBike.HeartRate, Converter={StaticResource PatientValueConverter}, ConverterParameter=HEARTRATE}" HorizontalAlignment="Center" FontSize="30"/>
+
         <!--Row 10-->
         <Button Grid.Column="6" Grid.Row="10" Content="Emergency stop" Command="{Binding StopCommand}">
             <Button.ToolTip>

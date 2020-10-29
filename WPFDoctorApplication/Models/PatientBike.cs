@@ -67,11 +67,11 @@ namespace WPFDoctorApplication.Models
         public double AccumulatedPower { get; set; }
         public double ElapsedTime { get; set; }
         public int ResistanceValue { get; set; }
-        public double HeartRate { get; set; }
+        public double HeartRate { get; set; } = 50;
         public ObservableCollection<string> PrivateChatList { get; set; }
         public string PrivateChatMessage { get; set; }
-        public Func<double, string> SpeedYFormatter { get; set; }
         public ChartValues<double> SpeedValues { get; set; }
+        public ChartValues<double> DistanceValues { get; set; }
         public ObservableCollection<string> TimeLabels { get; set; }
         public PatientBike(DoctorClient doctorClient, string username)
         {
@@ -79,6 +79,7 @@ namespace WPFDoctorApplication.Models
             this.DoctorClient = doctorClient;
             PrivateChatList = new ObservableCollection<string>();
             SpeedValues = new ChartValues<double>();
+            DistanceValues = new ChartValues<double>();
             HistoricalData = new List<DataSet>();
 
             InitializeGraphs();
@@ -129,6 +130,7 @@ namespace WPFDoctorApplication.Models
             for (int i = 0; i < 40; i++)
             {
                 SpeedValues.Add(0);
+                DistanceValues.Add(0);
             }
 
             TimeLabels = new ObservableCollection<string>();
@@ -136,9 +138,8 @@ namespace WPFDoctorApplication.Models
             {
                 TimeLabels.Add("00:00:00");
             }
-            //SpeedYFormatter = value => value.ToString();
 
-            Task.Run(Read);
+        Task.Run(Read);
         }
 
         private void Read()
@@ -153,6 +154,11 @@ namespace WPFDoctorApplication.Models
                     // Use the last 40 values
                     if (SpeedValues.Count > 40)
                         SpeedValues.RemoveAt(0);
+
+                    DistanceValues.Add(DistanceTraveled);
+
+                    if (DistanceValues.Count > 40)
+                        DistanceValues.RemoveAt(0);
 
                     TimeLabels.Add(TimeSpan.FromSeconds((double)ElapsedTime).ToString(@"hh\:mm\:ss"));
                     if (TimeLabels.Count > 20)

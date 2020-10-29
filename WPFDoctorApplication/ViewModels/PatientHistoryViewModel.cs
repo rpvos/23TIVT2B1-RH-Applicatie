@@ -2,14 +2,15 @@
 using LiveCharts.Wpf;
 using SharedItems;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using WPFDoctorApplication.Models;
 using WPFDoctorApplication.Utils;
 
 namespace WPFDoctorApplication.ViewModels
 {
+    /// <summary>
+    /// View model for displaying the patient history
+    /// </summary>
     public class PatientHistoryViewModel : CustomObservableObject
     {
         public PatientBike PatientBike { get; }

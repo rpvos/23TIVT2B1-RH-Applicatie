@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Text;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace UnitTests
 {
@@ -34,7 +34,9 @@ namespace UnitTests
             JObject jObject = (JObject)json["Data"];
             byte[] data2 = Encoding.ASCII.GetBytes(jObject.ToString());
             foreach (byte b in data2)
+            {
                 checksum2 ^= b;
+            }
             //Assert
             Assert.IsTrue(checksum2 == 0, "Checksum calculation is wrong");
         }

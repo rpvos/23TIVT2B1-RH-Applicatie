@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FietsDemo
@@ -22,9 +15,10 @@ namespace FietsDemo
 
         private void ButtonLogin_Click(object sender, EventArgs e)
         {
-            if(UsernameTextbox.Text != "" && PasswordTextbox.Text != "")
-            this.bluetoothBike.client.sendUserCredentials(UsernameTextbox.Text, PasswordTextbox.Text);
-            
+            if (UsernameTextbox.Text != "" && PasswordTextbox.Text != "")
+            {
+                bluetoothBike.client.sendUserCredentials(UsernameTextbox.Text, PasswordTextbox.Text);
+            }
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
@@ -37,22 +31,22 @@ namespace FietsDemo
 
             UsernameTextbox.Invoke((MethodInvoker)(() =>
             {
-                this.UsernameTextbox.Text = "Login failed";
-                this.PasswordTextbox.Text = "";
+                UsernameTextbox.Text = "Login failed";
+                PasswordTextbox.Text = "";
             }));
-           
+
 
         }
 
         public void loginSucceeded()
         {
 
-            this.Invoke((MethodInvoker)(() =>
+            Invoke((MethodInvoker)(() =>
             {
-                this.Hide();
+                Hide();
             }));
         }
 
-     
+
     }
 }

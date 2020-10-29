@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WPFDoctorApplication.Utils
+﻿namespace WPFDoctorApplication.Utils
 {
-    interface ICloseable
+    internal interface ICloseable
     {
         void Close();
     }

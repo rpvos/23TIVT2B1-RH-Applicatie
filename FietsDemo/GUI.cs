@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 
 namespace FietsDemo
 {
-
     public class GUI
     {
 
@@ -17,7 +11,7 @@ namespace FietsDemo
 
         public GUI(BluetoothBike program)
         {
-            this.bluetoothBike = program;
+            bluetoothBike = program;
         }
 
         public void run()
@@ -25,34 +19,34 @@ namespace FietsDemo
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            this.form = new MainForm(this);
+            form = new MainForm(this);
 
             Application.Run(form);
         }
 
         public MainForm getForm()
         {
-            return this.form;
+            return form;
         }
 
         public void stopSimulator()
         {
-            this.bluetoothBike.stopSimulator();
+            bluetoothBike.stopSimulator();
         }
 
         public void startSimulator()
         {
-            this.bluetoothBike.startSimulator();
+            bluetoothBike.startSimulator();
         }
 
         public void setResistance(int resistance)
         {
-            this.form.setResistance(resistance);
+            form.setResistance(resistance);
         }
 
         public void addTextMessage(string message)
         {
-            this.form.addMessage(message);
+            form.addMessage(message);
         }
 
 

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
 using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace SharedItems
 {
+    /// <summary>
+    /// Collection of the network traffic handling
+    /// Everything gets encrypted by a CryptoStream
+    /// </summary>
     public class Crypto
     {
         private byte[] buffer;
@@ -25,20 +24,18 @@ namespace SharedItems
         /// </summary>
         /// <param name="networkStream">the stream from a TcpClient</param>
         /// <param name="handleMethod">method where the data is being handled</param>
+        /// <param name="handleDisconnect">method that handles when the stream gets closed</param>
         public Crypto(NetworkStream networkStream, Action<string> handleMethod, Action handleDisconnect)
         {
-            this.buffer = new byte[1024];
-            this.encyptionService = new EncyptionService();
+            buffer = new byte[1024];
+            encyptionService = new EncyptionService();
             this.networkStream = networkStream;
             this.handleMethod = handleMethod;
             this.handleDisconnect = handleDisconnect;
-            this.totalBuffer = new List<byte>();
+            totalBuffer = new List<byte>();
 
             networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
-
-
-
 
         #region stream dynamics
 
@@ -64,7 +61,7 @@ namespace SharedItems
                 networkStream.Write(fullMessage, 0, fullMessage.Length);
                 networkStream.Flush();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 handleDisconnect();
             }
@@ -93,7 +90,9 @@ namespace SharedItems
                 int length = 0;
                 int totalLength = 0;
                 if (totalBuffer.Count > 4)
+                {
                     totalLength = calculateTotalLength(out length);
+                }
 
                 // Check if the message has been received fully by comparing the total buffer to the length that the full message should be
                 while (totalBuffer.Count >= totalLength + 4 && totalLength > 0)
@@ -107,7 +106,9 @@ namespace SharedItems
 
                     // cut out the encoded extra characters                  
                     if (length != totalLength)
+                    {
                         message = message.Substring(0, length);
+                    }
 
 
                     // Handle the message
@@ -120,13 +121,15 @@ namespace SharedItems
 
                     // Calculate length and totalLength with new message
                     if (totalBuffer.Count > 4)
+                    {
                         totalLength = calculateTotalLength(out length);
+                    }
                 }
 
                 // Listen for more messages 
                 networkStream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 handleDisconnect();
             }
@@ -149,15 +152,13 @@ namespace SharedItems
 
         #endregion
 
+        /// <summary>
+        /// Method to close the stream
+        /// </summary>
         public void disconnect()
         {
-            this.networkStream.Close();
+            networkStream.Close();
         }
-
-
-
-
-
 
     }
 }

@@ -1,14 +1,10 @@
-﻿using GalaSoft.MvvmLight.Command;
-using LiveCharts;
-using LiveCharts.Wpf;
+﻿using LiveCharts;
 using SharedItems;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using WPFDoctorApplication.Utils;
 using WPFDoctorApplication.ViewModels;
 using WPFDoctorApplication.Views;
@@ -26,23 +22,22 @@ namespace WPFDoctorApplication.Models
         private string _sessionText = "Start session";
         private bool _isInSession = false;
         public DoctorClient DoctorClient;
-        public List<DataSet> HistoricalData{ get; set; }
+        public List<DataSet> HistoricalData { get; set; }
         public double Speed
         {
             get { return _speed; }
             set
-            { 
+            {
                 _speed = value;
-                //SpeedValues.RemoveAt(0);
-                //SpeedValues.Add(value);
             }
         }
-        public bool IsInSession {
-            get 
+        public bool IsInSession
+        {
+            get
             {
                 return _isInSession;
-            } 
-            set 
+            }
+            set
             {
                 _isInSession = value;
                 if (value)
@@ -55,21 +50,21 @@ namespace WPFDoctorApplication.Models
                     SessionText = "Start session";
                     CanGetHistoricalData = true;
                 }
-            } 
+            }
         }
         public bool CanGetHistoricalData { get; set; } = true;
-        public string SessionText { 
+        public string SessionText
+        {
             get
             {
                 return _sessionText;
-            } 
-            set 
+            }
+            set
             {
                 _sessionText = value;
-            } 
-        } 
+            }
+        }
         public string Username { get; set; }
-        //public double Speed { get; set; }
         public double DistanceTraveled { get; set; }
         public double AccumulatedPower { get; set; }
         public double ElapsedTime { get; set; }
@@ -82,8 +77,8 @@ namespace WPFDoctorApplication.Models
         public ObservableCollection<string> TimeLabels { get; set; }
         public PatientBike(DoctorClient doctorClient, string username)
         {
-            this.Username = username;
-            this.DoctorClient = doctorClient;
+            Username = username;
+            DoctorClient = doctorClient;
             PrivateChatList = new ObservableCollection<string>();
             SpeedValues = new ChartValues<double>();
             DistanceValues = new ChartValues<double>();
@@ -96,18 +91,18 @@ namespace WPFDoctorApplication.Models
             PrivateChatList.Add("Doctor: " + PrivateChatMessage);
             DoctorClient.sendPrivMessage(PrivateChatMessage, Username);
             PrivateChatMessage = "";
-        }       
+        }
 
         public void StartSession()
         {
             IsInSession = !IsInSession;
-            this.DoctorClient.sendInSession(IsInSession, Username);
+            DoctorClient.sendInSession(IsInSession, Username);
         }
 
         public void AskUserDataFromServer()
         {
             HistoricalData.Clear();
-            this.DoctorClient.AskUserData(Username);
+            DoctorClient.AskUserData(Username);
         }
         public void SendResistance()
         {
@@ -146,7 +141,7 @@ namespace WPFDoctorApplication.Models
                 TimeLabels.Add("00:00:00");
             }
 
-        Task.Run(Read);
+            Task.Run(Read);
         }
 
         private void Read()
@@ -160,12 +155,16 @@ namespace WPFDoctorApplication.Models
 
                     // Use the last 40 values
                     if (SpeedValues.Count > 40)
+                    {
                         SpeedValues.RemoveAt(0);
+                    }
 
                     DistanceValues.Add(DistanceTraveled);
 
                     if (DistanceValues.Count > 40)
+                    {
                         DistanceValues.RemoveAt(0);
+                    }
 
                     TimeLabels.Add(TimeSpan.FromSeconds((double)ElapsedTime).ToString(@"hh\:mm\:ss"));
                     if (TimeLabels.Count > 20)

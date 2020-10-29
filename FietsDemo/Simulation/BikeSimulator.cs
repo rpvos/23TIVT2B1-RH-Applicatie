@@ -18,7 +18,7 @@ namespace FietsDemo
         public BikeSimulator(IBLEcallBack bLEcallBack)
         {
             // Random is needed to fluxuate the speed and heart rate
-            this.random = new Random();
+            random = new Random();
 
             IBLEcallBack = bLEcallBack;
             SendingPage0x10Message = new Page0x10Message();
@@ -209,7 +209,8 @@ namespace FietsDemo
             Resistance = (float)(byteArray[12] / 2.0);
         }
     }
-    class Page0x10Message
+
+    internal class Page0x10Message
     {
         private byte speed;
         // Value represents the speed in m/s.
@@ -290,7 +291,7 @@ namespace FietsDemo
         }
     }
 
-    class Page0x19Message
+    internal class Page0x19Message
     {
         public byte EventCount = 0;
         public int AccumulatedPower;
@@ -301,7 +302,7 @@ namespace FietsDemo
         public byte[] getData()
         {
             // Bitmask to get the first 8 bits and the 9th to 12th bit
-            byte BIT_MASK_FIRST_EIGHT_BITS = (byte)0xff;
+            byte BIT_MASK_FIRST_EIGHT_BITS = 0xff;
             int BIT_MASK_EIGHT_TO_TWELVE_BITS = (15 << 8);
 
             // Accumulated power calculation from big integer to two bytes
@@ -313,7 +314,10 @@ namespace FietsDemo
             byte instantaneousPowerMSBAndTrainerStatus = (byte)((InstantaneousPower % 4094) & BIT_MASK_EIGHT_TO_TWELVE_BITS);
             byte feStateAndLapToggle = 0;
             if (LapTogleBit)
+            {
                 feStateAndLapToggle = 1 << 7;
+            }
+
             feStateAndLapToggle = (byte)(feStateAndLapToggle & FEState << 3);
 
             // __TODO__ needs to get implemented using gears
@@ -336,7 +340,7 @@ namespace FietsDemo
         }
     }
 
-    class HeartRateMessage
+    internal class HeartRateMessage
     {
         public byte TargetHeartRate { get; set; }
         public byte HeartRate { get; set; }

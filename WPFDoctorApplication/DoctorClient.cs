@@ -1,22 +1,22 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
-using System.Text;
-using SharedItems;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Threading;
+using SharedItems;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Net.Sockets;
+using System.Text;
 using WPFDoctorApplication.Models;
 using WPFDoctorApplication.ViewModels;
-using System.Collections.ObjectModel;
-using WPFDoctorApplication.Utils;
 
 namespace WPFDoctorApplication
 {
+    /// <summary>
+    /// Class that connects to the server
+    /// From the server it gets all the information about clients
+    /// </summary>
     public class DoctorClient
     {
-
         private ShellViewModel shellViewModel;
         private TcpClient server;
         private string username;
@@ -28,13 +28,12 @@ namespace WPFDoctorApplication
         private string totalBuffer;
         private int testCounter;
 
-        private Login login;
         public string SelectedUsername { get; set; }
         public ObservableCollection<PatientBike> PatientBikeList;
 
         public DoctorClient(ShellViewModel shellViewModel)
         {
-            this.SelectedUsername = "-1";
+            SelectedUsername = "-1";
             this.shellViewModel = shellViewModel;
             PatientBikeList = new ObservableCollection<PatientBike>();
             this.shellViewModel.PatientBikeList = PatientBikeList;
@@ -42,12 +41,12 @@ namespace WPFDoctorApplication
 
         public void StartClient()
         {
-            this.server = new TcpClient("127.0.0.1", 8080);
+            server = new TcpClient("127.0.0.1", 8080);
 
-            this.buffer = new byte[1024];
-            this.crypto = new Crypto(server.GetStream(), handleData, disconnect);
+            buffer = new byte[1024];
+            crypto = new Crypto(server.GetStream(), handleData, disconnect);
 
-            this.usernames = new List<string>();
+            usernames = new List<string>();
 
         }
 
@@ -91,7 +90,9 @@ namespace WPFDoctorApplication
 
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
+                {
                     return;
+                }
 
                 JObject data = (JObject)json["Data"];
                 string type = json["Type"].ToString();
@@ -106,13 +107,13 @@ namespace WPFDoctorApplication
                             Console.WriteLine("Login succesful");
                             //Thread startThread = new Thread(Start);
                             //startThread.Start();
-                            this.shellViewModel.LoginViewModel.LoginSucces();
+                            shellViewModel.LoginViewModel.LoginSucces();
 
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
-                            this.shellViewModel.LoginViewModel.LoginFailed();
+                            shellViewModel.LoginViewModel.LoginFailed();
                         }
                         break;
                     case "update":
@@ -148,10 +149,10 @@ namespace WPFDoctorApplication
             string username = (string)data["Username"];
 
             //App.Current.Dispatcher in order to avoid threading problems
-            App.Current.Dispatcher.Invoke((System.Action)delegate
+            App.Current.Dispatcher.Invoke(delegate
             {
                 bool contains = false;
-                foreach (PatientBike bike in this.PatientBikeList)
+                foreach (PatientBike bike in PatientBikeList)
                 {
                     if (bike.Username == username)
                     {
@@ -163,11 +164,11 @@ namespace WPFDoctorApplication
 
                 if (!contains)
                 {
-                    this.PatientBikeList.Add(new PatientBike(this, username));
+                    PatientBikeList.Add(new PatientBike(this, username));
                 }
             }
              );
-            this.shellViewModel.DebugMessage = "Added Client";
+            shellViewModel.DebugMessage = "Added Client";
         }
         private void removeLeftClient(JObject data)
         {
@@ -181,7 +182,9 @@ namespace WPFDoctorApplication
                     if (PatientBikeList[i].Username == username)
                     {
                         lock (PatientBikeList[i])
+                        {
                             PatientBikeList.Remove(PatientBikeList[i]);
+                        }
                     }
                 }
             });
@@ -193,7 +196,9 @@ namespace WPFDoctorApplication
             foreach (PatientBike patientBike in PatientBikeList)
             {
                 if (patientBike.Username == username)
+                {
                     App.Current.Dispatcher.Invoke(patientBike.ShowHistoricalDataWindow);
+                }
             }
         }
 
@@ -205,10 +210,12 @@ namespace WPFDoctorApplication
             foreach (PatientBike patientBike in PatientBikeList)
             {
                 if (patientBike.Username.Equals(username))
-                    App.Current.Dispatcher.Invoke((System.Action)delegate
+                {
+                    App.Current.Dispatcher.Invoke(delegate
                     {
                         patientBike.PrivateChatList.Add(username + ": " + message);
                     });
+                }
             }
         }
 
@@ -219,7 +226,7 @@ namespace WPFDoctorApplication
             DateTime dateStamp = (DateTime)data["DateStamp"];
             string username = (string)data["Username"];
 
-            foreach (PatientBike patientBike in this.PatientBikeList)
+            foreach (PatientBike patientBike in PatientBikeList)
             {
                 if (patientBike.Username == username)
                 {
@@ -296,7 +303,10 @@ namespace WPFDoctorApplication
             JObject jObject = (JObject)json["Data"];
             byte[] data = Encoding.ASCII.GetBytes(jObject.ToString());
             foreach (byte b in data)
+            {
                 checksum ^= b;
+            }
+
             return checksum == 0;
         }
         #endregion
@@ -429,8 +439,8 @@ namespace WPFDoctorApplication
 
         public void disconnect()
         {
-            WriteTextMessage(getDisconnectString(this.username));
-            this.crypto.disconnect();
+            WriteTextMessage(getDisconnectString(username));
+            crypto.disconnect();
         }
         #endregion
     }

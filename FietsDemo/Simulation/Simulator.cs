@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 
 namespace FietsDemo
@@ -24,19 +19,19 @@ namespace FietsDemo
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            this.form = new SimulationForm(this.bikeSimulator, gui);
+            form = new SimulationForm(bikeSimulator, gui);
 
             Application.Run(form);
         }
 
         public SimulationForm getForm()
         {
-            return this.form;
+            return form;
         }
 
         public void setResistance(int resistance)
         {
-            this.form.setResistance(resistance);
+            form.setResistance(resistance);
         }
 
     }

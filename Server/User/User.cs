@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
 using SharedItems;
-using System;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Text;
 
 namespace Server
 {
+    /// <summary>
+    /// Collection of the user data
+    /// </summary>
     public class User
     {
         public string name { get; set; }
@@ -24,27 +23,27 @@ namespace Server
 
         public User(string name, string username, string password, Role role)
         {
-            this.loggedIn = false;
+            loggedIn = false;
             this.name = name;
             this.username = username;
             this.password = password;
             this.role = role;
-            this.userDataStorage = new UserDataStorage();
+            userDataStorage = new UserDataStorage();
         }
 
         public bool checkPassword(string password)
         {
             return password == this.password;
-        }     
+        }
 
         internal Role getRole()
         {
-            return this.role;
+            return role;
         }
 
         internal string getUsername()
         {
-            return this.username;
+            return username;
         }
         public string GetSaveFormat()
         {

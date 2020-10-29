@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 
 namespace WPFDoctorApplication.Utils
 {
-    class PatientValueConverter : IValueConverter
+    internal class PatientValueConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -23,7 +21,7 @@ namespace WPFDoctorApplication.Utils
                     convertedValue = String.Format("{0:0.000}", value) + " km";
                     break;
                 case "ELAPSEDTIME":
-                    var timeSpan = TimeSpan.FromSeconds((double)value);                   
+                    var timeSpan = TimeSpan.FromSeconds((double)value);
                     convertedValue = timeSpan.ToString(@"hh\:mm\:ss");
                     break;
                 case "HEARTRATE":

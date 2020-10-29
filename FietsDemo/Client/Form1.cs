@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FietsDemo
@@ -17,7 +11,7 @@ namespace FietsDemo
         public MainForm(GUI gui)
         {
             this.gui = gui;
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
 
             InitializeComponent();
         }
@@ -28,7 +22,7 @@ namespace FietsDemo
 
         private void exitButton_Click(object sender, EventArgs e)
         {
-            this.gui.bluetoothBike.client.disconnect();
+            gui.bluetoothBike.client.disconnect();
             System.Environment.Exit(0);
             Application.Exit();
         }
@@ -77,7 +71,7 @@ namespace FietsDemo
         {
             ResistanceValue.Invoke((MethodInvoker)(() =>
             {
-                ResistanceValue.Text = resistance+"%";
+                ResistanceValue.Text = resistance + "%";
             }));
         }
 
@@ -86,7 +80,7 @@ namespace FietsDemo
             //Changes colors of the selected and non-selected option.
             SoftwareSimulatorButton.BackColor = Color.White;
             ESPSimulatorButton.BackColor = Color.LightBlue;
-            this.gui.stopSimulator();
+            gui.stopSimulator();
         }
 
         private void SoftwareSimulatorButton_Click(object sender, EventArgs e)
@@ -94,7 +88,7 @@ namespace FietsDemo
             //Changes colors of the selected and non-selected option.
             SoftwareSimulatorButton.BackColor = Color.LightBlue;
             ESPSimulatorButton.BackColor = Color.White;
-            this.gui.startSimulator();
+            gui.startSimulator();
         }
 
         public void addMessage(string message)
@@ -112,7 +106,7 @@ namespace FietsDemo
             if (chatTextBox.Text != "")
             {
                 doctorChat.Items.Add(chatTextBox.Text);
-                this.gui.bluetoothBike.sendPrivateMessage(chatTextBox.Text);
+                gui.bluetoothBike.sendPrivateMessage(chatTextBox.Text);
                 chatTextBox.Text = "";
 
             }

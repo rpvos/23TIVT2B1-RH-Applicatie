@@ -4,15 +4,14 @@ using simulatie;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Timers;
 
 namespace TCP_naar_VR
-{    class TcpClientVR
+{
+    internal class TcpClientVR
     {
         #region Variables
         private NetworkStream stream;
@@ -29,18 +28,18 @@ namespace TCP_naar_VR
         internal double elapsedTime { get; set; }
         internal double resistance { get; set; }
         #endregion
-        
+
         public TcpClientVR(string ip, int port)
         {
-            this.objects = new Dictionary<string, string>();
-            this.tcpClient = new TcpClient(ip, port);
-            this.stream = tcpClient.GetStream();
-            this.callMethod = new CallMethod(this, objects);
-            this.receiving = true;
-            this.bikeAdded = false;
-            this.heartRate = 50;
-            SetTimer();            
-            
+            objects = new Dictionary<string, string>();
+            tcpClient = new TcpClient(ip, port);
+            stream = tcpClient.GetStream();
+            callMethod = new CallMethod(this, objects);
+            receiving = true;
+            bikeAdded = false;
+            heartRate = 50;
+            SetTimer();
+
             Thread receivingTCPDataThread = new Thread(new ThreadStart(Receive));
             receivingTCPDataThread.Start();
         }
@@ -89,9 +88,9 @@ namespace TCP_naar_VR
         internal void SendMessage(string message)
         {
             byte[] length = BitConverter.GetBytes(message.Length);
-            this.stream.Write(length, 0, length.Length);
+            stream.Write(length, 0, length.Length);
             byte[] buffer = Encoding.ASCII.GetBytes(message);
-            this.stream.Write(buffer, 0, buffer.Length);
+            stream.Write(buffer, 0, buffer.Length);
         }
         #endregion
 
@@ -102,7 +101,10 @@ namespace TCP_naar_VR
             byte[] buffer = new byte[count];
             int receivedBytes = 0;
             while (receivedBytes < count)
-                receivedBytes += this.stream.Read(buffer, receivedBytes, count - receivedBytes);
+            {
+                receivedBytes += stream.Read(buffer, receivedBytes, count - receivedBytes);
+            }
+
             return buffer;
         }
 
@@ -117,7 +119,7 @@ namespace TCP_naar_VR
                 string jsonS = Encoding.ASCII.GetString(buffer);
                 JObject json = JObject.Parse(jsonS);
 
-                ReceiveMessage(json);               
+                ReceiveMessage(json);
             }
         }
 
@@ -161,11 +163,11 @@ namespace TCP_naar_VR
                         //Adds the object to the objects dictionary, and looks if an object already exists
                         try
                         {
-                            this.objects.Add(name, uuid);
+                            objects.Add(name, uuid);
                         }
-                        catch (ArgumentException e)
+                        catch (ArgumentException)
                         {
-                            if (this.objects.ContainsValue(uuid))
+                            if (objects.ContainsValue(uuid))
                             {
                                 Console.WriteLine("already exists");
                             }
@@ -177,35 +179,35 @@ namespace TCP_naar_VR
                         {
                             case "ground":
                                 //Adds 3 layers of groundTexture, grasses for the lower levels, rocks for higher levels
-                                this.callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_green_d.jpg", uuid, 0, 2, 1);
-                                this.callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_ground_d.jpg", uuid, 1, 3, 1);
-                                this.callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_rocky_d.jpg", uuid, 3, 7, 1);
+                                callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_green_d.jpg", uuid, 0, 2, 1);
+                                callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_ground_d.jpg", uuid, 1, 3, 1);
+                                callMethod.AddTexture("data/NetworkEngine/textures/grass_normal.png", "data/NetworkEngine/textures/terrain/grass_rocky_d.jpg", uuid, 3, 7, 1);
                                 break;
 
                             case "tree":
                                 //Adds tree texture
-                                this.callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_05.png", "", uuid, 0, 10, 1);
+                                callMethod.AddTexture("data/NetworkEngine/models/trees/fantasy/Tree_05.png", "", uuid, 0, 10, 1);
                                 break;
 
                             case "panel":
                                 //Clears the panel
-                                this.callMethod.ClearPanel(uuid);
+                                callMethod.ClearPanel(uuid);
                                 break;
 
                             case "bike":
                                 //Scales the bike and lets the bike follow the route
-                                this.callMethod.UpdateNode(objects["bike"], this.objects["bike"], new double[] { 0, 0, 0 }, 0.015, new double[] { 0, 0, 0 });
-                                this.callMethod.FollowRoute(objects["route"], this.objects["bike"], 5, true, new double[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
+                                callMethod.UpdateNode(objects["bike"], objects["bike"], new double[] { 0, 0, 0 }, 0.015, new double[] { 0, 0, 0 });
+                                callMethod.FollowRoute(objects["route"], objects["bike"], 5, true, new double[] { 0, 0, 0 }, new int[] { 0, 0, 0 });
 
                                 //Connects the camera and panel with the bike. Scales the objects correctly
-                                if (this.objects.ContainsKey("panel") && this.objects.ContainsKey("camera"))
+                                if (objects.ContainsKey("panel") && objects.ContainsKey("camera"))
                                 {
-                                    this.callMethod.UpdateNode(this.objects["camera"], this.objects["bike"], new double[] { -660, -150, 0 }, 200, new double[] { 0, 90, 0 });
-                                    this.callMethod.UpdateNode(this.objects["panel"], this.objects["camera"], new double[] { 1, 1.7, 1.9 }, 0.3, new double[] { 0, 0, 0 });
+                                    callMethod.UpdateNode(objects["camera"], objects["bike"], new double[] { -660, -150, 0 }, 200, new double[] { 0, 90, 0 });
+                                    callMethod.UpdateNode(objects["panel"], objects["camera"], new double[] { 1, 1.7, 1.9 }, 0.3, new double[] { 0, 0, 0 });
                                 }
                                 break;
-                        }       
-                    }           
+                        }
+                    }
                     break;
 
                 //Prints the scene data
@@ -216,7 +218,7 @@ namespace TCP_naar_VR
 
                 //Resets the scene
                 case "scene/reset":
-                    this.callMethod.FindNode("GroundPlane");
+                    callMethod.FindNode("GroundPlane");
                     break;
 
                 //Adds a route
@@ -226,14 +228,14 @@ namespace TCP_naar_VR
                     string routeId = (string)routeData["uuid"];
                     try
                     {
-                        this.objects.Add(routeName, routeId);
+                        objects.Add(routeName, routeId);
                     }
                     catch (ArgumentException e)
                     {
                         Console.WriteLine(e.StackTrace);
                     }
 
-                    this.callMethod.AddRoad("data/NetworkEngine/textures/tarmac_normal.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", routeId);
+                    callMethod.AddRoad("data/NetworkEngine/textures/tarmac_normal.png", "data/NetworkEngine/textures/tarmac_diffuse.png", "data/NetworkEngine/textures/tarmac_specular.png", routeId);
                     break;
 
                 case "scene/node/update":
@@ -246,45 +248,45 @@ namespace TCP_naar_VR
                 case "scene/road/add":
                     //Adds the bike
                     //Prevention of adding multiple bikes.
-                    if (!this.bikeAdded)
+                    if (!bikeAdded)
                     {
-                        this.callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike_anim.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "Armature|Fietsen", 0.1);
-                        this.bikeAdded = true;
+                        callMethod.AddObjectNode("data/NetworkEngine/models/bike/bike_anim.fbx", "bike", new int[] { 0, 100, 0 }, new int[] { 0, 0, 0 }, true, "Armature|Fietsen", 0.1);
+                        bikeAdded = true;
                     }
                     break;
 
                 case "scene/panel/clear":
                     //Updates the panel with the new values
-                    this.callMethod.SetText("Welcome", this.objects["panel"], new double[] { 20, 50 }, 30.0);
-                    this.callMethod.UpdatePanel(this.objects["panel"]);
+                    callMethod.SetText("Welcome", objects["panel"], new double[] { 20, 50 }, 30.0);
+                    callMethod.UpdatePanel(objects["panel"]);
                     break;
 
                 case "scene/node/find":
                     //Finds a node
                     JArray nodeData = (JArray)data["data"];
-                    this.nodeId = nodeData[0]["uuid"].ToString();
+                    nodeId = nodeData[0]["uuid"].ToString();
                     string nodeName = nodeData[0]["name"].ToString();
-                    Console.WriteLine("UUID found: " + this.nodeId);
+                    Console.WriteLine("UUID found: " + nodeId);
                     switch (nodeName)
                     {
                         //Finds the camera and adds it to the objects
                         case "Camera":
-                            this.objects.Add("camera", this.nodeId);
+                            objects.Add("camera", nodeId);
                             break;
 
                         //Deletes the Head, GroundPlane, RightHand and LeftHand from the VR
                         case "Head":
                             Console.WriteLine("head deleted");
-                            this.callMethod.DeleteNode(this.nodeId);
+                            callMethod.DeleteNode(nodeId);
                             break;
                         case "GroundPlane":
-                        case "RightHand":  
+                        case "RightHand":
                         case "LeftHand":
-                            this.callMethod.DeleteNode(this.nodeId);
+                            callMethod.DeleteNode(nodeId);
                             break;
                     }
                     break;
-            }  
+            }
         }
         #endregion
 
@@ -303,16 +305,16 @@ namespace TCP_naar_VR
                 var date = DateTime.Now;
 
                 //Calls all the first methods
-                this.callMethod.SetTime(date.Hour);
-                this.callMethod.GetScene();
-                this.callMethod.AddTerrain(40000);
-                this.callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });
-                this.callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { 512 }, new int[] { 1, 1, 1, 1 });
-                this.callMethod.FindNode("Camera");
-                this.callMethod.FindNode("GroundPlane");
-                this.callMethod.FindNode("LeftHand");
-                this.callMethod.FindNode("RightHand");
-                this.callMethod.FindNode("Head");
+                callMethod.SetTime(date.Hour);
+                callMethod.GetScene();
+                callMethod.AddTerrain(40000);
+                callMethod.AddGroundNode("ground", new int[] { -100, 0, -100 }, new int[] { 0, 0, 0 });
+                callMethod.AddPanelNode("panel", new double[] { -1.5, 1.5, 0 }, new double[] { 0, 0, 0 }, new double[] { 1, 1 }, new int[] { 512 }, new int[] { 1, 1, 1, 1 });
+                callMethod.FindNode("Camera");
+                callMethod.FindNode("GroundPlane");
+                callMethod.FindNode("LeftHand");
+                callMethod.FindNode("RightHand");
+                callMethod.FindNode("Head");
 
                 //Adds trees on random positions
                 Random random = new Random();
@@ -323,8 +325,8 @@ namespace TCP_naar_VR
                     int treeNumber = random.Next(11);
                     float scale = (float)(0.1 * random.Next(20));
 
-                    Console.WriteLine(x + " " +  y);
-                    this.callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, 0, y }, new int[] { 0, 0, 0 }, false, "no", scale);
+                    Console.WriteLine(x + " " + y);
+                    callMethod.AddObjectNode("data/NetworkEngine/models/trees/fantasy/tree" + treeNumber + ".obj", "tree" + i, new int[] { x, 0, y }, new int[] { 0, 0, 0 }, false, "no", scale);
                 }
 
             }
@@ -344,7 +346,9 @@ namespace TCP_naar_VR
                 Console.WriteLine(clientInfo);
 
                 if ((string)clientInfo["host"] == Environment.MachineName)
-                    SendTunnelRequest((string)data[i]["id"]); 
+                {
+                    SendTunnelRequest((string)data[i]["id"]);
+                }
             }
         }
 
@@ -352,23 +356,23 @@ namespace TCP_naar_VR
         private void SetRoute()
         {
             //Makes the beautiful route
-            callMethod.NewRoutePoints(new int[] { 0,  0, 0  }, new int[] {  8, 0, 0  });
-            callMethod.NewRoutePoints(new int[] { 20, 0, 0  }, new int[] { 10, 0, 0  });
-            callMethod.NewRoutePoints(new int[] { 30, 0,-15 }, new int[] { 10, 0, 0  });
-            callMethod.NewRoutePoints(new int[] { 50, 0,-15 }, new int[] { 10, 0, 0  });
-            callMethod.NewRoutePoints(new int[] { 70, 0, 10 }, new int[] {  0, 0, 10 });
-            callMethod.NewRoutePoints(new int[] { 65, 0, 80 }, new int[] {-20, 0,-20 });
-            callMethod.NewRoutePoints(new int[] { 40, 0, 60 }, new int[] {-10, 0, 0  });
-            callMethod.NewRoutePoints(new int[] { 20, 0, 70 }, new int[] {-10, 0, 0  });
-            callMethod.NewRoutePoints(new int[] {  0, 0, 30 }, new int[] {-10, 0,-10 });
-            callMethod.NewRoutePoints(new int[] {-50, 0, 70 }, new int[] {-10, 0,-10 });
-            callMethod.NewRoutePoints(new int[] {-70, 0, 30 }, new int[] { 3,  0,-5  });
-            callMethod.NewRoutePoints(new int[] {-50, 0, 0  }, new int[] {-4,  0,-5  });
-            callMethod.NewRoutePoints(new int[] {-40, 0,-60 }, new int[] { 10, 0, 8  });
-            callMethod.NewRoutePoints(new int[] { 60, 0,-60 }, new int[] { 10, 0, 8  });
-            callMethod.NewRoutePoints(new int[] { 65, 0,-40 }, new int[] {-10, 0, 0  });
-            callMethod.NewRoutePoints(new int[] { 30, 0,-30 }, new int[] { 20, 0, 20 });
-            callMethod.NewRoutePoints(new int[] {-20, 0,-15 }, new int[] { 20, 0, 20 });
+            callMethod.NewRoutePoints(new int[] { 0, 0, 0 }, new int[] { 8, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 20, 0, 0 }, new int[] { 10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 30, 0, -15 }, new int[] { 10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 50, 0, -15 }, new int[] { 10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 70, 0, 10 }, new int[] { 0, 0, 10 });
+            callMethod.NewRoutePoints(new int[] { 65, 0, 80 }, new int[] { -20, 0, -20 });
+            callMethod.NewRoutePoints(new int[] { 40, 0, 60 }, new int[] { -10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 20, 0, 70 }, new int[] { -10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 0, 0, 30 }, new int[] { -10, 0, -10 });
+            callMethod.NewRoutePoints(new int[] { -50, 0, 70 }, new int[] { -10, 0, -10 });
+            callMethod.NewRoutePoints(new int[] { -70, 0, 30 }, new int[] { 3, 0, -5 });
+            callMethod.NewRoutePoints(new int[] { -50, 0, 0 }, new int[] { -4, 0, -5 });
+            callMethod.NewRoutePoints(new int[] { -40, 0, -60 }, new int[] { 10, 0, 8 });
+            callMethod.NewRoutePoints(new int[] { 60, 0, -60 }, new int[] { 10, 0, 8 });
+            callMethod.NewRoutePoints(new int[] { 65, 0, -40 }, new int[] { -10, 0, 0 });
+            callMethod.NewRoutePoints(new int[] { 30, 0, -30 }, new int[] { 20, 0, 20 });
+            callMethod.NewRoutePoints(new int[] { -20, 0, -15 }, new int[] { 20, 0, 20 });
 
             callMethod.AddRoute();
         }
@@ -378,17 +382,19 @@ namespace TCP_naar_VR
         //Sets a Timer for the panel
         private void SetTimer()
         {
-            this.panelUpdateTimer = new System.Timers.Timer(500);
-            this.panelUpdateTimer.Elapsed += OnTimedEvent;
-            this.panelUpdateTimer.AutoReset = true;
-            this.panelUpdateTimer.Enabled = true;
+            panelUpdateTimer = new System.Timers.Timer(500);
+            panelUpdateTimer.Elapsed += OnTimedEvent;
+            panelUpdateTimer.AutoReset = true;
+            panelUpdateTimer.Enabled = true;
         }
 
         //Updates the panel when expired.
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
         {
-            if (this.objects.ContainsKey("panel"))
-                this.callMethod.ClearPanel(this.objects["panel"]);
+            if (objects.ContainsKey("panel"))
+            {
+                callMethod.ClearPanel(objects["panel"]);
+            }
         }
         #endregion
     }

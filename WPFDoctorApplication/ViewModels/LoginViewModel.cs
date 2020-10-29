@@ -1,16 +1,13 @@
 ﻿using GalaSoft.MvvmLight.Command;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using WPFDoctorApplication.Utils;
 
 namespace WPFDoctorApplication.ViewModels
 {
+    /// <summary>
+    /// ViewModel for login
+    /// </summary>
     public class LoginViewModel : CustomObservableObject
     {
         private readonly DoctorClient doctorClient;
@@ -31,7 +28,7 @@ namespace WPFDoctorApplication.ViewModels
                 Login();
             });
         }
-        
+
         public void LoginFailed()
         {
             ErrorMessage = "Please try again.";

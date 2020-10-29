@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SharedItems
+﻿namespace SharedItems
 {
+    /// <summary>
+    /// The type of update
+    /// </summary>
     public enum UpdateType
     {
         Heartrate,
@@ -15,6 +14,9 @@ namespace SharedItems
         Resistance
     }
 
+    /// <summary>
+    /// Roles that clients can have
+    /// </summary>
     public enum Role
     {
         Doctor,

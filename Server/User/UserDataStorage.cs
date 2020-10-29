@@ -1,10 +1,13 @@
 ﻿using SharedItems;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Server
 {
+    /// <summary>
+    /// Object that keeps the update data
+    /// This object we save and load in the server
+    /// </summary>
     public class UserDataStorage
     {
         public List<DataSet> dataSets { get; set; }
@@ -13,8 +16,8 @@ namespace Server
 
         public UserDataStorage()
         {
-            this.dataSets = new List<DataSet>();
-            this.lastUpdate = new Dictionary<UpdateType, DateTime>();
+            dataSets = new List<DataSet>();
+            lastUpdate = new Dictionary<UpdateType, DateTime>();
         }
 
         /// <summary>
@@ -26,7 +29,7 @@ namespace Server
         {
             DateTime lastUpdateForThisUpdateType;
             // If the updatetype has a value
-            if(lastUpdate.TryGetValue(updateType,out lastUpdateForThisUpdateType))
+            if (lastUpdate.TryGetValue(updateType, out lastUpdateForThisUpdateType))
             {
                 // Check if the lastUpdateForThisUpdateType is longer then a second ago
                 if (DateTime.Now.CompareTo(lastUpdateForThisUpdateType.AddSeconds(1)) >= 0)
@@ -36,7 +39,7 @@ namespace Server
                     lastUpdate.Add(updateType, DateTime.Now);
 
                     // Add it to the historical data
-                    this.dataSets.Add(new DataSet(updateType, value, DateTime.Now));
+                    dataSets.Add(new DataSet(updateType, value, DateTime.Now));
                 }
             }
             else
@@ -45,11 +48,11 @@ namespace Server
                 lastUpdate.Add(updateType, DateTime.Now);
 
                 // Add it to the historical data
-                this.dataSets.Add(new DataSet(updateType, value, DateTime.Now));
+                dataSets.Add(new DataSet(updateType, value, DateTime.Now));
             }
 
         }
     }
 
-   
+
 }

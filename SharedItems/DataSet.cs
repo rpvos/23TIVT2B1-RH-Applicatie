@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SharedItems
 {
+    /// <summary>
+    /// Class that stores the update data
+    /// </summary>
     public class DataSet
     {
         public UpdateType UpdateType { get; }

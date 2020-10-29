@@ -1,33 +1,20 @@
 ﻿using GalaSoft.MvvmLight.Command;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
 using System.Windows.Input;
 using WPFDoctorApplication.Models;
 using WPFDoctorApplication.Utils;
 
 namespace WPFDoctorApplication.ViewModels
 {
+    /// <summary>
+    /// This class is responsable for showing the patient bike in the list
+    /// </summary>
     public class PatientListViewModel : CustomObservableObject
     {
         private PatientBike _selectedPatientBike;
         private ShellViewModel shellViewModel;
-        private ObservableCollection<PatientBike> _patientBikeList;
-        public ObservableCollection<PatientBike> PatientBikeList
-        {
-            get
-            {
-                return _patientBikeList;
-            }
-            set
-            {
-                _patientBikeList = value;
-                //OnPropertyChanged("PatientBikeList");
-            }
-        }
+
+        public ObservableCollection<PatientBike> PatientBikeList { get; set; }
         public CustomObservableObject SelectedPatientViewModel { get; set; }
         public string GlobalChatMessage { get; set; }
         public ICommand GlobalChatKeyDownCommand { get; set; }
@@ -39,14 +26,20 @@ namespace WPFDoctorApplication.ViewModels
             {
                 _selectedPatientBike = value;
                 if (_selectedPatientBike != null)
+                {
                     SelectedPatientViewModel = new PatientViewModel(value, value.DoctorClient);
+                }
+                else
+                {
+                    SelectedPatientViewModel = null;
+                }
             }
         }
 
         public PatientListViewModel(ShellViewModel shellViewModel)
         {
             this.shellViewModel = shellViewModel;
-            this.PatientBikeList = shellViewModel.PatientBikeList;
+            PatientBikeList = shellViewModel.PatientBikeList;
             GlobalChatList = new ObservableCollection<string>();
             GlobalChatKeyDownCommand = new RelayCommand(() => GlobalChatKeyDown()); ;
         }

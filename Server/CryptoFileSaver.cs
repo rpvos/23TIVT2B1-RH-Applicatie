@@ -1,32 +1,31 @@
-﻿using System;
-using SharedItems;
-using System.Collections.Generic;
+﻿using SharedItems;
+using System;
 using System.IO;
-using System.Net.Security;
-using System.Text;
-using System.Globalization;
 
 namespace Server
 {
+    /// <summary>
+    /// Saves file encrypted to savedData.txt
+    /// </summary>
     public class CryptoFileSaver
     {
         private readonly string DEFAULT_FILENAME = "savedData.txt";
-        private EncyptionService encyptionService; 
+        private EncyptionService encyptionService;
         private string path;
         public CryptoFileSaver(string folderName)
         {
-            this.encyptionService = new EncyptionService();
+            encyptionService = new EncyptionService();
 
             string location = Environment.CurrentDirectory;
             char[] BLACKLIST = new char[] { '/', '\\', '<', '>', ':', '"', '|', '?', '*' };
-            foreach(char c in BLACKLIST)
+            foreach (char c in BLACKLIST)
             {
                 if (folderName.Contains(c))
                 {
                     throw new ArgumentException($"foldername contains invallid character: {c}");
                 }
             }
-            this.path = $"{location}/{folderName}";
+            path = $"{location}/{folderName}";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -34,7 +33,7 @@ namespace Server
         }
         public void WriteUserData(string json, string userName)
         {
-            string location = $"{this.path}/{userName}";
+            string location = $"{path}/{userName}";
 
             if (!Directory.Exists(location))
             {
@@ -50,7 +49,9 @@ namespace Server
                         int length = json.Length;
                         int amountOfCharactersNeeded = 16 - length % 16;
                         for (int i = 0; i < amountOfCharactersNeeded; i++)
+                        {
                             json += '^';
+                        }
 
                         byte[] cypher = encyptionService.EncryptStringToBytes(json);
                         string base64cypher = Convert.ToBase64String(cypher);
@@ -58,7 +59,8 @@ namespace Server
                         streamWriter.Flush();
                     }
                 }
-            } catch(IOException e)
+            }
+            catch (IOException e)
             {
                 Console.WriteLine(e.StackTrace);
             }
@@ -67,23 +69,27 @@ namespace Server
         {
             try
             {
-                string[] directories = Directory.GetDirectories(this.path);
+                string[] directories = Directory.GetDirectories(path);
                 string[] users = new string[directories.Length];
-                for(int i = 0; i < directories.Length; i++)
+                for (int i = 0; i < directories.Length; i++)
                 {
-                    using (StreamReader streamReader = new StreamReader($"{directories[i]}/{this.DEFAULT_FILENAME}"))
+                    using (StreamReader streamReader = new StreamReader($"{directories[i]}/{DEFAULT_FILENAME}"))
                     {
                         string cypher = streamReader.ReadToEnd();
                         string user = encyptionService.DecryptStringFromBytes(Convert.FromBase64String(cypher));
                         int place = user.IndexOf('^');
-                        if(place>=0)
-                        user = user.Remove(place);
+                        if (place >= 0)
+                        {
+                            user = user.Remove(place);
+                        }
+
                         users[i] = user;
                     }
                 }
 
                 return users;
-            } catch(IOException e)
+            }
+            catch (IOException e)
             {
                 Console.WriteLine(e.StackTrace);
             }

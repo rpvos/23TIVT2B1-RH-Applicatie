@@ -2,26 +2,22 @@
 using LiveCharts;
 using LiveCharts.Wpf;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using WPFDoctorApplication.Models;
 using WPFDoctorApplication.Utils;
-using WPFDoctorApplication.Views;
 
 namespace WPFDoctorApplication.ViewModels
 {
+    /// <summary>
+    /// View model for displaying the patient information
+    /// </summary>
     public class PatientViewModel : CustomObservableObject
     {
         private readonly DoctorClient doctorClient;
         public PatientBike PatientBike { get; set; }
         public string Username { get; set; }
-        public ICommand StopCommand{ get; set; }
+        public ICommand StopCommand { get; set; }
         public ICommand PrivateChatKeyDownCommand { get; set; }
         public ICommand StartSessionCommand { get; set; }
         public ICommand GetHistoricalDataCommand { get; set; }
@@ -32,7 +28,7 @@ namespace WPFDoctorApplication.ViewModels
 
         public PatientViewModel(PatientBike patientBike, DoctorClient doctorClient)
         {
-            this.PatientBike = patientBike;
+            PatientBike = patientBike;
             this.doctorClient = doctorClient;
             Username = patientBike.Username;
 
@@ -62,7 +58,7 @@ namespace WPFDoctorApplication.ViewModels
                     PointGeometry = null,
                     Title = "Distance in km",
                     Values = PatientBike.DistanceValues,
-                    Stroke = Brushes.Green                    
+                    Stroke = Brushes.Green
                 }
             };
         }

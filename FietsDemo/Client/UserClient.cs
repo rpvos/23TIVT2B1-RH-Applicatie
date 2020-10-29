@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using SharedItems;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -24,9 +23,9 @@ namespace FietsDemo
         public UserClient(BluetoothBike bluetoothBike)
         {
             this.bluetoothBike = bluetoothBike;
-            this.server = new TcpClient("127.0.0.1", 8080);
+            server = new TcpClient("127.0.0.1", 8080);
 
-            this.crypto = new Crypto(server.GetStream(), handleData, disconnect);
+            crypto = new Crypto(server.GetStream(), handleData, disconnect);
         }
 
         public void sendUserCredentials(string username, string password)
@@ -50,7 +49,9 @@ namespace FietsDemo
 
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
+                {
                     return;
+                }
 
                 JObject data = (JObject)json["Data"];
                 string type = json["Type"].ToString();
@@ -67,13 +68,13 @@ namespace FietsDemo
                             Console.WriteLine("Login succesful");
                             Thread startThread = new Thread(start);
                             startThread.Start();
-                            this.bluetoothBike.loginSucceeded();
+                            bluetoothBike.loginSucceeded();
 
                         }
                         else
                         {
                             Console.WriteLine("Login failed");
-                            this.bluetoothBike.loginFailed();
+                            bluetoothBike.loginFailed();
 
                         }
                         break;
@@ -102,13 +103,13 @@ namespace FietsDemo
 
         public void start()
         {
-            this.bluetoothBike.start();
+            bluetoothBike.start();
         }
 
         private void AddChatMessage(JObject data)
         {
             string message = (string)data["Message"];
-            this.bluetoothBike.gui.addTextMessage("Doctor: " + message);
+            bluetoothBike.gui.addTextMessage("Doctor: " + message);
 
         }
 
@@ -116,7 +117,7 @@ namespace FietsDemo
         {
             string resistance = (string)data["Resistance"];
             int res = Int32.Parse(resistance);
-            this.bluetoothBike.setResistance(res);
+            bluetoothBike.setResistance(res);
         }
 
         private bool handleUserCredentialsResponse(JObject data)
@@ -131,14 +132,17 @@ namespace FietsDemo
             JObject jObject = (JObject)json["Data"];
             byte[] data = Encoding.ASCII.GetBytes(jObject.ToString());
             foreach (byte b in data)
+            {
                 checksum ^= b;
+            }
+
             return checksum == 0;
         }
 
         public void disconnect()
         {
-            WriteTextMessage(getDisconnectString(this.username));
-            this.crypto.disconnect();
+            WriteTextMessage(getDisconnectString(username));
+            crypto.disconnect();
         }
 
         #endregion
@@ -153,7 +157,7 @@ namespace FietsDemo
         }
         public void sendPrivateMessage(string message)
         {
-            WriteTextMessage(getPrivateMessageString(this.username, message));
+            WriteTextMessage(getPrivateMessageString(username, message));
         }
 
         private string getPrivateMessageString(string username, string message)

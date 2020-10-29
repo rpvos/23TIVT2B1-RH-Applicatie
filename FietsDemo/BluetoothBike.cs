@@ -1,12 +1,9 @@
+using Avans.TI.BLE;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Avans.TI.BLE;
-using SharedItems;
 using TCP_naar_VR;
 using UpdateType = SharedItems.UpdateType;
 
@@ -49,9 +46,7 @@ namespace FietsDemo
 
         private Login login;
 
-
-
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             BluetoothBike bluetoothBike = new BluetoothBike();
             bluetoothBike.startLogin();
@@ -60,15 +55,15 @@ namespace FietsDemo
         public void startLogin()
         {
 
-            this.login = new Login(this);
-            this.login.run();
+            login = new Login(this);
+            login.run();
 
         }
 
 
         public void start()
         {
-            this.random = new Random();
+            random = new Random();
 
 
             Thread guiThread = new Thread(startGUI);
@@ -90,24 +85,24 @@ namespace FietsDemo
         {
             Thread clientThread = new Thread(() =>
             {
-                this.client = new UserClient(this);
+                client = new UserClient(this);
             });
             clientThread.Start();
         }
 
         public void loginFailed()
         {
-            this.login.loginFailed();
+            login.loginFailed();
         }
 
         public void loginSucceeded()
         {
-            this.login.loginSucceeded();
+            login.loginSucceeded();
         }
 
         public void sendPrivateMessage(string message)
         {
-            this.client.sendPrivateMessage(message);
+            client.sendPrivateMessage(message);
         }
 
         public void startVR()
@@ -119,8 +114,8 @@ namespace FietsDemo
         public void startSimulator()
         {
             // When starting the simulator, the first thing to do is to unsubscribe from the real BLE device, otherwise they would interfere.
-            this.BleBike.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
-            this.HeartRateSensor.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
+            BleBike.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
+            HeartRateSensor.SubscriptionValueChanged -= BleBike_SubscriptionValueChanged;
 
             // The second step is to start the simulator and the GUI that comes with it.
             if (!isSimulatorRunning)
@@ -139,27 +134,27 @@ namespace FietsDemo
 
         private void startSimulatorGUI()
         {
-            this.simulator = new Simulator(this.bikeSimulator);
-            this.bikeSimulator.running = true;
-            this.simulator.run(this.gui);
+            simulator = new Simulator(bikeSimulator);
+            bikeSimulator.running = true;
+            simulator.run(gui);
         }
 
         public void stopSimulator()
         {
             // To stop the simulator we first stop the simulator thread and the GUI.
             Console.WriteLine("Stopping Simulator...");
-            this.bikeSimulator.running = false;
-            this.isSimulatorRunning = false;
+            bikeSimulator.running = false;
+            isSimulatorRunning = false;
             // After that we subscribe to the BLE service again to continue measuring.
-            this.BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            this.HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+            HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
             Reset();
         }
 
         public void startGUI()
         {
-            this.gui = new GUI(this);
-            this.gui.run();
+            gui = new GUI(this);
+            gui.run();
         }
 
         public async Task initialize()
@@ -301,27 +296,31 @@ namespace FietsDemo
 
                         // Calculation time elapsed
                         if (previousTimeElapsed > elapsedTime)
+                        {
                             timeElapsedCounter++;
+                        }
 
-                        this.timeElapsedInSeconds = ((64 * timeElapsedCounter) + elapsedTime * 0.25);
-                        this.previousTimeElapsed = elapsedTime;
+                        timeElapsedInSeconds = ((64 * timeElapsedCounter) + elapsedTime * 0.25);
+                        previousTimeElapsed = elapsedTime;
 
                         setValuesInGui(UpdateType.ElapsedTime, timeElapsedInSeconds);
 
                         // Calculation distance traveled
                         if (previousDistanceTraveled > distanceTraveled)
+                        {
                             distanceTraveledCounter++;
+                        }
 
-                        this.distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000.0;
-                        this.previousDistanceTraveled = distanceTraveled;
+                        distanceTraveledInKM = ((256 * distanceTraveledCounter) + distanceTraveled) / 1000.0;
+                        previousDistanceTraveled = distanceTraveled;
 
-                        setValuesInGui(UpdateType.AccumulatedDistance, this.distanceTraveledInKM);
+                        setValuesInGui(UpdateType.AccumulatedDistance, distanceTraveledInKM);
                         setValuesInGui(UpdateType.Speed, speed);
 
                         //resistance = 30f;
                         //setValuesInGui("resistance", setResistance(resistance));
 
-                        Console.WriteLine("{0}: \t distance traveled: {1}", name, this.distanceTraveledInKM);
+                        Console.WriteLine("{0}: \t distance traveled: {1}", name, distanceTraveledInKM);
                     }
                     else if (bytes[startingByteMessage] == 0x19)
                     {
@@ -441,11 +440,13 @@ namespace FietsDemo
 
                         // Acumelated power calculation
                         double accumulatedPower = (accumalatedPowerLSB + (accumelatedPowerMSB << 8)) / 1000.0;
-                        if (this.previousAccumulatedPower > accumulatedPower)
-                            this.accumulatedPowerCounter++;
+                        if (previousAccumulatedPower > accumulatedPower)
+                        {
+                            accumulatedPowerCounter++;
+                        }
 
                         this.accumulatedPower = (65536 * accumulatedPowerCounter) + accumulatedPower;
-                        this.previousAccumulatedPower = accumulatedPower;
+                        previousAccumulatedPower = accumulatedPower;
 
                         // Instantaneous power calculation
                         double instantaneousPower = (instantaneousPowerLSB + (instantaneousPowerMSN << 8));
@@ -466,34 +467,34 @@ namespace FietsDemo
         public void setValuesInGui(UpdateType updateType, double value)
         {
             //Send values to server.
-            this.client.sendUpdatedValues(updateType, value);
+            client.sendUpdatedValues(updateType, value);
 
             //Set values in GUI.
             switch (updateType)
             {
                 case UpdateType.Speed:
-                    this.gui.getForm().setSpeed(value);
-                    this.tcpClientVR.speed = value;
+                    gui.getForm().setSpeed(value);
+                    tcpClientVR.speed = value;
                     break;
                 case UpdateType.Heartrate:
-                    this.gui.getForm().setHeartRate(value);
-                    this.tcpClientVR.heartRate = value;
+                    gui.getForm().setHeartRate(value);
+                    tcpClientVR.heartRate = value;
                     break;
                 case UpdateType.AccumulatedPower:
-                    this.gui.getForm().setAP(value);
-                    this.tcpClientVR.AP = value;
+                    gui.getForm().setAP(value);
+                    tcpClientVR.AP = value;
                     break;
                 case UpdateType.AccumulatedDistance:
-                    this.gui.getForm().setDT(value);
-                    this.tcpClientVR.DT = value;
+                    gui.getForm().setDT(value);
+                    tcpClientVR.DT = value;
                     break;
                 case UpdateType.ElapsedTime:
-                    this.gui.getForm().setElapsedTime(value);
-                    this.tcpClientVR.elapsedTime = value;
+                    gui.getForm().setElapsedTime(value);
+                    tcpClientVR.elapsedTime = value;
                     break;
                 case UpdateType.Resistance:
-                    this.gui.getForm().setResistance(value);
-                    this.tcpClientVR.resistance = value;
+                    gui.getForm().setResistance(value);
+                    tcpClientVR.resistance = value;
                     break;
 
             }
@@ -502,11 +503,11 @@ namespace FietsDemo
         public double setResistance(double percentage)
         {
             //Check if simulator is turned on, if so set resistance in simulator as well.
-            if (this.simulator != null)
+            if (simulator != null)
             {
-                this.tcpClientVR.resistance = percentage;
-                this.simulator.setResistance((int)percentage);
-                this.gui.setResistance((int)percentage);
+                tcpClientVR.resistance = percentage;
+                simulator.setResistance((int)percentage);
+                gui.setResistance((int)percentage);
             }
 
             if (percentage <= 100.0 && percentage >= 0.0)
@@ -545,17 +546,17 @@ namespace FietsDemo
 
         public void Reset()
         {
-            this.accumulatedPower = 0;
-            this.accumulatedPowerCounter = 0;
-            this.distanceTraveledInKM = 0;
-            this.distanceTraveledCounter = 0;
-            this.previousAccumulatedPower = 0;
-            this.previousDistanceTraveled = 0;
-            this.previousTimeElapsed = 0;
-            this.resistance = 0;
-            this.timeElapsedCounter = 0;
-            this.timeElapsedInSeconds = 0;
-            this.speed = 0;
+            accumulatedPower = 0;
+            accumulatedPowerCounter = 0;
+            distanceTraveledInKM = 0;
+            distanceTraveledCounter = 0;
+            previousAccumulatedPower = 0;
+            previousDistanceTraveled = 0;
+            previousTimeElapsed = 0;
+            resistance = 0;
+            timeElapsedCounter = 0;
+            timeElapsedInSeconds = 0;
+            speed = 0;
             setValuesInGui(UpdateType.AccumulatedDistance, distanceTraveledInKM);
             setValuesInGui(UpdateType.AccumulatedPower, accumulatedPower);
             setValuesInGui(UpdateType.ElapsedTime, timeElapsedInSeconds);

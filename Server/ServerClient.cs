@@ -3,15 +3,14 @@ using Newtonsoft.Json.Linq;
 using SharedItems;
 using System;
 using System.IO;
-using System.Net.Security;
 using System.Net.Sockets;
-using System.Reflection.Metadata;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace Server
 {
+    /// <summary>
+    /// Handles the new connection
+    /// </summary>
     public class ServerClient
     {
 
@@ -31,12 +30,12 @@ namespace Server
         {
             this.client = client;
             this.server = server;
-            this.inSession = false; 
+            inSession = false;
 
-            this.buffer = new byte[1024];
-            this.crypto = new Crypto(client.GetStream(), handleData, Disconnect);
+            buffer = new byte[1024];
+            crypto = new Crypto(client.GetStream(), handleData, Disconnect);
 
-            this.logger = new StringBuilder();
+            logger = new StringBuilder();
         }
 
         #region stream dynamics
@@ -56,7 +55,7 @@ namespace Server
             {
                 using (StreamWriter streamWriter = new StreamWriter(location + $"/log{user.getUsername()}.txt", false))
                 {
-                    streamWriter.Write(this.logger.ToString());
+                    streamWriter.Write(logger.ToString());
                     streamWriter.Flush();
                 }
             }
@@ -64,7 +63,7 @@ namespace Server
             {
                 using (StreamWriter streamWriter = new StreamWriter(location + $"/logUnconnected.txt", true))
                 {
-                    streamWriter.Write(this.logger.ToString());
+                    streamWriter.Write(logger.ToString());
                     streamWriter.Flush();
                 }
             }
@@ -81,7 +80,9 @@ namespace Server
             {
                 JObject json = JObject.Parse(packet);
                 if (!checkChecksum(json))
+                {
                     return;
+                }
 
                 JObject data = (JObject)json["Data"];
 
@@ -95,18 +96,18 @@ namespace Server
                         handleUpdateInformation(data);
                         break;
                     case "globalmessage":
-                        this.server.SendToPatients(getJsonObject("globalmessage", data));
+                        server.SendToPatients(getJsonObject("globalmessage", data));
                         break;
                     case "resistance":
-                        this.server.sendResistanceToOneClient(data);
-                        this.server.sendResistanceToAllDoctors(data, this);
-                        this.server.setResistancePerClient(data);
+                        server.sendResistanceToOneClient(data);
+                        server.sendResistanceToAllDoctors(data, this);
+                        server.setResistancePerClient(data);
                         break;
                     case "privMessage":
-                        this.server.sendPrivMessage(data);
+                        server.sendPrivMessage(data);
                         break;
                     case "privateMessageToDoctor":
-                        this.server.sendPrivateMessageToDoctors(data);
+                        server.sendPrivateMessageToDoctors(data);
                         break;
                     case "disconnect":
                         Disconnect();
@@ -114,10 +115,10 @@ namespace Server
                     case "inSession":
                         StartAndStopSession(data);
                         break;
-                   
-                    case"dataRequest":
+
+                    case "dataRequest":
                         requestData(data);
-                            break;
+                        break;
 
                     default:
                         Console.WriteLine("Invalid type");
@@ -137,16 +138,19 @@ namespace Server
             bool inSession = (bool)data["InSession"];
 
             //Check which user's session is stopped or started.
-            foreach (ServerClient client in this.server.Clients)
+            foreach (ServerClient client in server.Clients)
+            {
                 if (client.user.getUsername() == username)
                 {
                     client.inSession = inSession;
                     if (!client.inSession)
-                        this.server.saveUser(client.user);
+                    {
+                        server.saveUser(client.user);
+                    }
+
                     break;
                 }
-
-           
+            }
         }
 
         internal void sendClientLeft(ServerClient leavingClient)
@@ -154,18 +158,20 @@ namespace Server
             WriteTextMessage(getLeavingClientString(leavingClient.user.getUsername()));
         }
 
-        
+
 
         public void requestData(JObject data)
         {
             string username = (string)data["Username"];
 
             //Check from which user the data is requested.
-            foreach(ServerClient client in this.server.Clients)
-                if(client.user.getUsername() == username)
+            foreach (ServerClient client in server.Clients)
+            {
+                if (client.user.getUsername() == username)
                 {
                     sendDataToDoctor(client);
                 }
+            }
         }
 
         public void sendDataToDoctor(ServerClient client)
@@ -173,7 +179,7 @@ namespace Server
             //Send each packet of data to the doctor.
             foreach (DataSet set in client.user.userDataStorage.dataSets)
             {
-                sendDataSet(set.UpdateType, set.Value, set.DateStamp,client.user.getUsername());
+                sendDataSet(set.UpdateType, set.Value, set.DateStamp, client.user.getUsername());
             }
             WriteTextMessage(getFinishedUserString(client.user.getUsername()));
         }
@@ -191,10 +197,12 @@ namespace Server
                 Value = value
             };
 
-            if (this.inSession)
-                this.user.userDataStorage.addDataSet(updateType, value);
-            
-            this.server.SendToDoctors(getJsonObject("update", parsedData, this.user));
+            if (inSession)
+            {
+                user.userDataStorage.addDataSet(updateType, value);
+            }
+
+            server.SendToDoctors(getJsonObject("update", parsedData, user));
         }
 
         private Role handleUserCredentials(JObject data)
@@ -202,36 +210,40 @@ namespace Server
             string username = (string)data["Username"];
             string password = (string)data["Password"];
 
-            this.user = server.checkUser(username, password);
+            user = server.checkUser(username, password);
             if (user != null)
             {
-                if (this.user.getRole() == Role.Patient)
+                if (user.getRole() == Role.Patient)
                 {
                     sendAddUserMessage(username);
 
                     //Adds a spot in the resistance list when connected.
-                    this.server.usernameAndResistance.Add(username, "0");
+                    server.usernameAndResistance.Add(username, "0");
                 }
 
-                if (this.user.getRole() == Role.Doctor)
-                    this.server.addUsersToThisDoctorClient(this);
+                if (user.getRole() == Role.Doctor)
+                {
+                    server.addUsersToThisDoctorClient(this);
+                }
 
                 return user.getRole();
 
 
             }
             else
+            {
                 return Role.Invallid;
+            }
         }
 
         public void sendAddUserMessage(string username)
         {
-            this.server.SendToDoctors(getAddUserString(username));
+            server.SendToDoctors(getAddUserString(username));
         }
 
         public void sendResistance(string resistance)
         {
-            WriteTextMessage(getResistanceString(resistance, this.user.getUsername()));
+            WriteTextMessage(getResistanceString(resistance, user.getUsername()));
         }
 
         private void sendDataSet(UpdateType updateType, double value, DateTime dateStamp, string username)
@@ -292,7 +304,10 @@ namespace Server
             JObject jObject = (JObject)json["Data"];
             byte[] data = Encoding.ASCII.GetBytes(jObject.ToString());
             foreach (byte b in data)
+            {
                 checksum ^= b;
+            }
+
             return checksum == 0;
         }
         #endregion
@@ -408,7 +423,9 @@ namespace Server
         private void sendUserCredentialsResponse(Role role)
         {
             if (role != Role.Invallid)
+            {
                 Console.WriteLine($"Login as {role}");
+            }
             else
             {
                 server.RemoveThisClient(this);
@@ -430,20 +447,20 @@ namespace Server
         public void Disconnect()
         {
             //This part makes sure the client is disconnected safely.
-            this.server.Clients.Remove(this);
-            this.server.usernameAndResistance.Remove(this.user.getUsername());
-            this.user.loggedIn = false;
-            this.server.Disconnect(this);
+            server.Clients.Remove(this);
+            server.usernameAndResistance.Remove(user.getUsername());
+            user.loggedIn = false;
+            server.Disconnect(this);
 
             // Try to close the stream
             try
             {
-                this.client.GetStream().Close();
-                this.client.Close();
+                client.GetStream().Close();
+                client.Close();
             }
             catch { }
 
-            Console.WriteLine(this.user.getUsername() + " disconnected");
+            Console.WriteLine(user.getUsername() + " disconnected");
         }
         #endregion
     }

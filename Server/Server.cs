@@ -3,14 +3,14 @@ using Newtonsoft.Json.Linq;
 using SharedItems;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace Server
 {
+    /// <summary>
+    /// Accepts connections
+    /// </summary>
     public class Server
     {
         #region private atributes
@@ -23,7 +23,7 @@ namespace Server
 
         #endregion
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Server server = new Server();
         }
@@ -32,19 +32,20 @@ namespace Server
 
         public Server()
         {
-            this.usernameAndResistance = new Dictionary<string, string>();
-            this.Clients = new List<ServerClient>();
+            usernameAndResistance = new Dictionary<string, string>();
+            Clients = new List<ServerClient>();
 
-            this.dataBase = new Dictionary<string, User>();
-            this.cryptoFileSaver = new CryptoFileSaver("data_saves");
+            dataBase = new Dictionary<string, User>();
+            cryptoFileSaver = new CryptoFileSaver("data_saves");
             loadUsers();
 
             if (dataBase.Keys.Count == 0)
+            {
                 fillUsers();
-
+            }
 
             IPAddress localhost = IPAddress.Parse("127.0.0.1");
-            this.listener = new TcpListener(localhost, 8080);
+            listener = new TcpListener(localhost, 8080);
 
             Console.WriteLine("Starting server");
 
@@ -58,7 +59,7 @@ namespace Server
 
         private void loadUsers()
         {
-            string[] users = this.cryptoFileSaver.GetSavedUsers();
+            string[] users = cryptoFileSaver.GetSavedUsers();
 
             foreach (string serializedUser in users)
             {
@@ -78,10 +79,10 @@ namespace Server
 
                 foreach (JObject dataSet in jArray)
                 {
-                    user.userDataStorage.dataSets.Add(new DataSet((UpdateType)Enum.Parse(typeof(UpdateType), (string)dataSet["UpdateType"]), (double)dataSet["Value"],(DateTime)dataSet["DateStamp"]));
+                    user.userDataStorage.dataSets.Add(new DataSet((UpdateType)Enum.Parse(typeof(UpdateType), (string)dataSet["UpdateType"]), (double)dataSet["Value"], (DateTime)dataSet["DateStamp"]));
                 }
 
-                this.dataBase.Add(user.username, user);
+                dataBase.Add(user.username, user);
             }
         }
 
@@ -97,14 +98,14 @@ namespace Server
 
         public void saveUser(User user)
         {
-            this.cryptoFileSaver.WriteUserData(user.GetSaveFormat(), user.username);
+            cryptoFileSaver.WriteUserData(user.GetSaveFormat(), user.username);
         }
 
         public void saveAllUsers()
         {
             foreach (string userName in dataBase.Keys)
             {
-                this.cryptoFileSaver.WriteUserData(dataBase[userName].GetSaveFormat(), userName);
+                cryptoFileSaver.WriteUserData(dataBase[userName].GetSaveFormat(), userName);
             }
         }
 
@@ -125,7 +126,7 @@ namespace Server
 
         public void RemoveThisClient(ServerClient client)
         {
-            this.Clients.Remove(client);
+            Clients.Remove(client);
         }
 
         internal void Disconnect(ServerClient client)
@@ -141,7 +142,7 @@ namespace Server
 
         private void notifyDoctorClientLeft(ServerClient leavingClient)
         {
-            foreach (ServerClient client in this.Clients)
+            foreach (ServerClient client in Clients)
             {
                 if (client.user?.getRole() == Role.Doctor)
                 {
@@ -153,12 +154,13 @@ namespace Server
         internal User checkUser(string username, string password)
         {
             if (dataBase.ContainsKey(username))
+            {
                 if (dataBase[username].checkPassword(password) && dataBase[username].loggedIn == false)
                 {
                     dataBase[username].loggedIn = true;
                     return dataBase[username];
                 }
-
+            }
 
             return null;
         }
@@ -167,14 +169,14 @@ namespace Server
 
         public void addUsersToThisDoctorClient(ServerClient doctorClient)
         {
-            foreach (ServerClient client in this.Clients)
-            {                
-                    if (client.user?.getRole() == Role.Patient)
-                    {
-                        string username = client.user.getUsername();
-                        doctorClient.sendAddUserMessage(username);
-                        doctorClient.sendResistanceToDoctor(this.usernameAndResistance[username], username);
-                    }               
+            foreach (ServerClient client in Clients)
+            {
+                if (client.user?.getRole() == Role.Patient)
+                {
+                    string username = client.user.getUsername();
+                    doctorClient.sendAddUserMessage(username);
+                    doctorClient.sendResistanceToDoctor(usernameAndResistance[username], username);
+                }
             }
 
         }
@@ -184,12 +186,14 @@ namespace Server
             //This part makes sure the resistance that is sent stays synchronized with the server.
             string resistance = (string)data["Resistance"];
             string username = (string)data["Username"];
-            this.usernameAndResistance[username] = resistance;
+            usernameAndResistance[username] = resistance;
         }
         internal void broadcast(string message)
         {
             foreach (ServerClient client in Clients)
+            {
                 client.sendMessage(message);
+            }
         }
 
         internal void SendToDoctors(string jsonMessage)
@@ -197,8 +201,12 @@ namespace Server
             foreach (ServerClient client in Clients)
             {
                 if (client.user != null)
+                {
                     if (client.user.getRole() == Role.Doctor)
+                    {
                         client.WriteTextMessage(jsonMessage);
+                    }
+                }
             }
 
         }
@@ -208,8 +216,12 @@ namespace Server
             foreach (ServerClient client in Clients)
             {
                 if (client.user != null)
+                {
                     if (client.user.getRole() == Role.Patient)
+                    {
                         client.WriteTextMessage(jsonMessage);
+                    }
+                }
             }
 
         }
@@ -235,7 +247,9 @@ namespace Server
             foreach (ServerClient client in Clients)
             {
                 if (client.user.getRole() == Role.Doctor && client != serverClient)
+                {
                     client.sendResistanceToDoctor(resistance, username);
+                }
             }
         }
 

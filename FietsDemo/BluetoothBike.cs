@@ -162,51 +162,60 @@ namespace FietsDemo
 
         public async Task initialize()
         {
-            int errorCode = 0;
-            BleBike = new BLE();
-            HeartRateSensor = new BLE();
-
-            // We need some time to list available devices
-            Thread.Sleep(1000);
-
-            // List available devices
-            List<string> bleBikeList = BleBike.ListDevices();
-            Console.WriteLine("Devices found: ");
-            foreach (var name in bleBikeList)
+            try
             {
-                Console.WriteLine($"Device: {name}");
-            }
+                int errorCode = 0;
+                BleBike = new BLE();
+                HeartRateSensor = new BLE();
 
-            // Connecting
-            errorCode = await BleBike.OpenDevice("Avans Bike");
-            // __TODO__ Error check
+                // We need some time to list available devices
+                Thread.Sleep(1000);
 
-            var services = BleBike.GetServices;
-            foreach (var service in services)
+                // List available devices
+                List<string> bleBikeList = BleBike.ListDevices();
+                Console.WriteLine("Devices found: ");
+                foreach (var name in bleBikeList)
+                {
+                    Console.WriteLine($"Device: {name}");
+                }
+
+                // Connecting
+                errorCode = await BleBike.OpenDevice("Avans Bike");
+
+
+                // __TODO__ Error check
+
+                var services = BleBike.GetServices;
+                foreach (var service in services)
+                {
+                    Console.WriteLine($"Service: {service}");
+                }
+
+
+                // Set service
+                errorCode = await BleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
+                // __TODO__ error check
+
+                // Subscribe
+                BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+                errorCode = await BleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+
+                // Heart rate
+                errorCode = await HeartRateSensor.OpenDevice("Avans Bike");
+
+                await HeartRateSensor.SetService("HeartRate");
+
+                HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
+                await HeartRateSensor.SubscribeToCharacteristic("HeartRateMeasurement");
+
+
+
+                Console.Read();
+            } catch
             {
-                Console.WriteLine($"Service: {service}");
+
             }
-
-
-            // Set service
-            errorCode = await BleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
-            // __TODO__ error check
-
-            // Subscribe
-            BleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            errorCode = await BleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
-
-            // Heart rate
-            errorCode = await HeartRateSensor.OpenDevice("Avans Bike");
-
-            await HeartRateSensor.SetService("HeartRate");
-
-            HeartRateSensor.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            await HeartRateSensor.SubscribeToCharacteristic("HeartRateMeasurement");
-
-
-
-            Console.Read();
+            
         }
 
         public void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
@@ -497,16 +506,14 @@ namespace FietsDemo
                     break;
 
             }
-
         }
 
         public double setResistance(double percentage)
         {
-            this.tcpClientVR.resistance = percentage;
-
             //Check if simulator is turned on, if so set resistance in simulator as well.
             if (this.simulator != null)
             {
+                this.tcpClientVR.resistance = percentage;
                 this.simulator.setResistance((int)percentage);
                 this.gui.setResistance((int)percentage);
             }
@@ -564,24 +571,6 @@ namespace FietsDemo
             setValuesInGui(UpdateType.Heartrate, 0);
             setValuesInGui(UpdateType.Speed, speed);
         }
-
-        //public void setResistance(float percentage)
-        //{
-        //    //byte[] byteArray = { 0xA4, 0x09, 0x4E, 0x05, 0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, (byte)(percentage * 2), 0 };
-        //    byte[] byteArray = { 0xA4, 0x09, 0x4E, 0x05, 0x30, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 40, 0 };
-
-
-        //    int checksumCalculated = 0;
-        //    for (int i = 0; i < byteArray.Length - 1; i++)
-        //    {
-        //        checksumCalculated = byteArray[i] ^ checksumCalculated;
-        //    }
-
-        //    byteArray[byteArray.Length - 1] = (byte)checksumCalculated;
-
-        //    BleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", byteArray);
-        //    //bikeSimulator.WriteCharacteristic("Simulator", byteArray);
-        //}
     }
 }
 

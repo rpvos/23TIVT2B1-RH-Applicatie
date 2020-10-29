@@ -22,7 +22,7 @@ namespace FietsDemo
 
         private void exitButton_Click(object sender, EventArgs e)
         {
-            gui.bluetoothBike.client.disconnect();
+            gui.BluetoothBike.client.disconnect();
             System.Environment.Exit(0);
             Application.Exit();
         }
@@ -106,7 +106,7 @@ namespace FietsDemo
             if (chatTextBox.Text != "")
             {
                 doctorChat.Items.Add(chatTextBox.Text);
-                gui.bluetoothBike.sendPrivateMessage(chatTextBox.Text);
+                gui.BluetoothBike.sendPrivateMessage(chatTextBox.Text);
                 chatTextBox.Text = "";
 
             }

@@ -109,7 +109,7 @@ namespace FietsDemo
         private void AddChatMessage(JObject data)
         {
             string message = (string)data["Message"];
-            bluetoothBike.gui.addTextMessage("Doctor: " + message);
+            bluetoothBike.Gui.addTextMessage("Doctor: " + message);
 
         }
 

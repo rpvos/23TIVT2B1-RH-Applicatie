@@ -1,18 +1,17 @@
 using Avans.TI.BLE;
+using SharedItems;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TCP_naar_VR;
-using UpdateType = SharedItems.UpdateType;
 
 namespace FietsDemo
 {
     public class BluetoothBike : IBLEcallBack
     {
-
-        public GUI gui { get; set; }
+        public GUI Gui { get; set; }
         private Simulator simulator;
         private BikeSimulator bikeSimulator;
 
@@ -33,9 +32,6 @@ namespace FietsDemo
         private int timeElapsedCounter = 0;
         private bool isSimulatorRunning;
 
-        //public bool SimulatorIsRunning = false;
-
-        private double resistance = 0;
 
         public UserClient client { get; set; }
 
@@ -136,7 +132,7 @@ namespace FietsDemo
         {
             simulator = new Simulator(bikeSimulator);
             bikeSimulator.running = true;
-            simulator.run(gui);
+            simulator.run(Gui);
         }
 
         public void stopSimulator()
@@ -153,8 +149,8 @@ namespace FietsDemo
 
         public void startGUI()
         {
-            gui = new GUI(this);
-            gui.run();
+            Gui = new GUI(this);
+            Gui.run();
         }
 
         public async Task initialize()
@@ -473,27 +469,27 @@ namespace FietsDemo
             switch (updateType)
             {
                 case UpdateType.Speed:
-                    gui.getForm().setSpeed(value);
+                    Gui.getForm().setSpeed(value);
                     tcpClientVR.speed = value;
                     break;
                 case UpdateType.Heartrate:
-                    gui.getForm().setHeartRate(value);
+                    Gui.getForm().setHeartRate(value);
                     tcpClientVR.heartRate = value;
                     break;
                 case UpdateType.AccumulatedPower:
-                    gui.getForm().setAP(value);
+                    Gui.getForm().setAP(value);
                     tcpClientVR.AP = value;
                     break;
                 case UpdateType.AccumulatedDistance:
-                    gui.getForm().setDT(value);
+                    Gui.getForm().setDT(value);
                     tcpClientVR.DT = value;
                     break;
                 case UpdateType.ElapsedTime:
-                    gui.getForm().setElapsedTime(value);
+                    Gui.getForm().setElapsedTime(value);
                     tcpClientVR.elapsedTime = value;
                     break;
                 case UpdateType.Resistance:
-                    gui.getForm().setResistance(value);
+                    Gui.getForm().setResistance(value);
                     tcpClientVR.resistance = value;
                     break;
 
@@ -507,7 +503,7 @@ namespace FietsDemo
             {
                 tcpClientVR.resistance = percentage;
                 simulator.setResistance((int)percentage);
-                gui.setResistance((int)percentage);
+                Gui.setResistance((int)percentage);
             }
 
             if (percentage <= 100.0 && percentage >= 0.0)
@@ -553,7 +549,6 @@ namespace FietsDemo
             previousAccumulatedPower = 0;
             previousDistanceTraveled = 0;
             previousTimeElapsed = 0;
-            resistance = 0;
             timeElapsedCounter = 0;
             timeElapsedInSeconds = 0;
             speed = 0;

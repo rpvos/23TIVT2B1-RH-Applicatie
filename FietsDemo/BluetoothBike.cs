@@ -502,9 +502,10 @@ namespace FietsDemo
 
         public double setResistance(double percentage)
         {
+            this.tcpClientVR.resistance = percentage;
 
             //Check if simulator is turned on, if so set resistance in simulator as well.
-            if(this.simulator != null)
+            if (this.simulator != null)
             {
                 this.simulator.setResistance((int)percentage);
                 this.gui.setResistance((int)percentage);

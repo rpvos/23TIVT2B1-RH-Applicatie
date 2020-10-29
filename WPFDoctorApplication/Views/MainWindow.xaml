@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WPFDoctorApplication"
         mc:Ignorable="d"
         Name="DoctorClientWindow"
-        Title="DoctorClient" Height="870" Width="1610" WindowStartupLocation="CenterScreen">
+        Title="DoctorClient" Height="880" Width="1530" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>

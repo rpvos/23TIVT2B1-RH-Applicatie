@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WPFDoctorApplication.Views"
              xmlns:utils="clr-namespace:WPFDoctorApplication.Utils"
              mc:Ignorable="d" 
-             d:DesignHeight="750" d:DesignWidth="1570" Background="White">
+             d:DesignHeight="760" d:DesignWidth="1490" Background="White">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -35,10 +35,10 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <UserControl Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="4" Width="1050" Content="{Binding SelectedPatientViewModel, UpdateSourceTrigger=PropertyChanged}"/>
-        <StackPanel Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Bottom">
+        <UserControl Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="1" Grid.RowSpan="4" Width="990" Content="{Binding SelectedPatientViewModel, UpdateSourceTrigger=PropertyChanged}"/>
+        <StackPanel Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" VerticalAlignment="Top">
             <Border BorderBrush="Black" BorderThickness="1">
-                <ScrollViewer  MinWidth="250" Height="400" VerticalScrollBarVisibility="Auto" >
+                <ScrollViewer  MinWidth="230" Height="700" VerticalScrollBarVisibility="Auto" >
                     <ItemsControl ItemsSource="{Binding GlobalChatList}" FontSize="12"/>
                 </ScrollViewer>
             </Border>

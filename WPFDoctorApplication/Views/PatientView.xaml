@@ -72,7 +72,7 @@
 
         <!--Row 3-->
         <TextBlock Grid.Column="1" Grid.Row="3" Text="Speed:"/>
-        <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding PatientBike.Speed, Converter={StaticResource PatientValueConverter}, ConverterParameter=SPEED}"/>
+        <TextBlock Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding PatientBike.Speed, Converter={StaticResource PatientValueConverter}, ConverterParameter=SPEED}" MaxWidth="130" FontSize="26"/>
         
         <StackPanel Grid.Column="5" Grid.Row="3" Grid.RowSpan="8" VerticalAlignment="Top" Margin="0 0 20 0">
             <Border BorderBrush="Black" BorderThickness="1">
@@ -95,8 +95,8 @@
         
         <!--Row 4-->
         <TextBlock Grid.Column="1" Grid.Row="4" Text="Heart rate:"/>
-        <TextBlock Grid.Column="2" Grid.Row="4" Text="{Binding PatientBike.HeartRate, Converter={StaticResource PatientValueConverter}, ConverterParameter=HEARTRATE}" x:Name="heartRateBlock"/>
-        <Button Grid.Column="6" Grid.Row="4" Grid.RowSpan="2" Height="40" VerticalAlignment="Top" Content="Get historical data" Margin="0 3 0 0" Command="{Binding GetHistoricalDataCommand}">
+        <TextBlock Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding PatientBike.HeartRate, Converter={StaticResource PatientValueConverter}, ConverterParameter=HEARTRATE}" x:Name="heartRateBlock"/>
+        <Button Grid.Column="6" Grid.Row="4" Grid.RowSpan="2" Height="40" VerticalAlignment="Top" Content="Get historical data" Margin="0 3 0 0" Command="{Binding GetHistoricalDataCommand}" IsEnabled="{Binding PatientBike.CanGetHistoricalData}">
             <Button.ToolTip>
                 <ToolTip Content="Retrieves the data of the recorded session and displays it in a new window."/>
             </Button.ToolTip>
@@ -104,7 +104,7 @@
 
         <!--Row 5-->
         <TextBlock Grid.Column="1" Grid.Row="5" Text="Active time:"/>
-        <TextBlock Grid.Column="2" Grid.Row="5" Text="{Binding PatientBike.ElapsedTime, Converter={StaticResource PatientValueConverter}, ConverterParameter=ELAPSEDTIME }" x:Name="elapsedTimeBlock"/>
+        <TextBlock Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" Text="{Binding PatientBike.ElapsedTime, Converter={StaticResource PatientValueConverter}, ConverterParameter=ELAPSEDTIME }" x:Name="elapsedTimeBlock"/>
         <wpf:AngularGauge Grid.Column="6" Grid.Row="5" Grid.RowSpan="5" Width="200" Value="{Binding PatientBike.HeartRate}" FromValue="50" ToValue="250" 
                           LabelsStep="50" TicksStep="25" Wedge="180"
                           TicksForeground="White" Foreground="White" 
@@ -118,12 +118,12 @@
         
         <!--Row 6-->
         <TextBlock Grid.Column="1" Grid.Row="6" Text="Distance traveled:"/>
-        <TextBlock Grid.Column="2" Grid.Row="6" Text="{Binding PatientBike.DistanceTraveled, Converter={StaticResource PatientValueConverter}, ConverterParameter=DISTANCETRAVELED}" x:Name="distanceTraveledBlock"/>
+        <TextBlock Grid.Column="2" Grid.Row="6" Grid.ColumnSpan="2" Text="{Binding PatientBike.DistanceTraveled, Converter={StaticResource PatientValueConverter}, ConverterParameter=DISTANCETRAVELED}" x:Name="distanceTraveledBlock"/>
 
         
         <!--Row 7-->
         <TextBlock Grid.Column="1" Grid.Row="7" Text="Accumulated power:"/>
-        <TextBlock Grid.Column="2" Grid.Row="7" Text="{Binding PatientBike.AccumulatedPower}" x:Name="accumulatedPowerBlock"/>
+        <TextBlock Grid.Column="2" Grid.Row="7" Grid.ColumnSpan="2" Text="{Binding PatientBike.AccumulatedPower}" x:Name="accumulatedPowerBlock"/>
 
         <!--Row 8-->
         <TextBlock Grid.Column="1" Grid.Row="8" Text="Resistance:"/>
@@ -131,7 +131,7 @@
 
         <!--Row 9-->
         <Slider Grid.Column="1" Grid.Row="9" Value="{Binding PatientBike.ResistanceValue}" Minimum="0" Maximum="100" ValueChanged="Slider_ValueChanged" Margin="0 10 0 0" Height="35"/>
-        <TextBlock Grid.Column="2" Grid.Row="9" Text="{Binding PatientBike.ResistanceValue}"/>
+        <TextBlock Grid.Column="2" Grid.Row="9" Grid.ColumnSpan="2" Text="{Binding PatientBike.ResistanceValue}"/>
         <TextBlock Grid.Column="6" Grid.Row="9" Text="{Binding PatientBike.HeartRate, Converter={StaticResource PatientValueConverter}, ConverterParameter=HEARTRATE}" HorizontalAlignment="Center" FontSize="30"/>
 
         <!--Row 10-->
@@ -141,7 +141,7 @@
             </Button.ToolTip>
         </Button>
         <TextBlock Grid.Column="1" Grid.Row="10" Text="In session: "/>
-        <TextBlock Grid.Column="2" Grid.Row="10" Text="{Binding PatientBike.IsInSession}"/>
+        <TextBlock Grid.Column="2" Grid.Row="10" Grid.ColumnSpan="2" Text="{Binding PatientBike.IsInSession}"/>
 
     </Grid>
 </UserControl>

@@ -46,11 +46,18 @@ namespace WPFDoctorApplication.Models
             {
                 _isInSession = value;
                 if (value)
+                {
                     SessionText = "Stop session";
+                    CanGetHistoricalData = false;
+                }
                 else
-                    SessionText = "Start session";                
+                {
+                    SessionText = "Start session";
+                    CanGetHistoricalData = true;
+                }
             } 
         }
+        public bool CanGetHistoricalData { get; set; } = true;
         public string SessionText { 
             get
             {

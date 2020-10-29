@@ -16,10 +16,11 @@ namespace WPFDoctorApplication.Utils
             switch (type)
             {
                 case "SPEED":
-                    convertedValue = value + " km/u";
+                    value = (double)value;
+                    convertedValue = String.Format("{0:0.0}", value) + " km/u";
                     break;
                 case "DISTANCETRAVELED":
-                    convertedValue = value + " km";
+                    convertedValue = String.Format("{0:0.000}", value) + " km";
                     break;
                 case "ELAPSEDTIME":
                     var timeSpan = TimeSpan.FromSeconds((double)value);                   

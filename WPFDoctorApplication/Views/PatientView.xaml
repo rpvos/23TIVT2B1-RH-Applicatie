@@ -7,7 +7,7 @@
              xmlns:utils="clr-namespace:WPFDoctorApplication.Utils"
              xmlns:wpf="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="1050" Background="White" FontSize="28">
+             d:DesignHeight="760" d:DesignWidth="970" Background="White" FontSize="28" VerticalAlignment="Top">
     <UserControl.Resources>
         <utils:PatientValueConverter x:Key="PatientValueConverter"/>
     </UserControl.Resources>
@@ -25,6 +25,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="25"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -34,35 +35,49 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
         <!--Row 0-->
         <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontSize="36" Text="{Binding Username}"/>
         
         <!--Row 1-->
-        <TextBlock Grid.Column="1" Grid.Row="1"/>
         
         <!--Row 2-->
         <wpf:CartesianChart Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="450" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20"  Series="{Binding SpeedCollection}" LegendLocation="None"  DisableAnimations="True" DataTooltip="{x:Null}">
             <wpf:CartesianChart.AxisY>
-                <wpf:Axis Title="Speed" MinValue="0" MaxValue="144"/>
+                <wpf:Axis Title="Speed in km/u" MinValue="0" MaxValue="144"/>
             </wpf:CartesianChart.AxisY>
             <wpf:CartesianChart.AxisX>
-                <wpf:Axis Title="Time" Labels="{Binding SpeedLabels}"/>
+                <wpf:Axis Title="Time" Labels="{Binding PatientBike.TimeLabels}">
+                    <wpf:Axis.Separator>
+                        <wpf:Separator Step="39" />
+                    </wpf:Axis.Separator>
+                </wpf:Axis>
             </wpf:CartesianChart.AxisX>
         </wpf:CartesianChart>
-        
+
+        <wpf:CartesianChart Grid.Column="4" Grid.Row="2" Grid.ColumnSpan="3" MinWidth="490" HorizontalAlignment="Left" MinHeight="300" Margin="0 0 0 20"  Series="{Binding DistanceCollection}" LegendLocation="None"  DisableAnimations="True" DataTooltip="{x:Null}">
+            <wpf:CartesianChart.AxisY>
+                <wpf:Axis Title="Distance in km" LabelFormatter="{Binding DistanceFormatter}"/>
+            </wpf:CartesianChart.AxisY>
+            <wpf:CartesianChart.AxisX>
+                <wpf:Axis Title="Time" Labels="{Binding PatientBike.TimeLabels}">
+                    <wpf:Axis.Separator>
+                        <wpf:Separator Step="39" />
+                    </wpf:Axis.Separator>
+                </wpf:Axis>
+            </wpf:CartesianChart.AxisX>
+        </wpf:CartesianChart>
+
         <!--Row 3-->
         <TextBlock Grid.Column="1" Grid.Row="3" Text="Speed:"/>
-        <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding PatientBike.Speed, Converter={StaticResource PatientValueConverter}, ConverterParameter=SPEED}"/>
+        <TextBlock Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding PatientBike.Speed, Converter={StaticResource PatientValueConverter}, ConverterParameter=SPEED}" MaxWidth="130" FontSize="26"/>
         
-            <!--Temporary chatbox-->
-        <StackPanel Grid.Column="5" Grid.Row="3" Grid.RowSpan="5" VerticalAlignment="Top">
+        <StackPanel Grid.Column="5" Grid.Row="3" Grid.RowSpan="8" VerticalAlignment="Top" Margin="0 0 20 0">
             <Border BorderBrush="Black" BorderThickness="1">
-                <ScrollViewer  MinWidth="250" Height="150" VerticalScrollBarVisibility="Auto" >
-                    <ItemsControl ItemsSource="{Binding PatientBike.PrivateChatList}" FontSize="12"/>
+                <ScrollViewer  MinWidth="250" Height="300" VerticalScrollBarVisibility="Auto" >
+                    <ItemsControl ItemsSource="{Binding PatientBike.PrivateChatList}" FontSize="14"/>
                 </ScrollViewer>
             </Border>
             <TextBox Width="auto" MinHeight="35" AcceptsReturn="False" Text="{Binding PatientBike.PrivateChatMessage, UpdateSourceTrigger=PropertyChanged}">
@@ -74,43 +89,59 @@
                 </TextBox.ToolTip>
             </TextBox>
         </StackPanel>
+        
+        <Button Grid.Column="6" Grid.Row="3" Grid.RowSpan="2" VerticalAlignment="Top" Height="40" Margin="0 0 0 3" Content="{Binding PatientBike.SessionText}" Command="{Binding StartSessionCommand}" />
 
+        
         <!--Row 4-->
         <TextBlock Grid.Column="1" Grid.Row="4" Text="Heart rate:"/>
-        <TextBlock Grid.Column="2" Grid.Row="4" Text="{Binding PatientBike.HeartRate, Converter={StaticResource PatientValueConverter}, ConverterParameter=HEARTRATE}" x:Name="heartRateBlock"/>
-
-        <!--Row 5-->
-        <TextBlock Grid.Column="1" Grid.Row="5" Text="Active time:"/>
-        <TextBlock Grid.Column="2" Grid.Row="5" Text="{Binding PatientBike.ElapsedTime, Converter={StaticResource PatientValueConverter}, ConverterParameter=ELAPSEDTIME }" x:Name="elapsedTimeBlock"/>
-
-        <!--Row 6-->
-        <TextBlock Grid.Column="1" Grid.Row="6" Text="Distance traveled:"/>
-        <TextBlock Grid.Column="2" Grid.Row="6" Text="{Binding PatientBike.DistanceTraveled, Converter={StaticResource PatientValueConverter}, ConverterParameter=DISTANCETRAVELED}" x:Name="distanceTraveledBlock"/>
-
-        <!--Row 7-->
-        <TextBlock Grid.Column="1" Grid.Row="7" Text="Accumulated power:"/>
-        <TextBlock Grid.Column="2" Grid.Row="7" Text="{Binding PatientBike.AccumulatedPower}" x:Name="accumulatedPowerBlock"/>
-
-        <!--Row 8-->
-        <TextBlock Grid.Column="1" Grid.Row="8" Text="Resistance:"/>
-        <Button Grid.Column="5" Grid.Row="8" Content="Emergency stop" Command="{Binding StopCommand}">
-            <Button.ToolTip>
-                <ToolTip Content="Sets the resistance to 100 for an immediate stop."/>
-            </Button.ToolTip>
-        </Button>
-
-        <!--Row 9-->
-        <Slider Grid.Column="1" Grid.Row="9" Value="{Binding PatientBike.ResistanceValue}" Minimum="0" Maximum="100" ValueChanged="Slider_ValueChanged" Margin="0 10 0 0" Height="35"/>
-        <TextBlock Grid.Column="2" Grid.Row="9" Text="{Binding PatientBike.ResistanceValue}"/>
-        <Button Grid.Column="5" Grid.Row="9" Content="{Binding PatientBike.SessionText}" Command="{Binding StartSessionCommand}" Margin="0 5 0 0"/>
-        
-        <!--Row 10-->
-        <TextBlock Grid.Column="1" Grid.Row="10" Text="In session: "/>
-        <TextBlock Grid.Column="2" Grid.Row="10" Text="{Binding PatientBike.IsInSession}"/>
-        <Button Grid.Column="5" Grid.Row="10" Content="Get historical data" Margin="0 5 0 0" Command="{Binding GetHistoricalDataCommand}">
+        <TextBlock Grid.Column="2" Grid.Row="4" Grid.ColumnSpan="2" Text="{Binding PatientBike.HeartRate, Converter={StaticResource PatientValueConverter}, ConverterParameter=HEARTRATE}" x:Name="heartRateBlock"/>
+        <Button Grid.Column="6" Grid.Row="4" Grid.RowSpan="2" Height="40" VerticalAlignment="Top" Content="Get historical data" Margin="0 3 0 0" Command="{Binding GetHistoricalDataCommand}" IsEnabled="{Binding PatientBike.CanGetHistoricalData}">
             <Button.ToolTip>
                 <ToolTip Content="Retrieves the data of the recorded session and displays it in a new window."/>
             </Button.ToolTip>
         </Button>
+
+        <!--Row 5-->
+        <TextBlock Grid.Column="1" Grid.Row="5" Text="Active time:"/>
+        <TextBlock Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" Text="{Binding PatientBike.ElapsedTime, Converter={StaticResource PatientValueConverter}, ConverterParameter=ELAPSEDTIME }" x:Name="elapsedTimeBlock"/>
+        <wpf:AngularGauge Grid.Column="6" Grid.Row="5" Grid.RowSpan="5" Width="200" Value="{Binding PatientBike.HeartRate}" FromValue="50" ToValue="250" 
+                          LabelsStep="50" TicksStep="25" Wedge="180"
+                          TicksForeground="White" Foreground="White" 
+                          FontWeight="Bold" FontSize="16"
+                          SectionsInnerRadius=".5">
+            <wpf:AngularGauge.Sections>
+                <wpf:AngularSection FromValue="50" ToValue="200" Fill="#F8A725"/>
+                <wpf:AngularSection FromValue="200" ToValue="250" Fill="#FF3939"/>
+            </wpf:AngularGauge.Sections>
+        </wpf:AngularGauge>
+        
+        <!--Row 6-->
+        <TextBlock Grid.Column="1" Grid.Row="6" Text="Distance traveled:"/>
+        <TextBlock Grid.Column="2" Grid.Row="6" Grid.ColumnSpan="2" Text="{Binding PatientBike.DistanceTraveled, Converter={StaticResource PatientValueConverter}, ConverterParameter=DISTANCETRAVELED}" x:Name="distanceTraveledBlock"/>
+
+        
+        <!--Row 7-->
+        <TextBlock Grid.Column="1" Grid.Row="7" Text="Accumulated power:"/>
+        <TextBlock Grid.Column="2" Grid.Row="7" Grid.ColumnSpan="2" Text="{Binding PatientBike.AccumulatedPower}" x:Name="accumulatedPowerBlock"/>
+
+        <!--Row 8-->
+        <TextBlock Grid.Column="1" Grid.Row="8" Text="Resistance:"/>
+        <TextBlock Grid.Column="6" Grid.Row="8" Text="Heart rate:"/>
+
+        <!--Row 9-->
+        <Slider Grid.Column="1" Grid.Row="9" Value="{Binding PatientBike.ResistanceValue}" Minimum="0" Maximum="100" ValueChanged="Slider_ValueChanged" Margin="0 10 0 0" Height="35"/>
+        <TextBlock Grid.Column="2" Grid.Row="9" Grid.ColumnSpan="2" Text="{Binding PatientBike.ResistanceValue}"/>
+        <TextBlock Grid.Column="6" Grid.Row="9" Text="{Binding PatientBike.HeartRate, Converter={StaticResource PatientValueConverter}, ConverterParameter=HEARTRATE}" HorizontalAlignment="Center" FontSize="30"/>
+
+        <!--Row 10-->
+        <Button Grid.Column="6" Grid.Row="10" Content="Emergency stop" Command="{Binding StopCommand}">
+            <Button.ToolTip>
+                <ToolTip Content="Sets the resistance to 100 for an immediate stop."/>
+            </Button.ToolTip>
+        </Button>
+        <TextBlock Grid.Column="1" Grid.Row="10" Text="In session: "/>
+        <TextBlock Grid.Column="2" Grid.Row="10" Grid.ColumnSpan="2" Text="{Binding PatientBike.IsInSession}"/>
+
     </Grid>
 </UserControl>
